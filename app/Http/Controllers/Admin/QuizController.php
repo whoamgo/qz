@@ -1,0 +1,210 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Constants\Status;
+use App\Http\Controllers\Controller;
+use App\Models\BankQuestion;
+use App\Models\Category;
+use App\Models\Quiz;
+use App\Models\QuizBankQuestion;
+use App\Rules\FileTypeValidate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class QuizController extends Controller {
+    public function index() {
+        $pageTitle = "All Quizzes";
+        $quizzes = Quiz::with(['category', 'subCategory'])
+            ->searchable(['title', 'slug', 'description'])
+            ->when(request('category_id'), function ($q) {
+                $q->where('category_id', request('category_id'));
+            })
+            ->when(request('sub_category_id'), function ($q) {
+                $q->where('sub_category_id', request('sub_category_id'));
+            })
+            ->when(request('status'), function ($q) {
+                $q->where('status', request('status'));
+            })
+            ->when(request('difficulty'), function ($q) {
+                $q->where('difficulty', request('difficulty'));
+            })
+            ->when(request('quiz_type'), function ($q) {
+                $q->where('quiz_type', request('quiz_type'));
+            })
+            ->latest()
+            ->paginate(getPaginate());
+
+        $categories = Category::onlyParent()->active()->orderBy('name')->get();
+        $subCategories = Category::onlyChild()->active()->orderBy('name')->get();
+
+        return view('admin.quiz.index', compact('pageTitle', 'quizzes', 'categories', 'subCategories'));
+    }
+
+    public function create($id = 0) {
+        $pageTitle = "Add Quiz";
+        $quiz = null;
+
+        if ($id) {
+            $pageTitle = "Edit Quiz";
+            $quiz = Quiz::findOrFail($id);
+        }
+
+        $categories = Category::onlyParent()->active()->orderBy('name')->get();
+        $subCategories = collect();
+        if ($quiz && $quiz->category_id) {
+            $subCategories = Category::where('parent_id', $quiz->category_id)->active()->orderBy('name')->get();
+        }
+
+        return view('admin.quiz.create', compact('pageTitle', 'quiz', 'categories', 'subCategories'));
+    }
+
+    public function store(Request $request, $id = 0) {
+        $imgValidation = $id ? 'nullable' : 'nullable';
+        $request->validate([
+            'title'               => 'required|string|max:255',
+            'slug'                => 'required|string|max:255|unique:quizzes,slug,' . $id,
+            'description'         => 'nullable|string',
+            'category_id'         => 'required|integer|exists:categories,id',
+            'sub_category_id'     => 'nullable|integer|exists:categories,id',
+            'quiz_type'           => 'required|in:free,paid,subscription',
+            'price'               => 'required_if:quiz_type,paid|numeric|min:0',
+            'difficulty'          => 'required|in:easy,medium,hard',
+            'total_questions'     => 'required|integer|min:0',
+            'time_limit'          => 'required|integer|min:0',
+            'pass_percentage'     => 'required|integer|min:0|max:100',
+            'marks_per_correct'   => 'required|numeric|min:0',
+            'negative_marking'    => 'required|numeric|min:0',
+            'randomize_questions' => 'nullable|boolean',
+            'randomize_options'     => 'nullable|boolean',
+            'show_result'         => 'nullable|boolean',
+            'show_correct_answers' => 'nullable|boolean',
+            'show_explanation'   => 'nullable|boolean',
+            'status'              => 'required|in:draft,published,archived',
+            'image'               => [$imgValidation, 'image', new FileTypeValidate(['jpeg', 'jpg', 'png'])],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            if ($id) {
+                $quiz = Quiz::findOrFail($id);
+                $message = 'Quiz updated successfully';
+            } else {
+                $quiz = new Quiz();
+                $message = 'Quiz created successfully';
+            }
+
+            if ($request->hasFile('image')) {
+                try {
+                    $old = $quiz->image;
+                    $quiz->image = fileUploader($request->image, getFilePath('exam'), getFileSize('exam'), $old);
+                } catch (\Exception $exp) {
+                    $notify[] = ['error', 'Couldn\'t upload your image'];
+                    return back()->withNotify($notify);
+                }
+            }
+
+            $quiz->title = $request->title;
+            $quiz->slug = slug($request->slug);
+            $quiz->description = $request->description;
+            $quiz->category_id = $request->category_id;
+            $quiz->sub_category_id = $request->sub_category_id;
+            $quiz->quiz_type = $request->quiz_type;
+            $quiz->price = $request->quiz_type == 'paid' ? $request->price : 0;
+            $quiz->difficulty = $request->difficulty;
+            $quiz->total_questions = $request->total_questions;
+            $quiz->time_limit = $request->time_limit;
+            $quiz->pass_percentage = $request->pass_percentage;
+            $quiz->marks_per_correct = $request->marks_per_correct;
+            $quiz->negative_marking = $request->negative_marking;
+            $quiz->randomize_questions = $request->boolean('randomize_questions');
+            $quiz->randomize_options = $request->boolean('randomize_options');
+            $quiz->show_result = $request->boolean('show_result');
+            $quiz->show_correct_answers = $request->boolean('show_correct_answers');
+            $quiz->show_explanation = $request->boolean('show_explanation');
+            $quiz->status = $request->status;
+
+            $quiz->save();
+            DB::commit();
+
+            $notify[] = ['success', $message];
+            return to_route('admin.quiz.show', $quiz->id)->withNotify($notify);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $notify[] = ['error', $e->getMessage()];
+            return back()->withNotify($notify);
+        }
+    }
+
+    public function show($id) {
+        $quiz = Quiz::with(['category', 'subCategory', 'questions.options', 'questions.correctOption'])
+            ->findOrFail($id);
+        $pageTitle = "Quiz: " . $quiz->title;
+
+        $questions = $quiz->questions;
+        $totalMarks = $quiz->questions->sum(function ($q) use ($quiz) {
+            return $q->pivot->marks ?? $quiz->marks_per_correct;
+        });
+
+        return view('admin.quiz.show', compact('pageTitle', 'quiz', 'questions', 'totalMarks'));
+    }
+
+    public function getSubCategories(Request $request) {
+        $request->validate([
+            'category_id' => 'required|integer|exists:categories,id',
+        ]);
+
+        $subCategories = Category::where('parent_id', $request->category_id)
+            ->active()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $subCategories
+        ]);
+    }
+
+    public function changeQuizStatus($id) {
+        $quiz = Quiz::findOrFail($id);
+
+        if ($quiz->status == Quiz::STATUS_PUBLISHED) {
+            $quiz->status = Quiz::STATUS_DRAFT;
+        } else {
+            $quiz->status = Quiz::STATUS_PUBLISHED;
+        }
+
+        $quiz->save();
+
+        $notify[] = ['success', 'Quiz status changed successfully'];
+        return back()->withNotify($notify);
+    }
+
+    public function delete($id) {
+        $quiz = Quiz::findOrFail($id);
+        $quiz->delete();
+
+        $notify[] = ['success', 'Quiz deleted successfully'];
+        return back()->withNotify($notify);
+    }
+
+    public function restore($id) {
+        $quiz = Quiz::onlyTrashed()->findOrFail($id);
+        $quiz->restore();
+
+        $notify[] = ['success', 'Quiz restored successfully'];
+        return back()->withNotify($notify);
+    }
+
+    public function preview($id) {
+        $quiz = Quiz::with(['questions.options', 'questions.correctOption'])
+            ->findOrFail($id);
+
+        if ($quiz->randomize_questions) {
+            $quiz->setRelation('questions', $quiz->questions->shuffle());
+        }
+
+        $pageTitle = "Preview: " . $quiz->title;
+        return view('admin.quiz.preview', compact('pageTitle', 'quiz'));
+    }
+}

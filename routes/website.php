@@ -1,0 +1,104 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Public Website Routes
+|--------------------------------------------------------------------------
+| Registered BEFORE routes/web.php. Laravel matches routes in registration
+| order, so declaring these first stops the legacy `/{slug}` catch-all in
+| web.php from swallowing paths like /quizzes and /categories.
+*/
+
+/*
+| Five paths overlap the legacy template site: /, /exams, /blog, /blog/{slug}
+| and /contact. Those legacy definitions are commented out in web.php, and the
+| replacements below deliberately KEEP THE ORIGINAL ROUTE NAMES (home, exams,
+| blog, blog.details, contact) because ~35 places across payment gateways,
+| helpers.php, SiteController and the legacy template call route('home') and
+| friends. Reusing the names keeps every one of those call sites working.
+*/
+Route::namespace('Website')->group(function () {
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::get('exams', 'ExamController@index')->name('exams');
+    Route::get('blog', 'BlogController@index')->name('blog');
+    Route::get('blog/{slug}', 'BlogController@show')->name('blog.details');
+    Route::get('contact', 'PageController@contact')->name('contact');
+});
+
+Route::namespace('Website')->name('website.')->group(function () {
+
+    // ---------------------------------------------------------------- quizzes
+    Route::controller('QuizController')->group(function () {
+        Route::get('quizzes', 'index')->name('quizzes');
+        Route::get('quiz/{slug}', 'show')->name('quiz.show');
+
+        Route::middleware('auth')->group(function () {
+            Route::post('quiz/{slug}/start', 'start')->name('quiz.start');
+            Route::get('quiz/attempt/{attempt}', 'attempt')->name('quiz.attempt');
+            Route::post('quiz/attempt/{attempt}/answer', 'saveAnswer')->name('quiz.answer');
+            Route::post('quiz/attempt/{attempt}/review', 'markReview')->name('quiz.mark.review');
+            Route::post('quiz/attempt/{attempt}/submit', 'submit')->name('quiz.submit');
+            Route::get('quiz/result/{attempt}', 'result')->name('quiz.result');
+            Route::get('quiz/review/{attempt}', 'review')->name('quiz.review');
+        });
+    });
+
+    // ------------------------------------------------------------- categories
+    Route::controller('CategoryController')->group(function () {
+        Route::get('categories', 'index')->name('categories');
+        Route::get('category/{slug}', 'show')->name('category.show');
+        Route::get('category/{parent}/{child}', 'subCategory')->name('subcategory.show');
+    });
+
+    // ------------------------------------------------------------------ exams
+    Route::controller('ExamController')->group(function () {
+        Route::get('exams/{slug}', 'show')->name('exam.show');
+        Route::get('mock-tests', 'mockTests')->name('mock.tests');
+        Route::get('pyq', 'pyq')->name('pyq');
+    });
+
+    // -------------------------------------------------------- current affairs
+    Route::controller('CurrentAffairsController')->prefix('current-affairs')->name('current.affairs.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('today', 'today')->name('today');
+        Route::get('weekly', 'weekly')->name('weekly');
+        Route::get('monthly', 'monthly')->name('monthly');
+    });
+
+    // ------------------------------------------------------------ leaderboard
+    Route::get('leaderboard', 'LeaderboardController@index')->name('leaderboard');
+
+    // ---------------------------------------------------------- static pages
+    Route::controller('PageController')->group(function () {
+        Route::get('about', 'about')->name('about');
+        Route::post('contact', 'contactSubmit')->name('contact.submit');
+        Route::get('privacy-policy', 'privacy')->name('privacy');
+        Route::get('terms-and-conditions', 'terms')->name('terms');
+        Route::get('disclaimer', 'disclaimer')->name('disclaimer');
+    });
+
+    // ------------------------------------------------------------ subscribe
+    Route::post('subscribe', 'SubscriberController@store')->name('subscribe');
+
+    // --------------------------------------------------------------- search
+    Route::get('search', 'SearchController@index')->name('search');
+    Route::get('search/suggest', 'SearchController@suggest')->name('search.suggest');
+
+    // --------------------------------------------------------------- profile
+    Route::middleware('auth')->prefix('profile')->name('profile.')->controller('ProfileController')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('quizzes', 'quizzes')->name('quizzes');
+        Route::get('progress', 'progress')->name('progress');
+        Route::get('xp', 'xp')->name('xp');
+        Route::get('badges', 'badges')->name('badges');
+        Route::get('streak', 'streak')->name('streak');
+        Route::get('bookmarks', 'bookmarks')->name('bookmarks');
+        Route::get('settings', 'settings')->name('settings');
+        Route::post('settings', 'settingsUpdate')->name('settings.update');
+    });
+
+    // ------------------------------------------------------------- bookmarks
+    Route::middleware('auth')->post('bookmark/toggle', 'BookmarkController@toggle')->name('bookmark.toggle');
+});

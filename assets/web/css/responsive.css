@@ -1,0 +1,113 @@
+/* ==========================================================================
+   Responsive rules. Bootstrap 5 breakpoints:
+   sm 576 | md 768 | lg 992 | xl 1200 | xxl 1400
+   Mobile-first: style.css holds the base, these are the overrides upward
+   and the mobile-only components (bottom nav, sticky quiz bar).
+   ========================================================================== */
+
+/* ------------------------------------------------- mobile bottom nav ----- */
+
+.w-bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 1040;
+    background: #fff; border-top: 1px solid var(--w-border);
+    display: none; padding-bottom: env(safe-area-inset-bottom);
+}
+.w-bottom-nav a {
+    flex: 1 1 0; text-align: center; padding: 0.5rem 0.25rem;
+    font-size: 0.68rem; color: var(--w-muted); min-height: 56px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.w-bottom-nav a i { font-size: 1.15rem; }
+.w-bottom-nav a.active { color: var(--w-primary); }
+
+/* Offcanvas mobile menu */
+.w-offcanvas .offcanvas-body { padding: 0; }
+.w-offcanvas .w-mobile-link {
+    display: flex; align-items: center; gap: var(--w-space-3);
+    padding: var(--w-space-4); border-bottom: 1px solid var(--w-border);
+    color: var(--w-body); font-weight: 500; min-height: 52px;
+}
+.w-offcanvas .w-mobile-link:hover,
+.w-offcanvas .w-mobile-link.active { background: var(--w-primary-light); color: var(--w-primary); }
+.w-offcanvas .w-mobile-link i { width: 22px; text-align: center; color: var(--w-muted); }
+.w-offcanvas .w-mobile-link.active i { color: var(--w-primary); }
+
+/* ---------------------------------------------------------- < 576 (xs) -- */
+
+@media (max-width: 575.98px) {
+    :root { --w-fs-4xl: 1.75rem; --w-fs-3xl: 1.5rem; --w-fs-2xl: 1.3rem; }
+
+    .w-section { padding: var(--w-space-6) 0; }
+    .w-hero { padding: var(--w-space-6) 0; }
+    .w-hero p { font-size: var(--w-fs-base); }
+    .w-hero .btn { width: 100%; }
+    .w-hero .btn + .btn { margin-top: var(--w-space-2); }
+
+    .w-section-head { flex-direction: column; align-items: flex-start; gap: var(--w-space-2); }
+
+    /* Bottom nav replaces the desktop utility bar; keep content clear of it. */
+    .w-bottom-nav { display: flex; }
+    body.has-bottom-nav { padding-bottom: 62px; }
+
+    .w-podium-item { width: 104px; }
+    .w-podium-avatar { width: 48px; height: 48px; }
+
+    .w-toast-wrap { left: 12px; right: 12px; top: auto; bottom: 74px; }
+    .w-toast { max-width: none; }
+}
+
+/* ------------------------------------------------------- 576 – 767 (sm) -- */
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .w-bottom-nav { display: flex; }
+    body.has-bottom-nav { padding-bottom: 62px; }
+    .w-section { padding: var(--w-space-6) 0; }
+}
+
+/* ------------------------------------------------------- < 992 (tablet) -- */
+
+@media (max-width: 991.98px) {
+    /* Desktop nav and header search collapse into the offcanvas. */
+    .w-desktop-nav, .w-header .w-search-wrap { display: none !important; }
+    .w-hero { text-align: center; }
+    .w-hero p { margin-left: auto; margin-right: auto; }
+
+    /* Tables that cannot reflow scroll inside their own container rather than
+       forcing the page to scroll sideways. */
+    .w-table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .w-table-responsive > table { min-width: 640px; }
+}
+
+/* ------------------------------------------------------ >= 992 (desktop) - */
+
+@media (min-width: 992px) {
+    .w-mobile-only { display: none !important; }
+    .w-section { padding: var(--w-space-10) 0; }
+}
+
+/* ------------------------------------------------------------- >= 1200 --- */
+
+@media (min-width: 1200px) {
+    .w-hero { padding: 5rem 0; }
+}
+
+/* --------------------------------------------------------------- print --- */
+
+@media print {
+    .w-header, .w-footer, .w-bottom-nav, .w-toast-wrap, .btn { display: none !important; }
+    body { background: #fff; }
+    .w-card { box-shadow: none; border-color: #ccc; }
+}
+
+/* No page may scroll horizontally at any width.
+   `clip` rather than `hidden`: overflow-x:hidden on html/body turns them into
+   scroll containers, which silently breaks `position: sticky` on the header.
+   `clip` prevents sideways scroll without creating a scroll container. */
+html, body { max-width: 100%; overflow-x: clip; }
+
+@supports not (overflow: clip) {
+    /* Older engines: keep the clip on body only, leaving html sticky-safe. */
+    body { overflow-x: hidden; }
+}
+img, video, iframe, table { max-width: 100%; }
+img { height: auto; }

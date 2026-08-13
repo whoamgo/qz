@@ -1,0 +1,904 @@
+{
+    "dashboard": {
+        "keyword": [
+            "Dashboard",
+            "Home",
+            "Panel",
+            "Admin",
+            "Control center",
+            "Overview",
+            "Main hub",
+            "Management hub",
+            "Administrative hub",
+            "Central hub",
+            "Command center",
+            "Administrator portal",
+            "Centralized interface",
+            "Admin console",
+            "Management dashboard",
+            "Main screen",
+            "Administrative dashboard",
+            "Command dashboard",
+            "Main control panel"
+        ],
+        "title": "Dashboard",
+        "icon": "las la-home",
+        "route_name": "admin.dashboard",
+        "menu_active": "admin.dashboard"
+    },
+    "category": {
+        "keyword": [
+            "Categories",
+            "Exam Categories",
+            "Manage Category"
+        ],
+        "title": "Categories",
+        "icon": "la la-list",
+        "route_name": "admin.category.index",
+        "menu_active": "admin.category.*"
+    },
+    "manage_exam": {
+        "title": "Manage Exams",
+        "icon": "las la-book-open",
+        "counters": [],
+        "menu_active": "admin.exams*",
+        "submenu": [
+            {
+                "keyword": [
+                    "Add Exam",
+                    "Create New Exam",
+                    "Exam Management",
+                    "Exam control",
+                    "Exam status",
+                    "Exam activity",
+                    "Exam analytics"
+                ],
+                "title": "Add New Exam",
+                "route_name": "admin.exams.add",
+                "menu_active": "admin.exams.add"
+            },
+            {
+                "keyword": [
+                    "Exam List",
+                    "Manage Exam",
+                    "Exam management",
+                    "Exam activity"
+                ],
+                "title": "All Exams",
+                "route_name": "admin.exams.index",
+                "menu_active": "admin.exams.index"
+            },
+            {
+                "keyword": [
+                    "Declared Result",
+                    "Result Publication",
+                    "Result management",
+                    "Result activity"
+                ],
+                "title": "Declared Result",
+                "route_name": "admin.exams.result.declare",
+                "menu_active": "admin.exams.result.declare"
+            }
+        ]
+    },
+    "quiz_manager": {
+        "title": "Quiz Manager",
+        "icon": "las la-puzzle-piece",
+        "counters": [],
+        "menu_active": "admin.quiz*|admin.question-bank*",
+        "submenu": [
+            {
+                "keyword": [
+                    "All Quizzes",
+                    "Quiz List",
+                    "Quiz Management"
+                ],
+                "title": "All Quizzes",
+                "route_name": "admin.quiz.index",
+                "menu_active": "admin.quiz.index"
+            },
+            {
+                "keyword": [
+                    "Add Quiz",
+                    "Create Quiz",
+                    "New Quiz"
+                ],
+                "title": "Add New Quiz",
+                "route_name": "admin.quiz.create",
+                "menu_active": "admin.quiz.create"
+            },
+            {
+                "keyword": [
+                    "Question Bank",
+                    "Questions",
+                    "Manage Questions"
+                ],
+                "title": "Question Bank",
+                "route_name": "admin.question-bank.index",
+                "menu_active": "admin.question-bank.index"
+            }
+        ]
+    },
+    "import_ai_tools": {
+        "title": "Import & AI Tools",
+        "icon": "las la-robot",
+        "counters": [],
+        "menu_active": "admin.question-import*|admin.quiz-import*|admin.ai-generator*|admin.ai-settings*",
+        "submenu": [
+            {
+                "keyword": [
+                    "Import Questions",
+                    "Bulk Import",
+                    "CSV Import",
+                    "Upload Questions"
+                ],
+                "title": "Import Questions",
+                "route_name": "admin.question-import.index",
+                "menu_active": "admin.question-import.index"
+            },
+            {
+                "keyword": [
+                    "Import History",
+                    "Import Log"
+                ],
+                "title": "Import History",
+                "route_name": "admin.question-import.history",
+                "menu_active": "admin.question-import.history"
+            },
+            {
+                "keyword": [
+                    "Import Quizzes",
+                    "Quiz Import",
+                    "Bulk Quiz Import",
+                    "Upload Quizzes"
+                ],
+                "title": "Import Quizzes",
+                "route_name": "admin.quiz-import.index",
+                "menu_active": "admin.quiz-import.index"
+            },
+            {
+                "keyword": [
+                    "Quiz Import History"
+                ],
+                "title": "Quiz Import History",
+                "route_name": "admin.quiz-import.history",
+                "menu_active": "admin.quiz-import.history"
+            },
+            {
+                "keyword": [
+                    "AI Question Generator",
+                    "Generate Questions",
+                    "AI Generate"
+                ],
+                "title": "AI Generator - Generate",
+                "route_name": "admin.ai-generator.create",
+                "menu_active": "admin.ai-generator.create"
+            },
+            {
+                "keyword": [
+                    "AI Generated Questions",
+                    "Generated Questions"
+                ],
+                "title": "AI Generated Questions",
+                "route_name": "admin.ai-generator.questions",
+                "menu_active": "admin.ai-generator.questions"
+            },
+            {
+                "keyword": [
+                    "AI Generation History",
+                    "Generation History"
+                ],
+                "title": "AI Generation History",
+                "route_name": "admin.ai-generator.history",
+                "menu_active": "admin.ai-generator.history"
+            },
+            {
+                "keyword": [
+                    "AI Settings",
+                    "AI Configuration",
+                    "AI Provider Settings"
+                ],
+                "title": "AI Settings",
+                "route_name": "admin.ai-settings.index",
+                "menu_active": "admin.ai-settings.index"
+            }
+        ]
+    },
+    "pricing": {
+        "keyword": [
+            "Pricing Plans",
+            "Manage Plans",
+            "Manage Pricing",
+            "Manage Subscription",
+            "Subscription management",
+            "Subscription plans",
+            "Subscription pricing"
+        ],
+        "title": "Pricing Plans",
+        "icon": "la la-gem",
+        "route_name": "admin.plan.index",
+        "menu_active": "admin.plan.*"
+    },
+    "website_content": {
+        "title": "Website Content",
+        "icon": "las la-desktop",
+        "counters": [],
+        "menu_active": "admin.frontend.sections|admin.frontend.manage.pages|admin.subscriber*",
+        "submenu": [
+            {
+                "keyword": [
+                    "Banner",
+                    "Hero Slider",
+                    "Slider",
+                    "Homepage Banner"
+                ],
+                "title": "Banner / Hero Slider",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "banner"
+                }
+            },
+            {
+                "keyword": [
+                    "Testimonial",
+                    "Reviews",
+                    "Feedback"
+                ],
+                "title": "Testimonials",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "testimonial"
+                }
+            },
+            {
+                "keyword": [
+                    "Blog",
+                    "Articles",
+                    "Posts"
+                ],
+                "title": "Blog Posts",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "blog"
+                }
+            },
+            {
+                "keyword": [
+                    "FAQ",
+                    "Questions",
+                    "Help"
+                ],
+                "title": "FAQ",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "faq"
+                }
+            },
+            {
+                "keyword": [
+                    "Counter",
+                    "Stats",
+                    "Numbers"
+                ],
+                "title": "Counters",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "counter"
+                }
+            },
+            {
+                "keyword": [
+                    "Social",
+                    "Social Links"
+                ],
+                "title": "Social Icons",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "social_icon"
+                }
+            },
+            {
+                "keyword": [
+                    "Policy",
+                    "Privacy",
+                    "Terms",
+                    "Disclaimer"
+                ],
+                "title": "Policy Pages",
+                "route_name": "admin.frontend.sections",
+                "menu_active": "admin.frontend.sections",
+                "params": {
+                    "key": "policy_pages"
+                }
+            },
+            {
+                "keyword": [
+                    "Manage Pages",
+                    "Pages",
+                    "Page Builder"
+                ],
+                "title": "Manage Pages",
+                "route_name": "admin.frontend.manage.pages",
+                "menu_active": "admin.frontend.manage.pages"
+            },
+            {
+                "keyword": [
+                    "Subscribers",
+                    "Newsletter",
+                    "Email List"
+                ],
+                "title": "Subscribers",
+                "route_name": "admin.subscriber.index",
+                "menu_active": "admin.subscriber*"
+            }
+        ]
+    },
+    "manage_users": {
+        "title": "Manage Users",
+        "icon": "las la-users",
+        "counters": [
+            "bannedUsersCount",
+            "emailUnverifiedUsersCount",
+            "mobileUnverifiedUsersCount"
+        ],
+        "menu_active": "admin.users*",
+        "submenu": [
+            {
+                "keyword": [
+                    "active users",
+                    "Manage Users",
+                    "User management",
+                    "User control",
+                    "User status",
+                    "User activity",
+                    "User analytics"
+                ],
+                "title": "Active Users",
+                "route_name": "admin.users.active",
+                "menu_active": "admin.users.active"
+            },
+            {
+                "keyword": [
+                    "banned users",
+                    "Manage Users",
+                    "User management",
+                    "Account bans",
+                    "User activity"
+                ],
+                "title": "Banned Users",
+                "route_name": "admin.users.banned",
+                "menu_active": "admin.users.banned",
+                "counter": "bannedUsersCount"
+            },
+            {
+                "keyword": [
+                    "email unverified users",
+                    "Manage Users",
+                    "User verification",
+                    "User authentication",
+                    "User management"
+                ],
+                "title": "Email Unverified",
+                "route_name": "admin.users.email.unverified",
+                "menu_active": "admin.users.email.unverified",
+                "counter": "emailUnverifiedUsersCount"
+            },
+            {
+                "keyword": [
+                    "mobile unverified users",
+                    "Manage Users",
+                    "User verification",
+                    "User authentication",
+                    "User management"
+                ],
+                "title": "Mobile Unverified",
+                "route_name": "admin.users.mobile.unverified",
+                "menu_active": "admin.users.mobile.unverified",
+                "counter": "mobileUnverifiedUsersCount"
+            },
+            {
+                "keyword": [
+                    "all users users",
+                    "Manage Users",
+                    "User management",
+                    "User control",
+                    "User activity",
+                    "User analytics"
+                ],
+                "title": "All Users",
+                "route_name": "admin.users.all",
+                "menu_active": "admin.users.all"
+            },
+            {
+                "keyword": [
+                    "send notification users",
+                    "Manage Users",
+                    "User notifications",
+                    "User management",
+                    "User activity"
+                ],
+                "title": "Send Notification",
+                "route_name": "admin.users.notification.all",
+                "menu_active": "admin.users.notification.all"
+            }
+        ]
+    },
+    "deposits": {
+        "title": "Payments",
+        "icon": "las la-file-invoice-dollar",
+        "counters": [
+            "pendingDepositsCount"
+        ],
+        "menu_active": "admin.deposit*",
+        "submenu": [
+            {
+                "keyword": [
+                    "Pending Payments",
+                    "Payments",
+                    "Payment management",
+                    "Payment control",
+                    "Payment status",
+                    "Payment activity"
+                ],
+                "title": "Pending Payments",
+                "route_name": "admin.deposit.pending",
+                "menu_active": "admin.deposit.pending",
+                "counter": "pendingDepositsCount",
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "Approved Payments",
+                    "Payments",
+                    "Payment management",
+                    "Payment activity"
+                ],
+                "title": "Approved Payments",
+                "route_name": "admin.deposit.approved",
+                "menu_active": "admin.deposit.approved",
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "Successful Payments",
+                    "Payments",
+                    "Payment management",
+                    "Payment activity"
+                ],
+                "title": "Successful Payments",
+                "route_name": "admin.deposit.successful",
+                "menu_active": "admin.deposit.successful",
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "Rejected Payments",
+                    "Payments",
+                    "Payment management",
+                    "Payment activity"
+                ],
+                "title": "Rejected Payments",
+                "route_name": "admin.deposit.rejected",
+                "menu_active": "admin.deposit.rejected",
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "Initiated Payments",
+                    "Payments",
+                    "Payment management",
+                    "Payment activity"
+                ],
+                "title": "Initiated Payments",
+                "route_name": "admin.deposit.initiated",
+                "menu_active": "admin.deposit.initiated",
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "All Payments",
+                    "Payments",
+                    "Payment management",
+                    "Payment control",
+                    "Payment activity"
+                ],
+                "title": "All Payments",
+                "route_name": "admin.deposit.list",
+                "menu_active": "admin.deposit.list",
+                "params": {
+                    "user_id": ""
+                }
+            }
+        ]
+    },
+    "support_ticket": {
+        "title": "Support Ticket",
+        "icon": "la la-ticket",
+        "counters": [
+            "pendingTicketCount"
+        ],
+        "menu_active": "admin.ticket*",
+        "submenu": [
+            {
+                "keyword": [
+                    "Pending Ticket",
+                    "Support Ticket",
+                    "Ticket management",
+                    "Ticket control",
+                    "Ticket status",
+                    "Ticket activity"
+                ],
+                "title": "Pending Ticket",
+                "route_name": "admin.ticket.pending",
+                "menu_active": "admin.ticket.pending",
+                "counter": "pendingTicketCount"
+            },
+            {
+                "keyword": [
+                    "Closed Ticket",
+                    "Support Ticket",
+                    "Ticket management",
+                    "Ticket activity"
+                ],
+                "title": "Closed Ticket",
+                "route_name": "admin.ticket.closed",
+                "menu_active": "admin.ticket.closed"
+            },
+            {
+                "keyword": [
+                    "Answered Ticket",
+                    "Support Ticket",
+                    "Ticket management",
+                    "Ticket activity"
+                ],
+                "title": "Answered Ticket",
+                "route_name": "admin.ticket.answered",
+                "menu_active": "admin.ticket.answered"
+            },
+            {
+                "keyword": [
+                    "All Ticket",
+                    "Support Ticket",
+                    "Ticket management",
+                    "Ticket control",
+                    "Ticket activity"
+                ],
+                "title": "All Ticket",
+                "route_name": "admin.ticket.index",
+                "menu_active": "admin.ticket.index"
+            }
+        ]
+    },
+    "reports": {
+        "title": "Report",
+        "icon": "la la-list",
+        "menu_active": "admin.report*",
+        "submenu": [
+            {
+                "keyword": [
+                    "Subscription Log",
+                    "Report",
+                    "Subscription report",
+                    "Subscription history",
+                    "Subscription activity",
+                    "balance sheet",
+                    "balance log",
+                    "balance history"
+                ],
+                "title": "Subscription History",
+                "route_name": "admin.report.subscriptions",
+                "menu_active": [
+                    "admin.report.subscriptions",
+                    "admin.report.subscriptions.search"
+                ],
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "Exam Log",
+                    "Report",
+                    "Exam report",
+                    "Exam history",
+                    "Exam activity",
+                    "balance sheet",
+                    "balance log",
+                    "balance history"
+                ],
+                "title": "Exam History",
+                "route_name": "admin.report.exams",
+                "menu_active": [
+                    "admin.report.exams",
+                    "admin.report.exams.search"
+                ],
+                "params": {
+                    "user_id": ""
+                }
+            },
+            {
+                "keyword": [
+                    "Login History",
+                    "Report",
+                    "Login report",
+                    "Login history",
+                    "Login activity"
+                ],
+                "title": "Login History",
+                "route_name": "admin.report.login.history",
+                "menu_active": [
+                    "admin.report.login.history",
+                    "admin.report.login.ip.history"
+                ]
+            },
+            {
+                "keyword": [
+                    "Notification History",
+                    "Report",
+                    "Notification report",
+                    "Notification history",
+                    "Notification activity",
+                    "email log",
+                    "email history",
+                    "sms log",
+                    "sms history",
+                    "push notification log",
+                    "push notification history"
+                ],
+                "title": "Notification History",
+                "route_name": "admin.report.notification.history",
+                "menu_active": "admin.report.notification.history"
+            }
+        ]
+    },
+    "system_setting": {
+        "keyword": [
+            "System Setting",
+            "setting",
+            "System configuration",
+            "System preferences",
+            "Configuration management",
+            "System setup"
+        ],
+        "title": "System Setting",
+        "icon": "las la-life-ring",
+        "route_name": "admin.setting.system",
+        "menu_active": [
+            "admin.setting.system",
+            "admin.setting.general",
+            "admin.setting.socialite.credentials",
+            "admin.cron*",
+            "admin.setting.system.configuration",
+            "admin.setting.logo.icon",
+            "admin.extensions.index",
+            "admin.language.manage",
+            "admin.language.key",
+            "admin.seo",
+            "admin.kyc.setting",
+            "admin.frontend.templates",
+            "admin.frontend.manage.*",
+            "admin.maintenance.mode",
+            "admin.setting.cookie",
+            "admin.setting.custom.css",
+            "admin.setting.sitemap",
+            "admin.setting.robot",
+            "admin.setting.notification.global.email",
+            "admin.setting.notification.global.sms",
+            "admin.setting.notification.global.push",
+            "admin.setting.notification.email",
+            "admin.setting.notification.sms",
+            "admin.setting.notification.push",
+            "admin.setting.notification.templates",
+            "admin.setting.notification.template.edit",
+            "admin.frontend.index",
+            "admin.frontend.sections*",
+            "admin.gateway*",
+            "admin.withdraw.method*",
+            "admin.setting.app.purchase",
+            "admin.certificate.template"
+        ]
+    },
+    "extra": {
+        "title": "Extra",
+        "icon": "la la-server",
+        "menu_active": "admin.system*",
+        "counters": [
+            "updateAvailable"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Application",
+                    "System",
+                    "Application management",
+                    "Application settings",
+                    "System information",
+                    "version",
+                    "laravel",
+                    "timezone"
+                ],
+                "title": "Application",
+                "route_name": "admin.system.info",
+                "menu_active": "admin.system.info"
+            },
+            {
+                "keyword": [
+                    "Server",
+                    "System",
+                    "Server management",
+                    "Server settings",
+                    "System information",
+                    "version",
+                    "php version",
+                    "software",
+                    "ip address",
+                    "server ip address",
+                    "server port",
+                    "http host"
+                ],
+                "title": "Server",
+                "route_name": "admin.system.server.info",
+                "menu_active": "admin.system.server.info"
+            },
+            {
+                "keyword": [
+                    "Cache",
+                    "System",
+                    "Cache management",
+                    "Cache optimization",
+                    "System performance",
+                    "clear cache"
+                ],
+                "title": "Cache",
+                "route_name": "admin.system.optimize",
+                "menu_active": "admin.system.optimize"
+            },
+            {
+                "keyword": [
+                    "Update",
+                    "System",
+                    "Update management",
+                    "System update",
+                    "Software updates",
+                    "version update",
+                    "upgrade",
+                    "latest version"
+                ],
+                "title": "Update",
+                "route_name": "admin.system.update",
+                "menu_active": "admin.system.update*",
+                "counter": "updateAvailable"
+            }
+        ]
+    },
+    "report_and_request": {
+        "keyword": [
+            "Report & Request",
+            "Report and Request",
+            "Reports and Requests",
+            "Reporting and Requests",
+            "Report management",
+            "Request management",
+            "feature request",
+            "bug report"
+        ],
+        "title": "Report & Request",
+        "icon": "las la-bug",
+        "route_name": "admin.request.report",
+        "menu_active": "admin.request.report"
+    },
+    "gamification": {
+        "keyword": [
+            "Gamification",
+            "XP",
+            "Experience Points",
+            "Levels",
+            "Badges",
+            "Achievements",
+            "Leaderboard",
+            "Streaks",
+            "Rewards",
+            "User engagement"
+        ],
+        "title": "Gamification",
+        "icon": "las la-star",
+        "counters": [],
+        "menu_active": "admin.xp*",
+        "submenu": [
+            {
+                "keyword": [
+                    "XP Dashboard",
+                    "Gamification Dashboard",
+                    "XP Statistics",
+                    "Gamification Statistics"
+                ],
+                "title": "XP Dashboard",
+                "route_name": "admin.xp.dashboard",
+                "menu_active": "admin.xp.dashboard"
+            },
+            {
+                "keyword": [
+                    "XP Rules",
+                    "Manage XP",
+                    "XP Configuration",
+                    "XP Management"
+                ],
+                "title": "XP Rules",
+                "route_name": "admin.xp.rules.index",
+                "menu_active": "admin.xp.rules*"
+            },
+            {
+                "keyword": [
+                    "User XP",
+                    "Manage User XP",
+                    "User Experience Points",
+                    "User XP Management"
+                ],
+                "title": "User XP",
+                "route_name": "admin.xp.users.index",
+                "menu_active": "admin.xp.users*"
+            },
+            {
+                "keyword": [
+                    "XP Transactions",
+                    "Transaction History",
+                    "XP History",
+                    "Transaction Log"
+                ],
+                "title": "XP Transactions",
+                "route_name": "admin.xp.transactions.index",
+                "menu_active": "admin.xp.transactions*"
+            },
+            {
+                "keyword": [
+                    "Levels",
+                    "Manage Levels",
+                    "Level Management",
+                    "User Levels"
+                ],
+                "title": "Levels",
+                "route_name": "admin.xp.levels.index",
+                "menu_active": "admin.xp.levels*"
+            },
+            {
+                "keyword": [
+                    "Badges",
+                    "Manage Badges",
+                    "Badge Management",
+                    "Achievements",
+                    "Badges & Rewards"
+                ],
+                "title": "Badges & Rewards",
+                "route_name": "admin.xp.badges.index",
+                "menu_active": "admin.xp.badges*"
+            },
+            {
+                "keyword": [
+                    "Gamification Settings",
+                    "XP Settings",
+                    "Gamification Configuration",
+                    "Gamification Setup"
+                ],
+                "title": "Settings",
+                "route_name": "admin.xp.settings.settings",
+                "menu_active": "admin.xp.settings*"
+            }
+        ]
+    }
+}
