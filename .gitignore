@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 config/google-service-account.json
 assets/admin/push_config.json
+assets/admin/push_config.json
