@@ -174,6 +174,22 @@
                                 </div>
 
                                 <div class="col-md-4">
+                                    <label class="form-label fw-semibold" for="question_limit">
+                                        @lang('Question Limit')
+                                    </label>
+                                    <input type="number" min="0" name="question_limit" id="question_limit" class="form-control"
+                                           value="{{ old('question_limit', $quiz?->question_limit ?? 0) }}">
+                                    <small class="text-muted">
+                                        @lang('How many questions each attempt shows, picked at random. 0 = show all.')
+                                        @if ($quiz)
+                                            <span class="d-block mt-1">
+                                                @lang('Bank has'): <strong>{{ $quiz->questions()->count() }}</strong> @lang('questions')
+                                            </span>
+                                        @endif
+                                    </small>
+                                </div>
+
+                                <div class="col-md-4">
                                     <label class="form-label fw-semibold" for="time_limit">
                                         @lang('Time Limit') <span class="text-danger">*</span>
                                     </label>

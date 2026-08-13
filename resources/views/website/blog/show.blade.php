@@ -20,7 +20,7 @@
                     </div>
 
                     @if (!empty($values->image))
-                        <img src="{{ frontendImage('blog', $values->image) }}" alt="{{ $values->title ?? '' }}"
+                        <img src="{{ frontendThumb('blog', $values->image, '960x640') }}" alt="{{ $values->title ?? '' }}"
                              class="w-100 rounded mb-4" loading="eager">
                     @endif
 

@@ -24,7 +24,8 @@ class Quiz extends Model {
 
     protected $fillable = [
         'title', 'slug', 'description', 'category_id', 'sub_category_id',
-        'quiz_type', 'price', 'difficulty', 'total_questions', 'time_limit',
+        'quiz_type', 'price', 'difficulty', 'total_questions',
+        'question_limit', 'time_limit',
         'pass_percentage', 'marks_per_correct', 'negative_marking',
         'randomize_questions', 'randomize_options', 'show_result',
         'show_correct_answers', 'show_explanation', 'status', 'image',
@@ -65,6 +66,29 @@ class Quiz extends Model {
 
     public function xpSettings() {
         return $this->hasOne(QuizXpSetting::class, 'quiz_id');
+    }
+
+    /**
+     * How many questions one attempt should serve.
+     *
+     * A limit of 0 (or one larger than the bank) means "serve everything",
+     * so the value is always clamped to what is actually attached.
+     */
+    public function effectiveQuestionCount(?int $available = null): int {
+        $available = $available ?? $this->questions()->count();
+        $limit     = (int) $this->question_limit;
+
+        if ($limit <= 0) {
+            return $available;
+        }
+
+        return min($limit, $available);
+    }
+
+    /** True when an attempt sees only part of the bank. */
+    public function isLimited(): bool {
+        $limit = (int) $this->question_limit;
+        return $limit > 0 && $limit < $this->questions()->count();
     }
 
     /** Public-site attempts of this quiz. */

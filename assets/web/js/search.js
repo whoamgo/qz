@@ -1,38 +1,59 @@
 /**
- * search.js — header typeahead. Queries the suggest endpoint after a short
- * debounce and renders grouped results with keyboard support.
+ * search.js — live search suggestions.
+ *
+ * Each .w-search-wrap is wired independently, so the hero search and the
+ * mobile menu search can coexist without sharing state. Previously a single
+ * global selector meant only the first input on the page worked.
  */
 (function ($, window) {
     'use strict';
 
-    $(function () {
-        var $input = $('.w-search-input');
-        if (!$input.length) { return; }
+    function initSearch(wrap) {
+        var $wrap  = $(wrap);
+        var $input = $wrap.find('.w-search-input');
+        var $box   = $wrap.find('.w-suggest');
+        var url    = $input.data('suggest-url');
 
-        var $box = $('.w-suggest');
-        var url = $input.data('suggest-url');
+        // No endpoint declared: plain form, no live suggestions.
+        if (!$input.length || !$box.length || !url) { return; }
+
         var activeIndex = -1;
+        var lastTerm = '';
 
-        function hide() { $box.removeClass('show').empty(); activeIndex = -1; }
+        function hide() {
+            $box.removeClass('show').empty();
+            activeIndex = -1;
+            $input.attr('aria-expanded', 'false');
+        }
+
+        function skeleton() {
+            var rows = '';
+            for (var i = 0; i < 3; i++) {
+                rows += '<div class="w-suggest-item"><span class="w-skeleton-line is-title mb-0"></span></div>';
+            }
+            $box.html(rows).addClass('show');
+        }
 
         function render(payload) {
-            var html = '';
+            var quizzes = payload.quizzes || [];
+            var cats    = payload.categories || [];
+            var html    = '';
 
-            if (payload.quizzes && payload.quizzes.length) {
+            if (quizzes.length) {
                 html += '<div class="w-suggest-label">Quizzes</div>';
-                $.each(payload.quizzes, function (i, q) {
-                    html += '<a class="w-suggest-item" href="' + q.url + '">' +
+                $.each(quizzes, function (i, q) {
+                    html += '<a class="w-suggest-item" href="' + q.url + '" role="option">' +
                                 '<i class="bi bi-patch-question me-2"></i>' +
-                                '<span class="wq-title"></span>' +
-                                '<small class="w-muted d-block ms-4">' + (q.questions || 0) + ' questions</small>' +
+                                '<span><span class="wq-title"></span>' +
+                                '<small class="w-muted d-block">' + (q.questions || 0) + ' questions</small></span>' +
                             '</a>';
                 });
             }
 
-            if (payload.categories && payload.categories.length) {
+            if (cats.length) {
                 html += '<div class="w-suggest-label">Categories</div>';
-                $.each(payload.categories, function (i, c) {
-                    html += '<a class="w-suggest-item" href="' + c.url + '">' +
+                $.each(cats, function (i, c) {
+                    html += '<a class="w-suggest-item" href="' + c.url + '" role="option">' +
                                 '<i class="bi bi-folder2 me-2"></i><span class="wc-title"></span>' +
                             '</a>';
                 });
@@ -43,26 +64,42 @@
             }
 
             $box.html(html).addClass('show');
+            $input.attr('aria-expanded', 'true');
 
-            // Titles are injected via .text() so results cannot carry markup.
-            $box.find('.wq-title').each(function (i) { $(this).text(payload.quizzes[i].title); });
-            $box.find('.wc-title').each(function (i) { $(this).text(payload.categories[i].name); });
+            // Titles are set with .text() so a result can never inject markup.
+            $box.find('.wq-title').each(function (i) { $(this).text(quizzes[i].title); });
+            $box.find('.wc-title').each(function (i) { $(this).text(cats[i].name); });
+
+            activeIndex = -1;
         }
 
         var lookup = window.WSite.debounce(function (term) {
             window.WSite.get(url, { q: term })
-                .done(render)
+                .done(function (payload) {
+                    // Ignore a response that arrived after the user typed on.
+                    if (term !== lastTerm) { return; }
+                    render(payload);
+                })
                 .fail(hide);
-        }, 260);
+        }, 250);
 
         $input.on('input', function () {
             var term = $.trim($(this).val());
+            lastTerm = term;
+
             if (term.length < 2) { hide(); return; }
+            skeleton();
             lookup(term);
         });
 
+        $input.on('focus', function () {
+            if ($.trim($(this).val()).length >= 2 && $box.children().length) {
+                $box.addClass('show');
+            }
+        });
+
         $input.on('keydown', function (e) {
-            var $items = $box.find('.w-suggest-item');
+            var $items = $box.find('a.w-suggest-item');
             if (!$items.length) { return; }
 
             if (e.key === 'ArrowDown') {
@@ -83,11 +120,17 @@
             }
 
             $items.removeClass('is-active').eq(activeIndex).addClass('is-active');
+            $items.eq(activeIndex)[0].scrollIntoView({ block: 'nearest' });
         });
 
+        // Close when focus or a click leaves this particular widget.
         $(document).on('click', function (e) {
-            if (!$(e.target).closest('.w-search-wrap').length) { hide(); }
+            if (!$(e.target).closest($wrap).length) { hide(); }
         });
+    }
+
+    $(function () {
+        $('.w-search-wrap').each(function () { initSearch(this); });
     });
 
 })(jQuery, window);

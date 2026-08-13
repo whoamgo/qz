@@ -17,9 +17,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($categories as $category)
+                                @forelse($categories as $key=>$category)
                                     <tr>
-                                        <td>{{ __($category->id) }}</td>
+                                        <td>{{ ++$key }} ==</td>
                                         <td>
                                             <div class="user justify-content-center">
                                                 <div class="thumb">
@@ -35,7 +35,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="name fw-bold">{{ __($category->name) }}</span>
+                                            <span class="name fw-bold">{{ __($category->name) }} ({{$category->id}})</span>
                                         </td>
                                         
                                         <td>

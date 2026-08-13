@@ -34,7 +34,7 @@
 
                         <div class="row g-3 mt-3">
                             @foreach ([
-                                ['bi-question-circle', $quiz->questions_count, 'Questions'],
+                                ['bi-question-circle', $quiz->effectiveQuestionCount($quiz->questions_count), 'Questions'],
                                 ['bi-clock', $quiz->time_limit ? $quiz->time_limit . ' min' : 'No limit', 'Duration'],
                                 ['bi-check2-circle', $quiz->pass_percentage . '%', 'To pass'],
                                 ['bi-star', $quiz->marks_per_correct, 'Marks / correct'],
@@ -55,7 +55,13 @@
                     <div class="w-card-body">
                         <h2 class="w-card-title"><i class="bi bi-info-circle"></i> Instructions</h2>
                         <ul class="w-muted mb-0" style="padding-left: 1.1rem;">
-                            <li>This quiz has <strong>{{ $quiz->questions_count }}</strong> questions.</li>
+                            <li>This quiz has <strong>{{ $quiz->effectiveQuestionCount($quiz->questions_count) }}</strong> questions.</li>
+                            @if ($quiz->isLimited())
+                                <li>
+                                    Questions are picked <strong>at random</strong> from a bank of
+                                    {{ $quiz->questions_count }}, so each attempt is different.
+                                </li>
+                            @endif
                             @if ($quiz->time_limit)
                                 <li>You have <strong>{{ $quiz->time_limit }} minutes</strong>. The quiz submits automatically when time runs out.</li>
                             @else

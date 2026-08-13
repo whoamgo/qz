@@ -569,3 +569,30 @@ function wAsset($path) {
     $version = is_file($full) ? filemtime($full) : null;
     return asset($path) . ($version ? '?v=' . $version : '');
 }
+
+/**
+ * Frontend image with a thumbnail-first, original-second fallback.
+ *
+ * getImage() returns a grey placeholder when the file is missing, so a post
+ * whose thumb_ variant was never generated (older uploads, or formats the
+ * thumbnailer skipped) showed a 420x280 placeholder even though the full-size
+ * image was sitting right there. Order: thumb -> original -> placeholder.
+ */
+function frontendThumb($sectionName, $image, $size = null) {
+    $image = trim((string) $image);
+
+    if ($image !== '') {
+        $dir   = 'assets/images/frontend/' . $sectionName . '/';
+        $thumb = $dir . 'thumb_' . $image;
+        $full  = $dir . $image;
+
+        if (is_file(base_path($thumb))) {
+            return asset($thumb);
+        }
+        if (is_file(base_path($full))) {
+            return asset($full);
+        }
+    }
+
+    return $size ? route('placeholder.image', $size) : asset('assets/images/default.png');
+}

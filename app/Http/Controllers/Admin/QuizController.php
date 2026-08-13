@@ -71,6 +71,7 @@ class QuizController extends Controller {
             'price'               => 'required_if:quiz_type,paid|numeric|min:0',
             'difficulty'          => 'required|in:easy,medium,hard',
             'total_questions'     => 'required|integer|min:0',
+            'question_limit'      => 'nullable|integer|min:0',
             'time_limit'          => 'required|integer|min:0',
             'pass_percentage'     => 'required|integer|min:0|max:100',
             'marks_per_correct'   => 'required|numeric|min:0',
@@ -113,6 +114,9 @@ class QuizController extends Controller {
             $quiz->price = $request->quiz_type == 'paid' ? $request->price : 0;
             $quiz->difficulty = $request->difficulty;
             $quiz->total_questions = $request->total_questions;
+            // 0 = serve every attached question; any higher value is clamped
+            // to the bank size at attempt time, never here.
+            $quiz->question_limit  = (int) $request->input('question_limit', 0);
             $quiz->time_limit = $request->time_limit;
             $quiz->pass_percentage = $request->pass_percentage;
             $quiz->marks_per_correct = $request->marks_per_correct;

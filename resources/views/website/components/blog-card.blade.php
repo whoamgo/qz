@@ -6,7 +6,7 @@
 @endphp
 <article class="w-card">
     <a href="{{ route('blog.details', $blog->slug) }}" aria-label="{{ $v->title ?? 'Article' }}">
-        <img src="{{ frontendImage('blog', 'thumb_' . ($v->image ?? ''), '420x280') }}"
+        <img src="{{ frontendThumb('blog', $v->image ?? '', '420x280') }}"
              alt="{{ $v->title ?? 'Article' }}" class="w-100" loading="lazy" width="420" height="280">
     </a>
     <div class="w-card-body">

@@ -104,7 +104,7 @@ class QuizController extends BaseWebsiteController {
         $seo = $this->seo([
             'title'       => $quiz->title . ' — ' . ($quiz->category?->name ?? 'Quiz') . ' Practice Test',
             'description' => $quiz->description
-                ?: "Attempt the {$quiz->title} quiz with {$quiz->questions_count} questions in {$quiz->time_limit} minutes. Difficulty: " . ucfirst($quiz->difficulty) . '.',
+                ?: "Attempt the {$quiz->title} quiz with " . $quiz->effectiveQuestionCount($quiz->questions_count) . " questions in {$quiz->time_limit} minutes. Difficulty: " . ucfirst($quiz->difficulty) . '.',
             'canonical'   => route('website.quiz.show', $quiz->slug),
             'type'        => 'article',
             'image'       => $quiz->image ? getImage(getFilePath('exam') . '/' . $quiz->image) : null,
@@ -288,11 +288,14 @@ class QuizController extends BaseWebsiteController {
     }
 
     private function quizFaqs(Quiz $quiz): array {
-        $count = $quiz->questions_count ?? $quiz->questions()->count();
+        $bank  = $quiz->questions_count ?? $quiz->questions()->count();
+        $count = $quiz->effectiveQuestionCount($bank);
         $time  = $quiz->time_limit ? "{$quiz->time_limit} minutes" : 'no time limit';
 
         return [
-            ['question' => "How many questions are in the {$quiz->title}?", 'answer' => "This quiz has {$count} questions and {$time}."],
+            ['question' => "How many questions are in the {$quiz->title}?", 'answer' => $quiz->isLimited()
+                ? "Each attempt serves {$count} questions, drawn at random from a bank of {$bank}, with {$time}."
+                : "This quiz has {$count} questions and {$time}."],
             ['question' => 'What is the passing score?', 'answer' => "You need at least {$quiz->pass_percentage}% to pass this quiz."],
             ['question' => 'Is there negative marking?', 'answer' => $quiz->negative_marking > 0
                 ? "Yes, {$quiz->negative_marking} mark(s) are deducted for each wrong answer."

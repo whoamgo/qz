@@ -1,6 +1,8 @@
 @props(['quiz'])
 @php
-    $qCount = $quiz->questions_count ?? $quiz->total_questions;
+    // What the user will actually be served, after any question limit.
+    $bank   = $quiz->questions_count ?? $quiz->total_questions;
+    $qCount = $quiz->effectiveQuestionCount($bank);
     $xp     = $quiz->xpSettings->completion_xp ?? null;
 @endphp
 <article class="w-card">

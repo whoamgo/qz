@@ -80,6 +80,13 @@
         @yield('content')
     </main>
 
+    {{-- Google Website Translator: hidden container. The visible control is
+         our own language switcher in the header; Google's banner and toolbar
+         are suppressed in CSS so the page never shifts. --}}
+    <div id="google_translate_element"
+         data-languages="{{ \App\Models\Language::pluck('code')->implode(',') ?: 'en' }}"
+         aria-hidden="true"></div>
+
     @include('website.layouts.footer')
     @include('website.layouts.mobile-nav')
 
@@ -106,6 +113,8 @@
     <script src="{{ wAsset('assets/web/js/animations.js') }}" defer></script>
     <script src="{{ wAsset('assets/web/js/search.js') }}" defer></script>
     <script src="{{ wAsset('assets/web/js/profile.js') }}" defer></script>
+    <script src="{{ wAsset('assets/web/js/translate.js') }}"></script>
+    <script src="//translate.google.com/translate_a/element.js?cb=wGoogleTranslateInit" defer></script>
     @stack('scripts')
 </body>
 </html>

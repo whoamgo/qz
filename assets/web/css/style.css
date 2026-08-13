@@ -545,3 +545,83 @@ textarea:focus-visible,
     .w-hero-slider .carousel-control-prev,
     .w-hero-slider .carousel-control-next { opacity: 1; }
 }
+
+/* Hero search: the suggestion panel must sit above the slider and hero art. */
+.w-hero-search { position: relative; z-index: 20; }
+.w-hero-search .w-suggest {
+    text-align: left;
+    color: var(--w-body);
+    max-height: 340px;
+}
+.w-hero-search .w-search-input {
+    background: #fff;
+    border-color: transparent;
+}
+.w-hero-search .w-suggest-item { display: flex; align-items: flex-start; gap: 0.25rem; }
+
+/* Language switcher */
+.w-lang-switch .dropdown-item.active { background: var(--w-primary-light); color: var(--w-primary-dark); }
+.w-lang-code {
+    display: inline-grid; place-items: center;
+    min-width: 30px; padding: 0.1rem 0.3rem;
+    font-size: var(--w-fs-xs); font-weight: 700;
+    background: var(--w-bg-alt); color: var(--w-muted);
+    border-radius: var(--w-radius-sm);
+}
+.w-lang-switch .dropdown-item.active .w-lang-code { background: var(--w-primary); color: #fff; }
+
+/* ------------------------------------------------- google translate (hidden) --- */
+
+/*
+ * The Google Website Translator is used as a translation engine only — the
+ * visible control is our own header switcher. Everything Google injects is
+ * suppressed: the top banner, the floating toolbar and the hover tooltip.
+ * Without this the banner pushes the whole page down by ~40px.
+ */
+#google_translate_element {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Banner iframe across the top */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.skiptranslate {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Google forces body { top: 40px } to make room for its banner. */
+body,
+body.translated-ltr,
+body.translated-rtl {
+    top: 0 !important;
+    position: static !important;
+}
+
+/* Floating balloon / tooltip shown on hover over translated text */
+#goog-gt-tt,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-te-balloon-frame {
+    display: none !important;
+}
+.goog-text-highlight {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* The inline "Select Language" gadget, if it ever renders */
+.goog-te-gadget,
+.goog-te-combo,
+.goog-logo-link,
+.goog-te-gadget-icon {
+    display: none !important;
+}
+
+/* Keep the brand, level/XP badges and codes out of machine translation. */
+.notranslate { unicode-bidi: isolate; }

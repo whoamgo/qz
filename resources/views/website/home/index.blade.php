@@ -26,12 +26,18 @@
                         <a href="{{ route('exams') }}" class="btn btn-outline-light btn-lg px-4">Explore Exams</a>
                     </div>
 
-                    {{-- Hero search --}}
-                    <form action="{{ route('website.search') }}" method="GET" role="search" class="position-relative" style="max-width: 520px;">
-                        <i class="bi bi-search w-search-icon" aria-hidden="true"></i>
-                        <input type="search" name="q" class="form-control form-control-lg w-search-input"
-                               placeholder="Search a topic, exam or quiz..." aria-label="Search quizzes">
-                    </form>
+                    {{-- Hero search with live suggestions --}}
+                    <div class="w-search-wrap w-hero-search" style="max-width: 520px;">
+                        <form action="{{ route('website.search') }}" method="GET" role="search">
+                            <i class="bi bi-search w-search-icon" aria-hidden="true"></i>
+                            <input type="search" name="q" class="form-control form-control-lg w-search-input"
+                                   placeholder="Search a topic or quiz..." autocomplete="off"
+                                   value="{{ request('q') }}" aria-label="Search quizzes"
+                                   aria-autocomplete="list" aria-controls="wHeroSuggest"
+                                   data-suggest-url="{{ route('website.search.suggest') }}">
+                        </form>
+                        <div class="w-suggest" id="wHeroSuggest" role="listbox" aria-label="Search suggestions"></div>
+                    </div>
                 </div>
 
                 <div class="col-lg-5">
@@ -229,7 +235,7 @@
 
     {{-- 4. Popular exams --}}
     @if ($examCategories->count())
-        <section class="w-section w-section-alt">
+        <section class="w-section w-section-alt" style="display:none;">
             <div class="container">
                 <div class="w-section-head">
                     <div>

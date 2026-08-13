@@ -24,7 +24,7 @@
                 $fbody = strip_tags($fv->description ?? '');
             @endphp
             <article class="w-blog-featured mb-5">
-                <img src="{{ frontendImage('blog', 'thumb_' . ($fv->image ?? ''), '420x280') }}"
+                <img src="{{ frontendThumb('blog', $fv->image ?? '', '420x280') }}"
                      alt="{{ $fv->title ?? '' }}" loading="eager" width="420" height="280">
                 <div class="w-blog-featured-body">
                     <span class="w-badge w-badge-primary mb-2">Featured</span>

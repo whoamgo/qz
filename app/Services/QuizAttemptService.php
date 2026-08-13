@@ -40,7 +40,18 @@ class QuizAttemptService {
         }
 
         return DB::transaction(function () use ($user, $quiz) {
-            $questions = $quiz->questions()->get();
+            $pool = $quiz->questions()->get();
+
+            // Question limit: serve a random subset of the bank for this
+            // attempt. 0, or a limit larger than the bank, means serve
+            // everything. The bank itself is never modified — the selection
+            // is recorded per attempt in quiz_attempt_answers, so the user
+            // sees a stable set if they reload mid-attempt.
+            $take = $quiz->effectiveQuestionCount($pool->count());
+
+            $questions = $take < $pool->count()
+                ? $pool->shuffle()->take($take)->values()   // random, no repeats
+                : $pool;
 
             $attempt = QuizAttempt::create([
                 'user_id'         => $user->id,
