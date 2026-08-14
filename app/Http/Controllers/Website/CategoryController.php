@@ -71,7 +71,9 @@ class CategoryController extends BaseWebsiteController {
         $questionTotal = BankQuestion::where('category_id', $category->id)->where('status', 1)->count();
 
         $faqs = [
-            ['question' => "What does the {$category->name} category cover?", 'answer' => "It brings together {$questionTotal} practice questions across every published {$category->name} quiz."],
+            ['question' => "What does the {$category->name} category cover?", 'answer' => $subCategories->count()
+                ? "It covers {$subCategories->count()} topics with {$questionTotal} practice questions across every published {$category->name} quiz."
+                : "It brings together {$questionTotal} practice questions across every published {$category->name} quiz."],
             ['question' => 'Are these quizzes free?', 'answer' => 'Quizzes marked Free can be attempted without payment. Any paid or subscription quiz is labelled on its card.'],
             ['question' => 'Do I earn XP in this category?', 'answer' => 'Yes. Completing any quiz awards XP, which counts towards your level, badges and leaderboard rank.'],
         ];
@@ -117,11 +119,7 @@ class CategoryController extends BaseWebsiteController {
         $seo = $this->seo([
             'title'       => $sub->name . ' Quiz — ' . $category->name . ' Practice Questions',
             'description' => "Practice {$sub->name} questions from the {$category->name} category. {$questionTotal} questions available with explanations, instant scoring and XP rewards.",
-            // Kept reachable for any existing link, but excluded from the index:
-            // the public structure is Category -> Quiz, so the parent category
-            // is the canonical destination for this content.
-            'canonical'   => route('website.category.show', $category->slug),
-            'robots'      => 'noindex, follow',
+            'canonical'   => route('website.subcategory.show', [$category->slug, $sub->slug]),
             'schema'      => [$this->breadcrumbSchema([
                 'Home'          => route('home'),
                 'Categories'    => route('website.categories'),

@@ -9,7 +9,6 @@ use App\Lib\FileManager;
 use App\Models\UpdateLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Laramin\Utility\VugiChugi;
 
 class SystemController extends Controller
 {
@@ -84,14 +83,13 @@ class SystemController extends Controller
             ]);
         }
 
-        $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-        $website = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null . $requestUri . ' - ' . env("APP_URL");
-
-        $response = CurlRequest::curlPostContent(VugiChugi::upman(),[
-            'purchasecode'=>$purchasecode,
-            'product'=>systemDetails()['name'],
-            'version'=>systemDetails()['version'],
-            'website'=>$website,
+        // Remote version check removed: it posted the purchase code, product,
+        // version and this site's host to an external server. Report the
+        // installed version locally instead.
+        $response = json_encode([
+            'status'  => 'ok',
+            'version' => systemDetails()['version'],
+            'message' => 'Automatic update checks are disabled on this installation.',
         ]);
 
         $response = json_decode($response);

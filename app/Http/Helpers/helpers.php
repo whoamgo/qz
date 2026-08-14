@@ -14,7 +14,6 @@ use App\Notify\Notify;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use Laramin\Utility\VugiChugi;
 
 function systemDetails() {
     $system['name']          = 'viserexam';
@@ -159,17 +158,28 @@ function osBrowser() {
 }
 
 function getTemplates() {
-    $param['purchasecode'] = env("PURCHASECODE");
-
-    $requestUri       = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-    $param['website'] = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '' . $requestUri . ' - ' . env("APP_URL");
-    $url              = VugiChugi::gttmp() . systemDetails()['name'];
-    $response         = CurlRequest::curlPostContent($url, $param);
-    if ($response) {
-        return $response;
-    } else {
+    // Previously POSTed the purchase code and this site's host/URL to an
+    // external server to list templates. Now enumerated from disk, so no
+    // request leaves the server.
+    $dir = resource_path('views/templates');
+    if (!is_dir($dir)) {
         return null;
     }
+
+    $templates = [];
+    foreach (scandir($dir) as $entry) {
+        if ($entry === '.' || $entry === '..' || !is_dir($dir . '/' . $entry)) {
+            continue;
+        }
+        $templates[] = (object) [
+            'name'       => $entry,
+            'title'      => ucwords(str_replace(['-', '_'], ' ', $entry)),
+            'image'      => null,
+            'is_default' => $entry === 'basic',
+        ];
+    }
+
+    return json_encode($templates);
 }
 
 function getPageSections($arr = false) {

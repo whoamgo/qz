@@ -16,18 +16,19 @@ class QuizImportRow extends Model {
 
     /** Fields an admin may correct from the preview screen. */
     const EDITABLE_FIELDS = [
-        'quiz_title', 'quiz_slug', 'quiz_description', 'category_raw', 'quiz_type',
+        'quiz_title', 'quiz_slug', 'quiz_description', 'category_raw', 'sub_category_raw', 'quiz_type',
         'quiz_difficulty', 'time_limit', 'pass_percentage', 'marks_per_correct',
-        'negative_marking', 'quiz_status', 'question', 'question_type',
+        'negative_marking', 'question_limit', 'quiz_status', 'question', 'question_type',
         'option_a', 'option_b', 'option_c', 'option_d',
         'correct_answer', 'explanation', 'question_difficulty',
     ];
 
     protected $fillable = [
         'import_id', 'row_number', 'quiz_key', 'quiz_title', 'quiz_slug',
-        'quiz_description', 'category_raw', 'category_id', 'quiz_type', 'price',
+        'quiz_description', 'category_raw', 'category_id',
+        'sub_category_raw', 'sub_category_id', 'question_limit', 'quiz_type', 'price',
         'quiz_difficulty', 'time_limit', 'pass_percentage', 'marks_per_correct',
-        'negative_marking', 'quiz_status', 'question', 'question_type',
+        'negative_marking', 'question_limit', 'quiz_status', 'question', 'question_type',
         'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer',
         'explanation', 'question_difficulty', 'validation_status',
         'validation_errors', 'duplicate_flag', 'duplicate_reason',
@@ -43,6 +44,7 @@ class QuizImportRow extends Model {
 
     public function import()  { return $this->belongsTo(QuizImport::class, 'import_id'); }
     public function category(){ return $this->belongsTo(Category::class, 'category_id'); }
+    public function subCategory(){ return $this->belongsTo(Category::class, 'sub_category_id'); }
     public function quiz()    { return $this->belongsTo(Quiz::class, 'quiz_id'); }
 
     public function optionMap(): array {

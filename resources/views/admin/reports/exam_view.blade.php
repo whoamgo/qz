@@ -38,7 +38,7 @@
                         <div class="exam-qsn">
                             <div class="exam-qsn-header">
                                 <h5 class="exam-qsn-title">
-                                    {{ $key + 1 }}. {{ __($question->title) }}
+                                    {{ $key + 1 }}. {{ $question->title }}
                                 </h5>
                             </div>
                             <div class="exam-qsn-body">

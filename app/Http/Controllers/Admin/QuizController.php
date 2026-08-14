@@ -59,14 +59,52 @@ class QuizController extends Controller {
         return view('admin.quiz.create', compact('pageTitle', 'quiz', 'categories', 'subCategories'));
     }
 
+    /**
+     * Validates the category / sub-category pairing before the main rules run,
+     * so the message points at the field the admin actually needs to fix.
+     */
+    private function subCategoryRule(Request $request): void {
+        $categoryId = (int) $request->input('category_id');
+        if (!$categoryId) { return; }
+
+        $hasChildren = \App\Models\Category::where('parent_id', $categoryId)
+            ->where('status', 1)->exists();
+
+        $chosen = $request->input('sub_category_id');
+
+        if ($hasChildren && !$chosen) {
+            abort(redirect()->back()->withInput()->withErrors([
+                'sub_category_id' => 'This category has sub-categories, so please choose one.',
+            ]));
+        }
+
+        if ($chosen) {
+            $belongs = \App\Models\Category::where('id', $chosen)
+                ->where('parent_id', $categoryId)->exists();
+            if (!$belongs) {
+                abort(redirect()->back()->withInput()->withErrors([
+                    'sub_category_id' => 'The chosen sub-category does not belong to that category.',
+                ]));
+            }
+        }
+    }
+
     public function store(Request $request, $id = 0) {
         $imgValidation = $id ? 'nullable' : 'nullable';
+        // A sub-category is mandatory only when the chosen category actually
+        // has sub-categories. Requiring it unconditionally would block every
+        // flat category; leaving it optional lets quizzes drift out of the
+        // Category -> Sub-category -> Quiz structure.
+        $this->subCategoryRule($request);
+
         $request->validate([
             'title'               => 'required|string|max:255',
             'slug'                => 'required|string|max:255|unique:quizzes,slug,' . $id,
             'description'         => 'nullable|string',
             'category_id'         => 'required|integer|exists:categories,id',
             'sub_category_id'     => 'nullable|integer|exists:categories,id',
+            // Conditionally required below: a category that HAS sub-categories
+            // must have one chosen; a flat category must not.
             'quiz_type'           => 'required|in:free,paid,subscription',
             'price'               => 'required_if:quiz_type,paid|numeric|min:0',
             'difficulty'          => 'required|in:easy,medium,hard',

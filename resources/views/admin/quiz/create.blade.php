@@ -89,7 +89,10 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold" for="sub_category_id">@lang('Sub-category')</label>
+                                            <label class="form-label fw-semibold" for="sub_category_id">
+                                                @lang('Sub-category')
+                                                <span class="text-danger d-none" id="subCatRequired">*</span>
+                                            </label>
                                             <select name="sub_category_id" id="sub_category_id" class="form-select">
                                                 <option value="">@lang('None')</option>
                                                 @foreach ($subCategories as $sub)
@@ -99,9 +102,12 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <small class="text-muted">
-                                                @lang('Optional — used for internal organisation, not shown on the website')
+                                            <small class="text-muted" id="subCatHint">
+                                                @lang('Required when the selected category has sub-categories.')
                                             </small>
+                                            @error('sub_category_id')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -469,11 +475,22 @@
             }
 
             $.get("{{ route('admin.quiz.subcategories') }}", { category_id: categoryId }, function (res) {
-                var html = '<option value="">@lang('None')</option>';
-                $.each(res.data || [], function (i, item) {
+                var items = res.data || [];
+                var required = items.length > 0;
+
+                var html = '<option value="">' + (required ? '@lang('Select sub-category')' : '@lang('None')') + '</option>';
+                $.each(items, function (i, item) {
                     html += '<option value="' + item.id + '">' + item.name + '</option>';
                 });
                 $sub.html(html);
+
+                // Mirror the server rule in the UI: mandatory only when the
+                // category actually has sub-categories.
+                $sub.prop('required', required).prop('disabled', !required);
+                $('#subCatRequired').toggleClass('d-none', !required);
+                $('#subCatHint').text(required
+                    ? '@lang('This category has sub-categories — choose one.')'
+                    : '@lang('This category has no sub-categories.')');
             }).fail(function () {
                 $sub.html('<option value="">@lang('Could not load sub-categories')</option>');
             });

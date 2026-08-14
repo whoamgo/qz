@@ -45,9 +45,9 @@
                                         </td>
                                         <td>
                                             <div class="button--group">
-                                                <!-- <a href="{{ route('admin.category.sub', $category->id) }}" class="btn btn-sm btn-outline--info" title="@lang('View Sub-Categories')">
+                                                 <a href="{{ route('admin.category.sub', $category->id) }}" class="btn btn-sm btn-outline--info" title="@lang('View Sub-Categories')">
                                                     <i class="las la-sitemap"></i>
-                                                </a> -->
+                                                </a> 
                                                 <button class="btn btn-sm btn-outline--primary editButton" data-category="{{ $category }}" data-image="{{ getImage(getFilepath('category') . '/' . $category->image) }}">
                                                     <i class="la la-pencil"></i> @lang('Edit')
                                                 </button>

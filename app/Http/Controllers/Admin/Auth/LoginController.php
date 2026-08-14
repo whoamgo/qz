@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Laramin\Utility\Onumoti;
 
 class LoginController extends Controller
 {
@@ -67,7 +66,9 @@ class LoginController extends Controller
         }
 
 
-        Onumoti::getData();
+        // Vendor call removed: it posted the purchase code and host to an
+        // external server on every admin login, and let the response set
+        // this site's maintenance_mode.
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and

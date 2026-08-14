@@ -113,8 +113,8 @@
                                                     </div>
                                                 @endif
                                                 <div>
-                                                    <span class="fw-bold">{{ __($quiz->title) }}</span>
-                                                    <small class="d-block text-muted">{{ __($quiz->slug) }}</small>
+                                                    <span class="fw-bold">{{ $quiz->title }}</span>
+                                                    <small class="d-block text-muted">{{ $quiz->slug }}</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -134,7 +134,7 @@
                                             <span class="badge badge--info">{{ $quiz->questions_count }} / {{ $quiz->total_questions }}</span>
                                         </td>
                                         <td>
-                                            <span>{{ __($quiz->time_limit) }} @lang('Min')</span>
+                                            <span>{{ $quiz->time_limit }} @lang('Min')</span>
                                         </td>
                                         <td>
                                             @php echo $quiz->quizStatusBadge; @endphp

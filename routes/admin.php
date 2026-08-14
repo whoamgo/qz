@@ -148,6 +148,7 @@ Route::middleware('admin')->group(function () {
         Route::get('index', 'index')->name('index');
         Route::get('history', 'history')->name('history');
         Route::get('template', 'template')->name('template');
+        Route::post('generate-prompt', 'generatePrompt')->name('generate.prompt');
         Route::post('upload', 'upload')->name('upload');
 
         Route::post('process/{id}', 'process')->name('process');
@@ -193,6 +194,7 @@ Route::middleware('admin')->group(function () {
         Route::get('index', 'index')->name('index');
         Route::get('history', 'history')->name('history');
         Route::get('template', 'template')->name('template');
+        Route::post('generate-prompt', 'generatePrompt')->name('generate.prompt');
         Route::post('upload', 'upload')->name('upload');
 
         Route::post('process/{id}', 'process')->name('process');

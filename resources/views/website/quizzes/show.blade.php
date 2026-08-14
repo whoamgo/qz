@@ -4,6 +4,9 @@
     @php
         $trail = ['Home' => route('home'), 'Quizzes' => route('website.quizzes')];
         if ($quiz->category) { $trail[$quiz->category->name] = route('website.category.show', $quiz->category->slug); }
+        if ($quiz->subCategory && $quiz->category) {
+            $trail[$quiz->subCategory->name] = route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]);
+        }
         $trail[$quiz->title] = route('website.quiz.show', $quiz->slug);
     @endphp
     <x-website::breadcrumbs :trail="$trail" />
@@ -22,6 +25,11 @@
                             @if ($quiz->category)
                                 <a href="{{ route('website.category.show', $quiz->category->slug) }}" class="w-badge">
                                     <i class="bi bi-folder2"></i> {{ $quiz->category->name }}
+                                </a>
+                            @endif
+                            @if ($quiz->subCategory && $quiz->category)
+                                <a href="{{ route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]) }}" class="w-badge">
+                                    {{ $quiz->subCategory->name }}
                                 </a>
                             @endif
                         </div>

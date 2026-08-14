@@ -5,8 +5,8 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between flex-wrap gap-2 align-items-center">
                     <div>
-                        <h5 class="mb-0">{{ __($quiz->title) }}</h5>
-                        <small class="text-muted">{{ __($quiz?->category?->name ?? '') }} @if($quiz->subCategory) / {{ __($quiz->subCategory->name) }} @endif</small>
+                        <h5 class="mb-0">{{ $quiz->title }}</h5>
+                        <small class="text-muted">{{ __($quiz?->category?->name ?? '') }} @if($quiz->subCategory) / {{ $quiz->subCategory->name }} @endif</small>
                     </div>
                     <div class="d-flex gap-2 align-items-center">
                         @php echo $quiz->difficultyBadge; @endphp
@@ -20,7 +20,7 @@
                 <div class="card-body">
                     @if($quiz->description)
                         <div class="alert alert-info mb-4">
-                            <p class="mb-0">{{ __($quiz->description) }}</p>
+                            <p class="mb-0">{{ $quiz->description }}</p>
                         </div>
                     @endif
 
@@ -62,7 +62,7 @@
                                     </h6>
                                 </div>
                                 <div class="question-text mb-4">
-                                    <h5>{{ __($question->question_text) }}</h5>
+                                    <h5>{{ $question->question_text }}</h5>
                                 </div>
                                 <div class="question-options">
                                     @php
@@ -78,7 +78,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <span class="me-2">{{ chr(65 + $optIndex) }}.</span>
-                                                <span>{{ __($opt->option_text) }}</span>
+                                                <span>{{ $opt->option_text }}</span>
                                                 @if($question->correct_option_id == $opt->id)
                                                     <span class="badge badge--success ms-2"><i class="las la-check"></i> @lang('Correct Answer')</span>
                                                 @endif
@@ -89,7 +89,7 @@
                                 @if($quiz->show_explanation && $question->explanation)
                                     <div class="explanation-box mt-3 p-3 bg-primary bg-opacity-5 rounded border-left border-primary" style="border-left: 3px solid #4634ff;">
                                         <small class="d-block text-muted mb-1"><i class="las la-lightbulb"></i> <strong>@lang('Explanation')</strong></small>
-                                        <p class="mb-0">{{ __($question->explanation) }}</p>
+                                        <p class="mb-0">{{ $question->explanation }}</p>
                                     </div>
                                 @endif
                             </div>

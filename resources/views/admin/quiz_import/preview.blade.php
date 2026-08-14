@@ -51,6 +51,33 @@
                         </div>
                     @endforeach
                 </div>
+
+                {{-- Detailed breakdown of what is staged --}}
+                <hr>
+                <div class="row g-3">
+                    @foreach ([
+                        ['Total Rows', $stats['rows'], 'text--dark'],
+                        ['Total Quizzes', $stats['quizzes'], 'text--info'],
+                        ['Total Questions', $stats['questions'], 'text--success'],
+                        ['Invalid Rows', $stats['invalid'], 'text--danger'],
+                        ['Duplicate Questions', $stats['duplicates'], 'text--warning'],
+                        ['Missing Required Fields', $stats['missingFields'], 'text--danger'],
+                    ] as [$label, $value, $cls])
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <small class="text-muted d-block">@lang($label)</small>
+                            <strong class="{{ $cls }}">{{ $value }}</strong>
+                        </div>
+                    @endforeach
+
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <small class="text-muted d-block">@lang('Category IDs')</small>
+                        <strong>{{ $stats['categories'] ? implode(', ', $stats['categories']) : '—' }}</strong>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <small class="text-muted d-block">@lang('Sub-category IDs')</small>
+                        <strong>{{ $stats['subCategories'] ? implode(', ', $stats['subCategories']) : '—' }}</strong>
+                    </div>
+                </div>
             </div>
 
             <div class="card-footer d-flex flex-wrap gap-2">

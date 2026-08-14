@@ -9,13 +9,13 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <h6 class="mb-1">{{ __($quiz->title) }}</h6>
-                        <small class="text-muted">{{ __($quiz->slug) }}</small>
+                        <h6 class="mb-1">{{ $quiz->title }}</h6>
+                        <small class="text-muted">{{ $quiz->slug }}</small>
                     </div>
                     @if($quiz->description)
                         <div class="mb-3">
                             <small class="text-muted">@lang('Description')</small>
-                            <p>{{ strLimit(__($quiz->description), 200) }}</p>
+                            <p>{{ strLimit($quiz->description, 200) }}</p>
                         </div>
                     @endif
                     <div class="row mb-3">
@@ -140,21 +140,27 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <h6 class="mb-2">{{ __($question->question_text) }}</h6>
-                                        <ul class="list-unstyled mb-2 ps-0">
-                                            @foreach($question->options as $opt)
-                                                <li class="mb-1 d-flex align-items-center gap-2">
-                                                    @if($question->correct_option_id == $opt->id)
-                                                        <i class="las la-check-circle text--success"></i>
-                                                    @else
-                                                        <span class="text-muted" style="width: 18px; display: inline-block;">•</span>
-                                                    @endif
-                                                    <span class="{{ $question->correct_option_id == $opt->id ? 'fw-bold text--success' : '' }}">{{ __($opt->option_text) }}</span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                        <h6 class="mb-2">{{ $question->question_text }}</h6>
+                                       <ul class="list-unstyled mb-2 ps-0">
+                                           @foreach($question->options as $opt)
+
+                                               <li class="mb-1 d-flex align-items-center gap-2">
+
+                                                   @if($question->correct_option_id == $opt->id)
+                                                       <i class="las la-check-circle text--success"></i>
+                                                   @else
+                                                       <span class="text-muted" style="width: 18px; display: inline-block;">•</span>
+                                                   @endif
+
+                                                   <span class="{{ $question->correct_option_id == $opt->id ? 'fw-bold text--success' : '' }}">
+                                                       {{ $opt->option_text }}
+                                                   </span>
+
+                                               </li>
+                                           @endforeach
+                                       </ul>
                                         @if($question->explanation)
-                                            <small class="text-muted"><strong>@lang('Explanation:')</strong> {{ strLimit(__($question->explanation), 150) }}</small>
+                                            <small class="text-muted"><strong>@lang('Explanation:')</strong> {{ strLimit($question->explanation, 150) }}</small>
                                         @endif
                                     </div>
                                     <div class="text-center" style="min-width: 80px;">
@@ -220,7 +226,7 @@
                             <select name="category_id" class="form-control select2">
                                 <option value="">@lang('Select')</option>
                                 @if($quiz->category_id)
-                                    <option value="{{ $quiz->category_id }}" selected>{{ __($quiz->category->name) }}</option>
+                                    <option value="{{ $quiz->category_id }}" selected>{{ $quiz->category->name }}</option>
                                 @endif
                             </select>
                         </div>
@@ -229,7 +235,7 @@
                             <select name="sub_category_id" class="form-control select2">
                                 <option value="">@lang('Select')</option>
                                 @if($quiz->sub_category_id)
-                                    <option value="{{ $quiz->sub_category_id }}" selected>{{ __($quiz->subCategory->name) }}</option>
+                                    <option value="{{ $quiz->sub_category_id }}" selected>{{ $quiz->subCategory->name }}</option>
                                 @endif
                             </select>
                         </div>

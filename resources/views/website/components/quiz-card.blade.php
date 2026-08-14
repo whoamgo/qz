@@ -28,7 +28,7 @@
         @if ($quiz->category)
             <p class="w-text-sm w-muted mb-3">
                 <i class="bi bi-folder2" aria-hidden="true"></i>
-                {{ $quiz->category->name }}
+                {{ $quiz->category->name }}@if ($quiz->subCategory) <span class="w-muted">&rsaquo;</span> {{ $quiz->subCategory->name }}@endif
             </p>
         @endif
 

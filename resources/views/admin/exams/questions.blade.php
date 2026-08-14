@@ -54,7 +54,7 @@
                             <tbody>
                                 @forelse ($questions as $question)
                                     <tr>
-                                        <td>{{ strLimit(__($question->title), 30) }}</td>
+                                        <td>{{ strLimit($question->title, 30) }}</td>
                                         <td>{{ $question->options->count() }}</td>
                                         <td>{{ strLimit($question?->result?->title ?? 'N/A', 30) }}</td>
                                         <td> @php echo $question->statusBadge @endphp </td>

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Laramin\Utility\Onumoti;
-
 abstract class Controller
 {
     public function __construct()
     {
-        $className = get_called_class();
-        Onumoti::mySite($this,$className);
+        // Vendor licence gate removed: it attached the remote check-project
+        // middleware to every controller in the application.
     }
 
     public static function middleware()

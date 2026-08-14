@@ -16,12 +16,28 @@
                     <div>
                         <h1 class="mb-1">{{ $category->name }} Quizzes</h1>
                         <p class="w-muted mb-0">
+                            @if ($subCategories->count()){{ $subCategories->count() }} topics &middot; @endif
                             {{ number_format($questionTotal) }} practice questions
                         </p>
                     </div>
                 </div>
             </div>
         </div>
+
+        {{-- Topics appear only when this category actually has sub-categories,
+             so a flat category never shows an empty navigation level. --}}
+        @if ($subCategories->count())
+            <div class="w-section-head"><div><h2>Browse by topic</h2></div></div>
+            <div class="row g-3 mb-5">
+                @foreach ($subCategories as $sub)
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <x-website::category-card :category="$sub"
+                            :quizCount="$subQuizCounts[$sub->id] ?? 0"
+                            :url="route('website.subcategory.show', [$category->slug, $sub->slug])" />
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
         @if ($popularQuizzes->count())
             <div class="w-section-head"><div><h2>Popular in {{ $category->name }}</h2></div></div>

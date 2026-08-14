@@ -80,14 +80,14 @@
                                     <tr>
                                         <td>
                                             <div>
-                                                <span class="d-block">{{ strLimit(__($question->question_text), 80) }}</span>
+                                                <span class="d-block">{{ strLimit($question->question_text, 80) }}</span>
                                                 <small class="text-muted">@lang('#ID:') {{ $question->id }}</small>
                                             </div>
                                         </td>
                                         <td>
                                             <span>{{ __($question?->category?->name ?? '-') }}</span>
                                             @if($question->subCategory)
-                                                <small class="d-block text-muted">{{ __($question->subCategory->name) }}</small>
+                                                <small class="d-block text-muted">{{ $question->subCategory->name }}</small>
                                             @endif
                                         </td>
                                         <td>

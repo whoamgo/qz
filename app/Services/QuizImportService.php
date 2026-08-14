@@ -28,8 +28,9 @@ class QuizImportService {
     const APPROVE_CHUNK = 500;
 
     const HEADERS = [
-        'quiz_title', 'quiz_slug', 'quiz_description', 'category_id', 'quiz_type',
-        'price', 'quiz_difficulty', 'time_limit', 'pass_percentage',
+        'quiz_title', 'quiz_slug', 'quiz_description',
+        'category_id', 'sub_category_id', 'quiz_type',
+        'price', 'quiz_difficulty', 'time_limit', 'question_limit', 'pass_percentage',
         'marks_per_correct', 'negative_marking', 'quiz_status',
         'question', 'question_type', 'option_a', 'option_b', 'option_c',
         'option_d', 'correct_answer', 'explanation', 'question_difficulty',
@@ -47,6 +48,7 @@ class QuizImportService {
     const OPTION_LETTERS  = ['A', 'B', 'C', 'D'];
 
     private ?array $categoryIds = null;
+    private array $childCache = [];
 
     // ------------------------------------------------------------ csv helpers
 
@@ -83,12 +85,48 @@ class QuizImportService {
             if ($key !== '') { $map[$key] = $i; }
         }
 
-        $missing = array_diff(self::REQUIRED_HEADERS, array_keys($map));
-        if ($missing) {
-            throw new \RuntimeException('Missing required column(s): ' . implode(', ', $missing) . '.');
+        $problems = $this->headerProblems(array_keys($map));
+        if ($problems) {
+            throw new \RuntimeException(implode(' ', $problems));
         }
 
         return $map;
+    }
+
+    /**
+     * Reports every issue with a header row at once, rather than failing on the
+     * first: which required columns are missing, which columns are not part of
+     * the schema, and whether the order differs from the template.
+     *
+     * Order is reported as a warning-style note, not a hard failure — the
+     * importer maps by NAME, so a reordered file still imports correctly.
+     */
+    public function headerProblems(array $found): array {
+        $problems = [];
+
+        $missingRequired = array_diff(self::REQUIRED_HEADERS, $found);
+        if ($missingRequired) {
+            $problems[] = 'Missing required column(s): ' . implode(', ', $missingRequired) . '.';
+        }
+
+        $unexpected = array_diff($found, self::HEADERS);
+        if ($unexpected) {
+            $problems[] = 'Unexpected column(s) not used by this importer: ' . implode(', ', $unexpected) . '.';
+        }
+
+        $missingOptional = array_diff(self::HEADERS, $found, self::REQUIRED_HEADERS);
+        if ($missingOptional) {
+            $problems[] = 'Optional column(s) absent (defaults will be used): ' . implode(', ', $missingOptional) . '.';
+        }
+
+        return $problems;
+    }
+
+    /** True when the file's column order matches the template exactly. */
+    public function headerOrderMatches(array $found): bool {
+        $known = array_values(array_intersect($found, self::HEADERS));
+        $expected = array_values(array_intersect(self::HEADERS, $found));
+        return $known === $expected;
     }
 
     public function countDataRows(QuizImport $import): int {
@@ -161,7 +199,8 @@ class QuizImportService {
 
         $title = $get('quiz_title');
         $slug  = $get('quiz_slug');
-        $categoryRaw = $get('category_id');
+        $categoryRaw    = $get('category_id');
+        $subCategoryRaw = $get('sub_category_id');
 
         // Rows are grouped by slug when present, otherwise by title. Either way
         // the key is normalised so casing/spacing differences do not split a quiz.
@@ -175,7 +214,10 @@ class QuizImportService {
             'quiz_slug'           => $slug ?: null,
             'quiz_description'    => $get('quiz_description') ?: null,
             'category_raw'        => $categoryRaw ?: null,
-            'category_id'         => $this->resolveCategory($categoryRaw),
+            'category_id'         => $categoryId = $this->resolveCategory($categoryRaw),
+            'sub_category_raw'    => $subCategoryRaw ?: null,
+            'sub_category_id'     => $this->resolveSubCategory($subCategoryRaw, $categoryId),
+            'question_limit'      => is_numeric($get('question_limit')) ? (int) $get('question_limit') : null,
             'quiz_type'           => strtolower($get('quiz_type')) ?: null,
             'price'               => is_numeric($get('price')) ? (float) $get('price') : null,
             'quiz_difficulty'     => strtolower($get('quiz_difficulty')) ?: null,
@@ -219,6 +261,42 @@ class QuizImportService {
 
         $needle = mb_strtolower(trim($value));
         return $this->categoryIds['name:' . $needle] ?? $this->categoryIds['slug:' . $needle] ?? null;
+    }
+
+    /**
+     * Resolves a sub-category by id, name or slug, but only within the chosen
+     * parent. Scoping to the parent is what stops a CSV pairing a quiz with a
+     * sub-category belonging to a different category.
+     */
+    private function resolveSubCategory(string $value, ?int $parentId): ?int {
+        if ($value === '' || !$parentId) {
+            return null;
+        }
+
+        $query = Category::where('parent_id', $parentId);
+
+        if (ctype_digit($value)) {
+            return $query->where('id', (int) $value)->value('id');
+        }
+
+        $needle = mb_strtolower(trim($value));
+
+        return $query->where(function ($q) use ($needle) {
+            $q->whereRaw('LOWER(name) = ?', [$needle])
+              ->orWhereRaw('LOWER(slug) = ?', [$needle]);
+        })->value('id');
+    }
+
+    /** True when the chosen category has any active sub-categories. */
+    private function categoryHasChildren(?int $categoryId): bool {
+        if (!$categoryId) { return false; }
+
+        if (!isset($this->childCache[$categoryId])) {
+            $this->childCache[$categoryId] = Category::where('parent_id', $categoryId)
+                ->where('status', 1)->exists();
+        }
+
+        return $this->childCache[$categoryId];
     }
 
     // -------------------------------------------------------------- staging
@@ -309,6 +387,27 @@ class QuizImportService {
             $errors[] = "Category '{$row['category_raw']}' does not match a top-level category (use its id, name or slug).";
         }
 
+        // Sub-category follows the same rule as the admin quiz form: mandatory
+        // when the category has sub-categories, and it must belong to that
+        // category. A flat category must not carry one.
+        if ($row['category_id']) {
+            $subRaw = trim((string) ($row['sub_category_raw'] ?? ''));
+
+            if ($this->categoryHasChildren($row['category_id'])) {
+                if ($subRaw === '') {
+                    $errors[] = "Category '{$row['category_raw']}' has sub-categories, so sub_category_id is required.";
+                } elseif (!$row['sub_category_id']) {
+                    $errors[] = "Sub-category '{$subRaw}' does not exist under '{$row['category_raw']}'.";
+                }
+            } elseif ($subRaw !== '') {
+                $errors[] = "Category '{$row['category_raw']}' has no sub-categories, so sub_category_id must be blank.";
+            }
+        }
+
+        if ($row['question_limit'] !== null && $row['question_limit'] < 0) {
+            $errors[] = 'Question limit cannot be negative.';
+        }
+
         if (!empty($row['quiz_type']) && !in_array($row['quiz_type'], self::QUIZ_TYPES, true)) {
             $errors[] = "Quiz type '{$row['quiz_type']}' is invalid. Use free, paid or subscription.";
         }
@@ -391,9 +490,10 @@ class QuizImportService {
 
     /** Re-validates a single staged row after an admin edit. */
     public function revalidateRow(QuizImportRow $row): QuizImportRow {
-        $row->category_id = $this->resolveCategory((string) $row->category_raw);
+        $row->category_id     = $this->resolveCategory((string) $row->category_raw);
+        $row->sub_category_id = $this->resolveSubCategory((string) $row->sub_category_raw, $row->category_id);
 
-        $data = $row->only(array_merge(QuizImportRow::EDITABLE_FIELDS, ['category_id', 'price']));
+        $data = $row->only(array_merge(QuizImportRow::EDITABLE_FIELDS, ['category_id', 'sub_category_id', 'price']));
         $errors = $this->validateRow($data);
 
         $row->validation_errors = $errors ?: null;
@@ -435,7 +535,7 @@ class QuizImportService {
                     // Re-validate at promotion time — categories may have changed.
                     foreach ($rows as $r) {
                         $problems = $this->validateRow(
-                            $r->only(array_merge(QuizImportRow::EDITABLE_FIELDS, ['category_id', 'price']))
+                            $r->only(array_merge(QuizImportRow::EDITABLE_FIELDS, ['category_id', 'sub_category_id', 'price']))
                         );
                         if ($problems) {
                             throw new \RuntimeException(
@@ -507,11 +607,12 @@ class QuizImportService {
             'slug'                 => $slug,
             'description'          => $row->quiz_description,
             'category_id'          => $row->category_id,
-            'sub_category_id'      => null,
+            'sub_category_id'      => $row->sub_category_id,
             'quiz_type'            => $row->quiz_type ?: 'free',
             'price'                => $row->quiz_type === 'paid' ? ($row->price ?: 0) : 0,
             'difficulty'           => $row->quiz_difficulty ?: 'medium',
             'total_questions'      => $questionCount,
+            'question_limit'       => $row->question_limit ?? 0,
             'time_limit'           => $row->time_limit ?? 0,
             'pass_percentage'      => $row->pass_percentage ?? 0,
             'marks_per_correct'    => $row->marks_per_correct ?? 1,
@@ -536,7 +637,7 @@ class QuizImportService {
     private function createQuestion(QuizImportRow $row, Quiz $quiz): BankQuestion {
         $question = BankQuestion::create([
             'category_id'     => $row->category_id,
-            'sub_category_id' => null,
+            'sub_category_id' => $row->sub_category_id,
             'question_type'   => $row->question_type,
             'difficulty'      => $row->question_difficulty ?: ($row->quiz_difficulty ?: 'medium'),
             'question_text'   => $row->question,

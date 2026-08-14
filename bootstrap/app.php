@@ -13,7 +13,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
-use Laramin\Utility\VugiChugi;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -21,13 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         using:function(){
+            // Vendor licence-check middleware removed: it redirected every
+            // non-localhost host to /activate and posted the host + purchase
+            // code to an external server.
             $appMiddleware = [];
-            $host = strtolower(request()->getHost() ?? $_SERVER['HTTP_HOST'] ?? '');
-            $bypassHosts = ['localhost', '127.0.0.1', '::1', '0.0.0.0'];
-
-            if (app()->environment('production') && !in_array($host, $bypassHosts, true)) {
-                $appMiddleware[] = VugiChugi::mdNm();
-            }
 
             Route::namespace('App\Http\Controllers')->middleware($appMiddleware)->group(function(){
                 Route::prefix('api')
