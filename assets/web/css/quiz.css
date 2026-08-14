@@ -97,16 +97,25 @@
    label length — Previous | Next on top, Mark | Submit below. The old
    flex-wrap + ms-auto layout let Submit wrap off-screen on narrow phones. */
 @media (max-width: 991.98px) {
+    /* The attempt screen is a focused mode: the global bottom nav and the
+       back-to-top button are hidden so they cannot cover the controls bar
+       (both are fixed to bottom:0 and would otherwise sit over Submit). */
+    body.w-quiz-shell .w-bottom-nav,
+    body.w-quiz-shell #wBackToTop { display: none !important; }
+
+    /* !important beats Bootstrap's .d-flex/.ms-auto utilities on the same
+       element, which would otherwise keep this a flex row and stack the
+       buttons full-width (pushing Submit off-screen). */
     .w-quiz-controls {
-        position: fixed; bottom: 0; left: 0; right: 0; z-index: 1036;
-        display: grid; grid-template-columns: 1fr 1fr; gap: var(--w-space-2);
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 1041;
+        display: grid !important; grid-template-columns: 1fr 1fr; gap: var(--w-space-2);
         background: #fff; border-top: 1px solid var(--w-border);
         padding: var(--w-space-3); box-shadow: 0 -4px 14px rgba(16,24,40,.09);
         padding-bottom: calc(var(--w-space-3) + env(safe-area-inset-bottom));
     }
     /* Neutralise Bootstrap's ms-auto/mt-4 and let each cell fill its column. */
     .w-quiz-controls .btn {
-        margin: 0; width: 100%; justify-content: center;
+        margin: 0 !important; width: 100%; justify-content: center;
         white-space: nowrap; font-size: var(--w-fs-sm); padding-inline: var(--w-space-2);
     }
     /* Reorder so navigation (Prev/Next) sits on the top row. */
@@ -126,6 +135,17 @@
 .w-result-hero { border-radius: var(--w-radius-lg); padding: var(--w-space-8) var(--w-space-5); text-align: center; color: #fff; }
 .w-result-hero.is-pass { background: linear-gradient(135deg, #16a34a, #059669); }
 .w-result-hero.is-fail { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+
+/* Celebratory entrance for a passing result: the card lifts in and the score
+   ring gives a little bounce. Confetti (confetti.js) fires alongside it. */
+.w-result-hero.w-celebrate { animation: w-celebrate-in 600ms cubic-bezier(.22,1,.36,1) both; }
+.w-result-hero.w-celebrate .w-score-ring { animation: w-celebrate-pop 750ms cubic-bezier(.34,1.56,.64,1) 120ms both; }
+@keyframes w-celebrate-in { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes w-celebrate-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+    .w-result-hero.w-celebrate,
+    .w-result-hero.w-celebrate .w-score-ring { animation: none; }
+}
 
 .w-score-ring {
     width: 148px; height: 148px; border-radius: 50%;

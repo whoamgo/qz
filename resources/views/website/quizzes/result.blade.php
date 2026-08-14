@@ -9,7 +9,7 @@
     <div class="container">
 
         {{-- Score --}}
-        <div class="w-result-hero {{ $attempt->passed ? 'is-pass' : 'is-fail' }} mb-4">
+        <div class="w-result-hero {{ $attempt->passed ? 'is-pass w-celebrate' : 'is-fail' }} mb-4">
             <div class="w-score-ring">
                 <div>
                     <strong>{{ round($attempt->percentage) }}%</strong>
@@ -160,3 +160,14 @@
     </div>
 </section>
 @endsection
+
+@if ($attempt->passed)
+    @push('scripts')
+        <script src="{{ wAsset('assets/web/js/confetti.js') }}"></script>
+        <script>
+            jQuery(function () {
+                if (window.WConfetti) { window.WConfetti.celebrate(); }
+            });
+        </script>
+    @endpush
+@endif

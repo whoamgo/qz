@@ -199,6 +199,28 @@ textarea:focus-visible,
 .w-hero p { font-size: var(--w-fs-lg); opacity: .94; max-width: 46rem; }
 .w-hero .w-hero-inner { position: relative; z-index: 1; }
 
+/* ---------------------------------------------- Independence Day theme --- */
+/* A tricolour touch on the hero for 15 August. The base stays dark so the
+   white hero text remains readable; the flag comes through as a top ribbon
+   and saffron/green background glows. Toggled by the .w-independence class
+   which the home view adds only around the day. */
+.w-hero.w-independence { background: linear-gradient(135deg, #06243f 0%, #002147 52%, #062a12 100%); }
+.w-hero.w-independence::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; z-index: 2;
+    background: linear-gradient(to bottom, #FF9933 0 33.33%, #ffffff 33.33% 66.66%, #138808 66.66% 100%);
+}
+.w-hero.w-independence::after {
+    background-image: radial-gradient(circle at 15% 18%, rgba(255,153,51,.28) 0, transparent 46%),
+                      radial-gradient(circle at 85% 82%, rgba(19,136,8,.30) 0, transparent 48%);
+}
+.w-independence-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
+    color: #fff; font-weight: 700; font-size: var(--w-fs-sm);
+    padding: 0.35rem 0.9rem; border-radius: var(--w-radius-pill);
+    margin-bottom: var(--w-space-3);
+}
+
 .w-hero-stat {
     background: rgba(255,255,255,.14);
     border: 1px solid rgba(255,255,255,.22);

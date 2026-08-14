@@ -2,11 +2,20 @@
 
 @section('content')
 
+    @php
+        // Independence Day (15 Aug) festive theme — shows for a short window
+        // around the day, then removes itself automatically.
+        $isIndependence = now()->month === 8 && now()->day >= 10 && now()->day <= 16;
+    @endphp
+
     {{-- 1. Hero + search --}}
-    <section class="w-hero">
+    <section class="w-hero @if ($isIndependence) w-independence @endif">
         <div class="container w-hero-inner">
             <div class="row align-items-center g-5">
                 <div class="col-lg-7">
+                    @if ($isIndependence)
+                        <span class="w-independence-badge">🇮🇳 Happy Independence Day</span>
+                    @endif
                     <h1>Test Your Knowledge. Learn. Practice. Compete.</h1>
                     <p class="mb-4">
                         Practice GK, Current Affairs and Competitive Exam quizzes.
