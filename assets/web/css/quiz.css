@@ -49,6 +49,29 @@
 .w-option.is-selected .w-option-key { background: var(--w-primary); color: #fff; }
 .w-option-text { flex: 1; line-height: 1.5; }
 
+/* ------------------------------------------------------------ anti-copy -- */
+/* Questions and options cannot be selected, dragged or copied. This is a
+   deterrent only — real grading happens server-side and answer keys are
+   never sent to the browser. */
+.w-question-card,
+.w-question-text,
+.w-options,
+.w-option,
+.w-option-text {
+    -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+}
+.w-question-card img { -webkit-user-drag: none; user-select: none; pointer-events: none; }
+
+/* Instructions dialog shown when the attempt opens. */
+.w-instr-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--w-space-3); text-align: center; margin-bottom: var(--w-space-4); }
+.w-instr-meta div { padding: var(--w-space-3); background: var(--w-bg-alt); border-radius: var(--w-radius-sm); }
+.w-instr-meta strong { display: block; font-size: var(--w-fs-lg); color: var(--w-primary); }
+.w-instr-meta span { font-size: var(--w-fs-xs); color: var(--w-muted); }
+.w-instr-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--w-space-2); }
+.w-instr-list li { display: flex; align-items: flex-start; gap: var(--w-space-2); font-size: var(--w-fs-sm); color: var(--w-body); }
+.w-instr-list li i { color: var(--w-primary); flex-shrink: 0; margin-top: 2px; }
+
 /* ----------------------------------------------------------- navigation -- */
 
 .w-q-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: var(--w-space-2); }
@@ -69,15 +92,31 @@
 .w-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
 .w-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 
-/* Mobile: controls pin to the bottom so they never require scrolling. */
+/* Mobile: controls pin to the bottom so they never require scrolling.
+   A fixed 2x2 grid keeps every button visible and evenly sized regardless of
+   label length — Previous | Next on top, Mark | Submit below. The old
+   flex-wrap + ms-auto layout let Submit wrap off-screen on narrow phones. */
 @media (max-width: 991.98px) {
     .w-quiz-controls {
         position: fixed; bottom: 0; left: 0; right: 0; z-index: 1036;
+        display: grid; grid-template-columns: 1fr 1fr; gap: var(--w-space-2);
         background: #fff; border-top: 1px solid var(--w-border);
         padding: var(--w-space-3); box-shadow: 0 -4px 14px rgba(16,24,40,.09);
         padding-bottom: calc(var(--w-space-3) + env(safe-area-inset-bottom));
     }
-    .w-quiz-shell { padding-bottom: 90px; }
+    /* Neutralise Bootstrap's ms-auto/mt-4 and let each cell fill its column. */
+    .w-quiz-controls .btn {
+        margin: 0; width: 100%; justify-content: center;
+        white-space: nowrap; font-size: var(--w-fs-sm); padding-inline: var(--w-space-2);
+    }
+    /* Reorder so navigation (Prev/Next) sits on the top row. */
+    .w-quiz-controls #wPrevBtn { order: 1; }
+    .w-quiz-controls #wNextBtn { order: 2; }
+    .w-quiz-controls #wMarkBtn { order: 3; }
+    .w-quiz-controls #wSubmitBtn { order: 4; }
+
+    /* Reserve room for the two-row bar (plus the notch safe area). */
+    .w-quiz-shell { padding-bottom: calc(140px + env(safe-area-inset-bottom)); }
     .w-question-card { padding: var(--w-space-4); border-radius: var(--w-radius); }
     .w-question-text { font-size: var(--w-fs-base); }
 }

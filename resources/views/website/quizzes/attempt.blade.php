@@ -104,6 +104,45 @@
         </div>
     </div>
 </div>
+
+{{-- Instructions — shown once when the attempt opens --}}
+<div class="modal fade" id="wInstructionsModal" tabindex="-1" aria-labelledby="wInstructionsLabel"
+     data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="wInstructionsLabel">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i> Instructions
+                </h2>
+            </div>
+            <div class="modal-body">
+                <p class="w-muted mb-3 text-truncate"><strong>{{ $quiz->title }}</strong></p>
+
+                <div class="w-instr-meta">
+                    <div><strong>{{ count($questions) }}</strong><span>Questions</span></div>
+                    <div><strong>{{ $quiz->time_limit ? $quiz->time_limit . ' min' : '∞' }}</strong><span>Duration</span></div>
+                    <div><strong>{{ $quiz->pass_percentage }}%</strong><span>To pass</span></div>
+                </div>
+
+                <ul class="w-instr-list">
+                    <li><i class="bi bi-check2-circle" aria-hidden="true"></i> Your answers are saved automatically as you move through the quiz.</li>
+                    <li><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Use Next / Previous or the question navigator to jump between questions.</li>
+                    <li><i class="bi bi-shield-lock" aria-hidden="true"></i> Copying questions, right-click and developer tools are disabled during the attempt.</li>
+                    <li><i class="bi bi-window" aria-hidden="true"></i> Switching or leaving this browser tab is recorded.</li>
+                    @if ($quiz->negative_marking > 0)
+                        <li><i class="bi bi-dash-circle" aria-hidden="true"></i> Negative marking: <strong>{{ $quiz->negative_marking }}</strong> deducted per wrong answer.</li>
+                    @endif
+                    <li><i class="bi bi-lock" aria-hidden="true"></i> Once submitted, answers cannot be changed. Scoring is done on the server.</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success w-100" id="wStartQuizBtn">
+                    <i class="bi bi-play-fill" aria-hidden="true"></i> I understand — Start
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -120,6 +159,54 @@
                 answerUrl:  "{{ route('website.quiz.answer', $attempt->id) }}",
                 reviewUrl:  "{{ route('website.quiz.mark.review', $attempt->id) }}",
                 submitUrl:  "{{ route('website.quiz.submit', $attempt->id) }}"
+            });
+        });
+
+        // --- Attempt guard: instructions + anti-copy + dev-tools deterrents ---
+        // Note: these are deterrents, not real security. The score is computed
+        // server-side and answer keys are never sent to the browser.
+        jQuery(function ($) {
+            // Show the instructions dialog once, when the attempt opens.
+            if (window.bootstrap) {
+                var instr = new window.bootstrap.Modal(document.getElementById('wInstructionsModal'));
+                instr.show();
+                $('#wStartQuizBtn').on('click', function () { instr.hide(); });
+            }
+
+            var warn = function (msg) {
+                if (window.WSite && window.WSite.toast) { window.WSite.toast(msg, 'warning'); }
+            };
+
+            // Block copy / cut / paste / right-click / selection / drag on the quiz.
+            $('.w-quiz-shell').on('contextmenu copy cut paste selectstart dragstart', function (e) {
+                e.preventDefault();
+                if (e.type === 'copy' || e.type === 'cut' || e.type === 'contextmenu') {
+                    warn('Copying is disabled during the quiz.');
+                }
+                return false;
+            });
+
+            // Block dev-tools / view-source / save / print keyboard shortcuts.
+            $(document).on('keydown', function (e) {
+                var k = (e.key || '').toLowerCase();
+                var isCombo = (e.ctrlKey || e.metaKey) && (
+                    (e.shiftKey && (k === 'i' || k === 'j' || k === 'c')) ||
+                    k === 'u' || k === 's' || k === 'p'
+                );
+                if (e.key === 'F12' || isCombo) {
+                    e.preventDefault();
+                    warn('This action is disabled during the quiz.');
+                    return false;
+                }
+            });
+
+            // Record tab-switching / minimising as a soft violation.
+            var switches = 0;
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    switches++;
+                    warn('Please stay on this tab — leaving the quiz is recorded (' + switches + ').');
+                }
             });
         });
     </script>

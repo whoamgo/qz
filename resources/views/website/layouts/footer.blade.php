@@ -51,7 +51,7 @@
                 <h5>@lang('Practice')</h5>
                 <ul class="list-unstyled mb-0">
                     <li><a href="{{ route('website.quizzes') }}">@lang('All Quizzes')</a></li>
-                    <li><a href="{{ route('website.current.affairs.today') }}">@lang('Today's Current Affairs')</a></li>
+                    <li><a href="{{ route('website.current.affairs.today') }}">@lang('Today\'s Current Affairs')</a></li>
                     <li><a href="{{ route('website.current.affairs.weekly') }}">@lang('Weekly Current Affairs')</a></li>
                     <li><a href="{{ route('website.mock.tests') }}">@lang('Mock Tests')</a></li>
                     <li><a href="{{ route('website.pyq') }}">@lang('Previous Year Questions')</a></li>
