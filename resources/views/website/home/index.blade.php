@@ -335,6 +335,50 @@
         </div>
     </section>
 
+    {{-- 7b. How to earn XP --}}
+    <section class="w-section w-section-alt">
+        <div class="container">
+            <div class="w-section-head text-center d-block">
+                <div class="mx-auto" style="max-width: 640px;">
+                    <span class="w-badge w-badge-primary mb-2"><i class="bi bi-lightning-charge-fill"></i> Gamified learning</span>
+                    <h2>How to Earn XP</h2>
+                    <p>Four simple steps — create an account, start playing, and earn XP, badges and leaderboard rank as you learn.</p>
+                </div>
+            </div>
+
+            <div class="row g-3 g-lg-4 w-xp-steps">
+                @foreach ([
+                    ['bi-person-plus-fill', 'Create Account', 'Register free in seconds — just your name and email, no fees.', 'Register', route('user.register')],
+                    ['bi-box-arrow-in-right', 'Log In', 'Sign in to save your progress, streaks and every XP point you earn.', 'Login', route('user.login')],
+                    ['bi-play-circle-fill', 'Play Quizzes', 'Attempt GK, Current Affairs, SSC, Banking and mock-test quizzes.', 'Browse quizzes', route('website.quizzes')],
+                    ['bi-trophy-fill', 'Earn XP & Rewards', 'Score XP on every quiz, unlock badges and climb the leaderboard.', 'Leaderboard', route('website.leaderboard')],
+                ] as $i => [$icon, $title, $text, $cta, $link])
+                    <div class="col-6 col-lg-3">
+                        <div class="w-step-card">
+                            <span class="w-step-num">{{ $i + 1 }}</span>
+                            <span class="w-step-icon"><i class="bi {{ $icon }}" aria-hidden="true"></i></span>
+                            <h3 class="w-step-title">{{ $title }}</h3>
+                            <p class="w-step-text">{{ $text }}</p>
+                            <a href="{{ $link }}" class="w-step-link">{{ $cta }} <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="text-center mt-4">
+                @guest
+                    <a href="{{ route('user.register') }}" class="btn w-btn-primary btn-lg px-4">
+                        <i class="bi bi-lightning-charge-fill me-2" aria-hidden="true"></i>Start Earning XP — It's Free
+                    </a>
+                @else
+                    <a href="{{ route('website.quizzes') }}" class="btn w-btn-primary btn-lg px-4">
+                        <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i>Play a Quiz & Earn XP
+                    </a>
+                @endguest
+            </div>
+        </div>
+    </section>
+
     {{-- 8. Leaderboard --}}
     @if ($leaders->count())
         <section class="w-section w-section-alt">
@@ -469,3 +513,63 @@
     </section>
 
 @endsection
+
+@if ($isIndependence)
+    @push('scripts')
+        <script src="{{ wAsset('assets/web/js/confetti.js') }}"></script>
+        <script>
+            // Independence Day celebration: confetti + rising tricolour balloons,
+            // once per session on the first home-page open. The whole thing runs
+            // for ~10 seconds, then removes itself. Decorative only.
+            (function () {
+                try {
+                    if (sessionStorage.getItem('wBalloonsShown')) { return; }
+                    sessionStorage.setItem('wBalloonsShown', '1');
+                } catch (e) { /* storage blocked — just show it once this load */ }
+
+                if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+
+                var rand = function (a, b) { return a + Math.random() * (b - a); };
+                var DURATION = 10000; // total run time (ms)
+
+                // ---- Confetti: an opening burst and a second one mid-way -----
+                if (window.WConfetti) {
+                    window.WConfetti.celebrate();
+                    setTimeout(function () { window.WConfetti.celebrate(); }, 5000);
+                }
+
+                // ---- Balloons ------------------------------------------------
+                var COLORS = ['is-saffron', 'is-white', 'is-green', 'is-tricolor', 'is-tricolor'];
+                var COUNT = 30;
+
+                var layer = document.createElement('div');
+                layer.className = 'w-balloons';
+                layer.setAttribute('aria-hidden', 'true');
+
+                for (var i = 0; i < COUNT; i++) {
+                    var b = document.createElement('span');
+                    b.className = 'w-balloon ' + COLORS[(Math.random() * COLORS.length) | 0];
+                    var size = rand(32, 56);
+                    b.style.left = rand(1, 95) + '%';
+                    b.style.width = size + 'px';
+                    b.style.height = (size * 1.25) + 'px';
+                    // Longer rise + wider delay spread so balloons keep coming
+                    // across the full 10 seconds instead of clearing early.
+                    b.style.animationDuration = rand(6, 9) + 's';
+                    b.style.animationDelay = rand(0, 4) + 's';
+                    b.style.setProperty('--drift', rand(-45, 45) + 'px');
+                    b.style.setProperty('--rot', rand(-12, 12) + 'deg');
+                    layer.appendChild(b);
+                }
+
+                document.body.appendChild(layer);
+
+                // Fade out and remove the whole layer after the run time.
+                setTimeout(function () {
+                    layer.classList.add('is-hiding');
+                    setTimeout(function () { layer.remove(); }, 850);
+                }, DURATION);
+            })();
+        </script>
+    @endpush
+@endif
