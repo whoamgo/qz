@@ -159,7 +159,7 @@
                 <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 removeFileInput">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="file" name="attachments[]" class="form-control" accept=".jpeg,.jpg,.png,.pdf,.doc,.docx" required>
+                            <input type="file" name="attachments[]" class="form-control" accept=".jpeg,.jpg,.png,.webp,.pdf,.doc,.docx" required>
                             <button type="button" class="input-group-text removeFile bg--danger border--danger"><i class="fas fa-times"></i></button>
                         </div>
                     </div>

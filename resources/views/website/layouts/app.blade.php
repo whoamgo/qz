@@ -39,6 +39,9 @@
     <meta property="og:image" content="{{ $ogImage }}">
 
     <meta name="twitter:card" content="summary_large_image">
+    @if (config('seo.twitter_site'))
+        <meta name="twitter:site" content="{{ config('seo.twitter_site') }}">
+    @endif
     <meta name="twitter:title" content="{{ $metaTitle }}">
     <meta name="twitter:description" content="{{ $metaDesc }}">
     <meta name="twitter:image" content="{{ $ogImage }}">

@@ -120,7 +120,7 @@ class QuizController extends Controller {
             'show_correct_answers' => 'nullable|boolean',
             'show_explanation'   => 'nullable|boolean',
             'status'              => 'required|in:draft,published,archived',
-            'image'               => [$imgValidation, 'image', new FileTypeValidate(['jpeg', 'jpg', 'png'])],
+            'image'               => [$imgValidation, 'image', new FileTypeValidate(['jpeg', 'jpg', 'png', 'webp'])],
         ]);
 
         DB::beginTransaction();

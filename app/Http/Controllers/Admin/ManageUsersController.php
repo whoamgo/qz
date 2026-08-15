@@ -166,7 +166,7 @@ class ManageUsersController extends Controller {
             'message' => 'required',
             'via'     => 'required|in:email,sms,push',
             'subject' => 'required_if:via,email,push',
-            'image'   => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'image'   => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
         ]);
 
         if (!gs('en') && !gs('sn') && !gs('pn')) {
@@ -205,7 +205,7 @@ class ManageUsersController extends Controller {
             'cooling_time'                 => 'required|integer|gte:1',
             'number_of_top_deposited_user' => 'required_if:being_sent_to,topDepositedUsers|integer|gte:0',
             'number_of_days'               => 'required_if:being_sent_to,notLoginUsers|integer|gte:0',
-            'image'                        => ["nullable", 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'image'                        => ["nullable", 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
         ], [
             'number_of_days.required_if'               => "Number of days field is required",
             'number_of_top_deposited_user.required_if' => "Number of top deposited user field is required",

@@ -107,7 +107,8 @@ class QuizController extends BaseWebsiteController {
                 ?: "Attempt the {$quiz->title} quiz with " . $quiz->effectiveQuestionCount($quiz->questions_count) . " questions in {$quiz->time_limit} minutes. Difficulty: " . ucfirst($quiz->difficulty) . '.',
             'canonical'   => route('website.quiz.show', $quiz->slug),
             'type'        => 'article',
-            'image'       => $quiz->image ? getImage(getFilePath('exam') . '/' . $quiz->image) : null,
+            // Branded, auto-generated OG card (quiz title + category) for social shares.
+            'image'       => route('og.quiz', $quiz->slug),
             'schema'      => [
                 $this->quizSchema($quiz),
                 $this->faqSchema($faqs),

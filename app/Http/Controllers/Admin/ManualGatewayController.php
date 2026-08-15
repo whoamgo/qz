@@ -148,7 +148,7 @@ class ManualGatewayController extends Controller
             'max_limit'      => 'required|numeric|gt:min_limit',
             'fixed_charge'   => 'required|numeric|gte:0',
             'percent_charge' => 'required|numeric|between:0,100',
-            'image' => [$isUpdate ? 'nullable' : 'required', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'image' => [$isUpdate ? 'nullable' : 'required', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
             'instruction'    => 'required'
         ];
 

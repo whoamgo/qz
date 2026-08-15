@@ -27,7 +27,7 @@ class LanguageController extends Controller
         $request->validate([
             'name' => 'required|string|max:40',
             'code' => 'required|string|max:40|unique:languages',
-            'image' => ['required', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])]
+            'image' => ['required', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])]
         ]);
 
 
@@ -70,7 +70,7 @@ class LanguageController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])]
+            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])]
         ]);
 
         $language = Language::findOrFail($id);

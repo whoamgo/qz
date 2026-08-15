@@ -149,7 +149,7 @@ class AdminController extends Controller {
         $request->validate([
             'name'  => 'required',
             'email' => 'required|email',
-            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
         ]);
         $user = auth('admin')->user();
 

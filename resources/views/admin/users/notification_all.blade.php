@@ -124,7 +124,7 @@
                             </div>
                             <div class="form-group col-md-12 push-notification-file d-none">
                                 <label>@lang('Image (optional)') </label>
-                                <input type="file" class="form-control" name="image" accept=".png,.jpg,.jpeg">
+                                <input type="file" class="form-control" name="image" accept=".png,.jpg,.jpeg,.webp">
                                 <small class="mt-3 text-muted"> @lang('Supported Files'):<b>@lang('.png, .jpg, .jpeg')</b> </small>
                             </div>
                             <div class="col-md-12">

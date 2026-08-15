@@ -121,7 +121,7 @@ class AutomaticGatewayController extends Controller
     {
         $validationRule = [
             'alias' => 'required',
-            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
         ];
         $validator = Validator::make($request->all(), $validationRule);
         return $validator;

@@ -44,7 +44,7 @@ class ManageExamController extends Controller {
             'subjects.*'          => 'required|string|distinct',
             'start_at'            => 'required_if:exam_type,paid|nullable|date_format:Y-m-d h:i A',
             'result_published_at' => 'required_if:exam_type,paid|nullable|date_format:Y-m-d h:i A|after:start_at',
-            'image'               => [$imgValidation, 'image', new FileTypeValidate(['jpeg', 'jpg', 'png'])],
+            'image'               => [$imgValidation, 'image', new FileTypeValidate(['jpeg', 'jpg', 'png', 'webp'])],
         ]);
 
         if ($id) {

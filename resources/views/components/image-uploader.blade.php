@@ -5,7 +5,7 @@
     'size' => null,
     'name' => 'image',
     'id' => 'image-upload-input1',
-    'accept' => '.png, .jpg, .jpeg',
+    'accept' => '.png, .jpg, .jpeg, .webp',
     'required' => true,
     'darkMode' => false,
     'showInfo' => true,

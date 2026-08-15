@@ -86,7 +86,7 @@ class GeneralSettingController extends Controller {
 
     public function logoIconUpdate(Request $request) {
         $request->validate([
-            'logo'    => ['image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'logo'    => ['image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
             'favicon' => ['image', new FileTypeValidate(['png'])],
         ]);
         $path = getFilePath('logoIcon');
@@ -193,7 +193,7 @@ class GeneralSettingController extends Controller {
     public function maintenanceModeSubmit(Request $request) {
         $request->validate([
             'description' => 'required',
-            'image'       => ['nullable', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
+            'image'       => ['nullable', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp'])],
         ]);
         $general                   = gs();
         $general->maintenance_mode = $request->status ? Status::ENABLE : Status::DISABLE;
