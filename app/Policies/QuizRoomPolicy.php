@@ -21,6 +21,12 @@ class QuizRoomPolicy {
         return $room->isHost($user) && $room->status === QuizRoom::STATUS_WAITING;
     }
 
+    /** Replay: only the host, and only once the round has finished. */
+    public function replay(User $user, QuizRoom $room): bool {
+        return $room->isHost($user)
+            && in_array($room->status, [QuizRoom::STATUS_COMPLETED, QuizRoom::STATUS_STARTED], true);
+    }
+
     public function cancel(User $user, QuizRoom $room): bool {
         return $room->isHost($user)
             && in_array($room->status, [QuizRoom::STATUS_WAITING, QuizRoom::STATUS_STARTED], true);

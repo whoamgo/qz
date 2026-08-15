@@ -102,11 +102,20 @@ class HomeController extends BaseWebsiteController {
             'schema'      => [$this->websiteSchema(), $this->organizationSchema(), $this->faqSchema($faqs)],
         ]);
 
+        // Real headline numbers for the hero trust badges, cached for an hour.
+        $heroStats = \Illuminate\Support\Facades\Cache::remember('website.hero.stats', 3600, function () {
+            return [
+                'quizzes'   => Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')->count(),
+                'questions' => \App\Models\BankQuestion::where('status', 1)->count(),
+                'members'   => \App\Models\User::count(),
+            ];
+        });
+
         return view('website.home.index', compact(
             'seo', 'categories', 'todayQuiz', 'popularQuizzes', 'latestQuizzes',
             'examCategories', 'currentAffairs', 'continueLearning', 'userStats',
             'weakTopics', 'leaders', 'blogs', 'faqs', 'user',
-            'testimonials', 'testimonialContent', 'heroSlides', 'heroContent'
+            'testimonials', 'testimonialContent', 'heroSlides', 'heroContent', 'heroStats'
         ));
     }
 

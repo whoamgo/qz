@@ -8,8 +8,9 @@
                 <strong class="d-block">{{ $txn->description ?? ucfirst(str_replace('_', ' ', $txn->type ?? 'XP')) }}</strong>
                 <small class="w-muted">{{ showDateTime($txn->created_at, 'd M Y, h:i A') }}</small>
             </div>
-            <span class="w-xp-amount {{ ($txn->amount ?? 0) >= 0 ? 'is-plus' : 'is-minus' }}">
-                {{ ($txn->amount ?? 0) >= 0 ? '+' : '' }}{{ number_format($txn->amount ?? 0) }} XP
+            @php $earned = ($txn->direction ?? 'earned') !== 'spent'; @endphp
+            <span class="w-xp-amount {{ $earned ? 'is-plus' : 'is-minus' }}">
+                {{ $earned ? '+' : '−' }}{{ number_format((int) ($txn->xp_amount ?? 0)) }} XP
             </span>
         </div>
     @empty

@@ -45,11 +45,11 @@
                                     <input type="text" id="uUsername" name="username"
                                            class="form-control wCheckUser @error('username') is-invalid @enderror"
                                            value="{{ old('username') }}" required autofocus
-                                           minlength="6" autocomplete="username"
+                                           minlength="3" autocomplete="username"
                                            aria-describedby="uUsernameHelp">
                                 </div>
                                 <div id="uUsernameHelp" class="w-text-xs w-muted mt-1">
-                                    At least 6 characters. Lowercase letters, numbers and underscores only.
+                                    At least 3 characters. Lowercase letters, numbers and underscores only.
                                 </div>
                                 <small class="text--danger d-block usernameExist" role="alert"></small>
                                 @error('username')<div class="text--danger w-text-sm">{{ $message }}</div>@enderror

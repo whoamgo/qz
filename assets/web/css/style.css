@@ -199,6 +199,17 @@ textarea:focus-visible,
 .w-hero p { font-size: var(--w-fs-lg); opacity: .94; max-width: 46rem; }
 .w-hero .w-hero-inner { position: relative; z-index: 1; }
 
+/* Hero trust badges */
+.w-hero-stats { display: flex; flex-wrap: wrap; gap: var(--w-space-4); color: #fff; }
+.w-hero-stats span { font-size: var(--w-fs-sm); opacity: .9; display: inline-flex; align-items: baseline; gap: 0.3rem; }
+.w-hero-stats strong { font-size: var(--w-fs-xl); font-weight: 800; opacity: 1; }
+/* "New" pill on the Play Live button */
+.w-hero-new {
+    font-size: 0.6rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    background: #16a34a; color: #fff; padding: 0.1rem 0.4rem; border-radius: var(--w-radius-pill);
+    margin-left: 0.35rem; vertical-align: middle;
+}
+
 /* ---------------------------------------------- Independence Day theme --- */
 /* A tricolour touch on the hero for 15 August. The base stays dark so the
    white hero text remains readable; the flag comes through as a top ribbon

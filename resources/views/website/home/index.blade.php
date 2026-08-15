@@ -18,11 +18,11 @@
                     @endif
                     <h1>Test Your Knowledge. Learn. Practice. Compete.</h1>
                     <p class="mb-4">
-                        Practice GK, Current Affairs and Competitive Exam quizzes.
-                        Earn XP, unlock badges and improve your rank.
+                        Practice GK, Current Affairs and Competitive Exam quizzes — earn XP, unlock
+                        badges, and now <strong>play live with friends</strong> in real-time quiz rooms.
                     </p>
 
-                    <div class="d-flex flex-wrap gap-2 mb-4">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
                         @if ($todayQuiz)
                             <a href="{{ route('website.quiz.show', $todayQuiz->slug) }}" class="btn w-btn-light btn-lg px-4">
                                 <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i>Start Today's Quiz
@@ -32,7 +32,17 @@
                                 <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i>Browse Quizzes
                             </a>
                         @endif
+                        <a href="{{ route('website.play.live') }}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-controller me-2" aria-hidden="true"></i>Play Live <span class="w-hero-new">New</span>
+                        </a>
                         <a href="{{ route('exams') }}" class="btn btn-outline-light btn-lg px-4">Explore Exams</a>
+                    </div>
+
+                    {{-- Trust badges (real, cached numbers) --}}
+                    <div class="w-hero-stats mb-4">
+                        <span><strong>{{ number_format($heroStats['quizzes']) }}+</strong> Quizzes</span>
+                        <span><strong>{{ number_format($heroStats['questions']) }}+</strong> Questions</span>
+                        <span><strong>{{ number_format($heroStats['members']) }}+</strong> Learners</span>
                     </div>
 
                     {{-- Hero search with live suggestions --}}

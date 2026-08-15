@@ -143,9 +143,11 @@ Route::namespace('Website')->name('website.')->group(function () {
         Route::get('{room}/results/data', 'resultsData')->name('results.data'); // AJAX poll
         Route::post('{room}/start', 'start')->name('start');
         Route::post('{room}/leave', 'leave')->name('leave');
+        Route::post('{room}/replay', 'replay')->name('replay');
         // Graceful GET fallback for the POST-only actions above (back button,
         // reload or a typed URL) — redirect instead of "Method Not Allowed".
         Route::get('{room}/start', 'startRedirect');
         Route::get('{room}/leave', 'startRedirect');
+        Route::get('{room}/replay', 'startRedirect');
     });
 });

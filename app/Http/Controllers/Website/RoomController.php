@@ -344,10 +344,40 @@ class RoomController extends BaseWebsiteController {
             return redirect()->route('website.rooms.waiting', $room->id);
         }
 
-        $board = $this->buildLeaderboard($room);
-        $seo   = $this->seo(['title' => 'Room Results ' . $room->room_code, 'robots' => 'noindex, nofollow']);
+        $board  = $this->buildLeaderboard($room);
+        $isHost = $room->isHost(auth()->user());
+        $seo    = $this->seo(['title' => 'Room Results ' . $room->room_code, 'robots' => 'noindex, nofollow']);
 
-        return view('website.rooms.results', compact('seo', 'room', 'board'));
+        return view('website.rooms.results', compact('seo', 'room', 'board', 'isHost'));
+    }
+
+    /**
+     * Play Again: the host restarts the same room with the same players. Each
+     * participant's previous attempt is unlinked and their score reset, the room
+     * returns to "waiting", and the host starts a fresh round from there.
+     */
+    public function replay(QuizRoom $room) {
+        Gate::authorize('replay', $room);
+
+        DB::transaction(function () use ($room) {
+            $room->activeParticipants()->update([
+                'quiz_attempt_id' => null,
+                'status'          => QuizRoomParticipant::STATUS_JOINED,
+                'score'           => 0,
+                'correct_answers' => 0,
+                'wrong_answers'   => 0,
+                'completed_at'    => null,
+            ]);
+
+            $room->update([
+                'status'     => QuizRoom::STATUS_WAITING,
+                'started_at' => null,
+                'ended_at'   => null,
+                'expires_at' => now()->addHours(self::ROOM_TTL_HOURS),
+            ]);
+        });
+
+        return redirect()->route('website.rooms.waiting', $room->id);
     }
 
     /** Polled by the leaderboard so it updates live as players finish. */
@@ -405,6 +435,7 @@ class RoomController extends BaseWebsiteController {
 
         return [
             'status'   => $room->status,
+            'is_host'  => $room->isHost(auth()->user()),
             'finished' => $rows->where('finished', true)->count(),
             'total'    => $rows->count(),
             'rows'     => $rows->all(),

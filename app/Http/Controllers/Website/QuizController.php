@@ -252,14 +252,14 @@ class QuizController extends BaseWebsiteController {
 
         $seo = $this->seo(['title' => 'Result: ' . $quiz->title, 'robots' => 'noindex, nofollow']);
 
-        // If this attempt was played inside a multiplayer room, offer a link
-        // back to that room's live leaderboard.
-        $roomLeaderboardUrl = \App\Models\QuizRoomParticipant::where('quiz_attempt_id', $attempt->id)
+        // If this attempt was played inside a multiplayer room, expose the room
+        // so the result page can show its leaderboard in a modal.
+        $roomId = \App\Models\QuizRoomParticipant::where('quiz_attempt_id', $attempt->id)
             ->where('user_id', $user->id)
             ->value('room_id');
-        $roomLeaderboardUrl = $roomLeaderboardUrl ? route('website.rooms.results', $roomLeaderboardUrl) : null;
+        $roomLeaderboardUrl = $roomId ? route('website.rooms.results', $roomId) : null;
 
-        return view('website.quizzes.result', compact('seo', 'attempt', 'quiz', 'xp', 'nextLevel', 'recentBadges', 'related', 'roomLeaderboardUrl'));
+        return view('website.quizzes.result', compact('seo', 'attempt', 'quiz', 'xp', 'nextLevel', 'recentBadges', 'related', 'roomId', 'roomLeaderboardUrl'));
     }
 
     /** Answer review, gated on the quiz's own display settings. */

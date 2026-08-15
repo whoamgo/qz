@@ -48,10 +48,19 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-2 mt-3">
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    @if ($isHost)
+                        <form method="POST" action="{{ route('website.rooms.replay', $room->id) }}" class="flex-grow-1" id="wReplayForm">
+                            @csrf
+                            <button type="submit" class="btn btn-success w-100" id="wReplayBtn"><i class="bi bi-arrow-repeat"></i> Play Again</button>
+                        </form>
+                    @endif
                     <a href="{{ route('website.rooms.create') }}" class="btn w-btn-outline flex-grow-1"><i class="bi bi-plus-circle"></i> New Room</a>
                     <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline flex-grow-1">Browse Quizzes</a>
                 </div>
+                @if (!$isHost)
+                    <p class="w-text-sm w-muted text-center mt-2 mb-0"><i class="bi bi-info-circle"></i> The host can start a new round — you'll be taken there automatically.</p>
+                @endif
             </div>
 
             {{-- Right: how ranking works + FAQ --}}
@@ -135,15 +144,29 @@ jQuery(function ($) {
         $('#wBoard .w-board-name').each(function (i) { $(this).text(board.rows[i].name); });
     }
 
+    var waitingUrl = "{{ route('website.rooms.waiting', $room->id) }}";
+    var replaying = false;
+
     render(initial);
 
     function poll() {
+        if (replaying) { return; }
         $.get(dataUrl).done(function (board) {
+            // A host "Play Again" sends the room back to waiting — pull everyone
+            // (host included) into the new round automatically.
+            if (board.status === 'waiting') { replaying = true; window.location = waitingUrl; return; }
             render(board);
-            if (board.status !== 'completed') setTimeout(poll, 3000);
+            // Poll fast while playing, slower once finished (to catch a replay).
+            setTimeout(poll, board.status === 'completed' ? 5000 : 3000);
         }).fail(function () { setTimeout(poll, 5000); });
     }
-    if (initial.status !== 'completed') poll();
+    poll();
+
+    // Host replay: avoid a double submit.
+    $('#wReplayForm').on('submit', function () {
+        replaying = true;
+        $('#wReplayBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Starting new round…');
+    });
 });
 </script>
 @endpush

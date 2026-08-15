@@ -2,6 +2,9 @@
 
 @push('styles')
     <link href="{{ wAsset('assets/web/css/quiz.css') }}" rel="stylesheet">
+    @if (!empty($roomId))
+        <link href="{{ wAsset('assets/web/css/rooms.css') }}" rel="stylesheet">
+    @endif
 @endpush
 
 @section('content')
@@ -79,10 +82,10 @@
 
                 {{-- Actions --}}
                 <div class="d-flex flex-wrap gap-2 mb-4">
-                    @if (!empty($roomLeaderboardUrl))
-                        <a href="{{ $roomLeaderboardUrl }}" class="btn btn-success">
+                    @if (!empty($roomId))
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#wRoomBoardModal">
                             <i class="bi bi-trophy"></i> View Room Leaderboard
-                        </a>
+                        </button>
                     @endif
                     @if ($quiz->show_correct_answers)
                         <a href="{{ route('website.quiz.review', $attempt->id) }}" class="btn w-btn-primary">
@@ -164,6 +167,38 @@
         </div>
     </div>
 </section>
+
+@if (!empty($roomId))
+    {{-- Room leaderboard modal --}}
+    <div class="modal fade" id="wRoomBoardModal" tabindex="-1" aria-labelledby="wRoomBoardLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="wRoomBoardLabel"><i class="bi bi-trophy"></i> Room Leaderboard</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <strong id="wRoomBoardTitle">Live Standings</strong>
+                        <span class="w-badge w-badge-primary"><span id="wRoomFinished">0</span> / <span id="wRoomTotal">0</span> finished</span>
+                    </div>
+                    <ol class="w-board" id="wRoomBoard"></ol>
+                    <p class="w-text-sm w-muted text-center mt-3 mb-0" id="wRoomBoardLoad">
+                        <span class="spinner-border spinner-border-sm"></span> Loading…
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{{ route('website.rooms.replay', $roomId) }}" class="d-none me-auto" id="wModalReplayForm">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm" id="wModalReplayBtn"><i class="bi bi-arrow-repeat"></i> Play Again</button>
+                    </form>
+                    <a href="{{ $roomLeaderboardUrl }}" class="btn w-btn-outline btn-sm">Open full page</a>
+                    <button type="button" class="btn w-btn-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 @endsection
 
 @if ($attempt->passed)
@@ -173,6 +208,70 @@
             jQuery(function () {
                 if (window.WConfetti) { window.WConfetti.celebrate(); }
             });
+        </script>
+    @endpush
+@endif
+
+@if (!empty($roomId))
+    @push('scripts')
+        <script>
+        jQuery(function ($) {
+            var dataUrl = "{{ route('website.rooms.results.data', $roomId) }}";
+            var waitingUrl = "{{ route('website.rooms.waiting', $roomId) }}";
+            var medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+            var pollId = null, replaying = false;
+
+            function render(board) {
+                $('#wRoomBoardLoad').addClass('d-none');
+                $('#wRoomFinished').text(board.finished);
+                $('#wRoomTotal').text(board.total);
+                $('#wRoomBoardTitle').text(board.status === 'completed' ? 'Final Results' : 'Live Standings');
+                // Host sees "Play Again" once the round is finished.
+                $('#wModalReplayForm').toggleClass('d-none', !(board.is_host && board.status === 'completed'));
+
+                var html = '';
+                $.each(board.rows, function (i, r) {
+                    var rankBadge = r.finished
+                        ? (medals[r.rank] || ('<span class="w-board-rank">' + r.rank + '</span>'))
+                        : '<span class="w-board-rank is-playing">•</span>';
+                    var right = r.finished
+                        ? '<span class="w-board-score">' + r.score + '<small>/' + r.total + '</small></span>' +
+                          '<span class="w-board-meta">' + r.correct + '✓ ' + r.wrong + '✗ · ' + r.percentage + '% · ' + r.time + '</span>'
+                        : '<span class="w-board-meta">' + (r.playing ? 'Playing…' : 'Not started') + '</span>';
+                    html += '<li class="w-board-row' + (r.is_you ? ' is-you' : '') + (r.finished ? '' : ' is-pending') + '">' +
+                        '<span class="w-board-pos">' + rankBadge + '</span>' +
+                        '<span class="w-player-avatar">' + (r.name ? r.name.charAt(0).toUpperCase() : '?') + '</span>' +
+                        '<span class="w-board-name"></span>' +
+                        (r.is_host ? '<span class="w-badge w-badge-warning ms-1">Host</span>' : '') +
+                        (r.is_you ? '<span class="w-badge w-badge-primary ms-1">You</span>' : '') +
+                        '<span class="w-board-right ms-auto text-end">' + right + '</span>' +
+                        '</li>';
+                });
+                $('#wRoomBoard').html(html);
+                $('#wRoomBoard .w-board-name').each(function (i) { $(this).text(board.rows[i].name); });
+            }
+
+            function fetch(poll) {
+                if (replaying) { return; }
+                $.get(dataUrl).done(function (board) {
+                    // Host started a new round → jump into the waiting room.
+                    if (board.status === 'waiting') { replaying = true; window.location = waitingUrl; return; }
+                    render(board);
+                    // Keep refreshing — slower once finished, so a replay is caught too.
+                    if (poll) { pollId = setTimeout(function () { fetch(true); }, board.status === 'completed' ? 5000 : 3000); }
+                });
+            }
+
+            // Load when the modal opens; stop polling when it closes.
+            $('#wRoomBoardModal')
+                .on('shown.bs.modal', function () { fetch(true); })
+                .on('hidden.bs.modal', function () { if (pollId) { clearTimeout(pollId); pollId = null; } });
+
+            $('#wModalReplayForm').on('submit', function () {
+                replaying = true;
+                $('#wModalReplayBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Starting…');
+            });
+        });
         </script>
     @endpush
 @endif
