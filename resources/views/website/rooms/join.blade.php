@@ -121,6 +121,15 @@ jQuery(function ($) {
     $('#wJoinForm').on('submit', function () {
         $('#wJoinBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Joining…');
     });
+
+    // Shared link (?code=QZ7K9P): pre-fill the code and preview automatically,
+    // so a friend who tapped the link only has to confirm "Join This Room".
+    var params = new URLSearchParams(window.location.search);
+    var sharedCode = (params.get('code') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (sharedCode.length >= 4) {
+        $('#wRoomCode').val(sharedCode);
+        $('#wPreviewBtn').trigger('click');
+    }
 });
 </script>
 @endpush

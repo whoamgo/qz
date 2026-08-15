@@ -91,6 +91,8 @@ jQuery(function ($) {
     var statusUrl = "{{ route('website.rooms.status', $room->id) }}";
     var code = "{{ $room->room_code }}";
     var joinUrl = "{{ route('website.rooms.join') }}";
+    // Direct link with the code baked in — the recipient lands ready to join.
+    var joinLink = joinUrl + "?code=" + code;
     var isHost = @json($isHost);
     var started = false;
 
@@ -105,11 +107,13 @@ jQuery(function ($) {
     });
 
     // ---- Share -----------------------------------------------------------
-    var shareText = "Join my Quiz Mitra quiz room!\n\nRoom Code: " + code +
-                    "\n\nJoin Quiz Mitra and enter the room code to participate.\n" + joinUrl;
+    // Message carries both the code and a one-tap join link to the site.
+    var shareText = "🎮 Join my Quiz Mitra quiz room!\n\n" +
+                    "Room Code: " + code + "\n\n" +
+                    "Tap to join 👉 " + joinLink;
     $('#wShareBtn').on('click', function () {
         if (navigator.share) {
-            navigator.share({ title: 'Quiz Mitra Room', text: shareText }).catch(function () {});
+            navigator.share({ title: 'Quiz Mitra Room', text: shareText, url: joinLink }).catch(function () {});
         } else {
             window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank');
         }

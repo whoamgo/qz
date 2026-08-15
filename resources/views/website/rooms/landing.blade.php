@@ -86,8 +86,18 @@
     </div>
 </section>
 
-{{-- Bottom CTA --}}
+{{-- FAQ --}}
 <section class="w-section">
+    <div class="container" style="max-width: 760px;">
+        <div class="w-section-head text-center d-block">
+            <div class="mx-auto" style="max-width: 620px;"><h2>Frequently Asked Questions</h2></div>
+        </div>
+        <x-website::faq-accordion :faqs="$faqs" id="wRoomFaq" :title="null" />
+    </div>
+</section>
+
+{{-- Bottom CTA --}}
+<section class="w-section w-section-alt">
     <div class="container">
         <div class="w-live-banner">
             <div class="w-live-banner-text">

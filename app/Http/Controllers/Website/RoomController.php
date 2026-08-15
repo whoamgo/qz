@@ -33,13 +33,39 @@ class RoomController extends BaseWebsiteController {
 
     /** Public "how it works" page — the marketing entry point for rooms. */
     public function landing() {
+        $faqs = [
+            ['question' => 'What is a Quiz Room on Quiz Mitra?',
+             'answer'   => 'A Quiz Room is a private multiplayer game where you and your friends attempt the same quiz together and compare scores on a live leaderboard. The person who creates the room is the host.'],
+            ['question' => 'How do I create a quiz room?',
+             'answer'   => 'Click “Create a Room”, choose a category and quiz, set the maximum players, and optionally the number of questions and time limit. A unique room code is generated for you to share.'],
+            ['question' => 'How do friends join my room?',
+             'answer'   => 'Share your room code (for example QZ7K9P). Your friends open “Join a Room”, enter the code, preview the room details, and tap “Join This Room” to enter the live waiting room.'],
+            ['question' => 'Is playing a quiz room free?',
+             'answer'   => 'Yes. Creating and joining quiz rooms is free — you only need a free Quiz Mitra account to host or join a room.'],
+            ['question' => 'Can the host set the number of questions and the time limit?',
+             'answer'   => 'Yes. When creating a room the host can choose how many questions to play and a time limit in minutes, or leave them empty to use the quiz’s own defaults.'],
+            ['question' => 'How many players can join a room?',
+             'answer'   => 'The host sets the maximum number of players (between 2 and 100) while creating the room. Once the room is full, no new players can join.'],
+            ['question' => 'What happens after everyone finishes the quiz?',
+             'answer'   => 'A live leaderboard ranks every player by score, using finishing time to break ties. Once all players finish, the final results are shown.'],
+            ['question' => 'Do I still earn XP and badges in a room?',
+             'answer'   => 'Yes. Every quiz you play inside a room awards the same XP and badges as a normal quiz, and counts towards your level and leaderboard rank.'],
+        ];
+
         $seo = $this->seo([
             'title'       => 'Play Live Multiplayer Quizzes with Friends',
             'description' => 'Create a private quiz room, share a code, and compete with friends in real time on Quiz Mitra — with a live leaderboard.',
             'canonical'   => route('website.play.live'),
+            'schema'      => [
+                $this->faqSchema($faqs),
+                $this->breadcrumbSchema([
+                    'Home'      => route('home'),
+                    'Play Live' => route('website.play.live'),
+                ]),
+            ],
         ]);
 
-        return view('website.rooms.landing', compact('seo'));
+        return view('website.rooms.landing', compact('seo', 'faqs'));
     }
 
     // ---------------------------------------------------------- create ----

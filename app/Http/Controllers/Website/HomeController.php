@@ -231,6 +231,7 @@ class HomeController extends BaseWebsiteController {
             ['question' => 'What is a streak?', 'answer' => 'Your streak counts consecutive days on which you completed at least one quiz. Missing a day resets it.'],
             ['question' => 'Can I review my answers after a quiz?', 'answer' => 'Yes, if the quiz has answer review enabled. After submitting you can see each question, your answer, the correct answer and an explanation.'],
             ['question' => 'Do I need an account?', 'answer' => 'You can browse quizzes and categories without an account. To attempt a quiz and earn XP, badges and leaderboard rank, you need to register.'],
+            ['question' => 'Can I play a quiz live with friends?', 'answer' => 'Yes. With Quiz Rooms you can create a private room, share a short room code, and have friends join to play the same quiz together — with a live leaderboard and final results. Open the Play Live page to create or join a room.'],
         ];
     }
 
