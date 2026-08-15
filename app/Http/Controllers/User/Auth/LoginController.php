@@ -29,7 +29,10 @@ class LoginController extends Controller
     {
         $pageTitle = "Login";
         Intended::identifyRoute();
-        return view('website.auth.login', compact('pageTitle'));
+        // Auth pages carry no organic search value — keep them out of the index
+        // (follow so link equity still flows to the public pages they link to).
+        $seo = ['title' => $pageTitle, 'robots' => 'noindex, follow'];
+        return view('website.auth.login', compact('pageTitle', 'seo'));
     }
 
     public function login(Request $request)

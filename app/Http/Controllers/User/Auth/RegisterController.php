@@ -29,7 +29,10 @@ class RegisterController extends Controller
     {
         $pageTitle = "Register";
         Intended::identifyRoute();
-        return view('website.auth.register', compact('pageTitle'));
+        // Auth pages carry no organic search value — keep them out of the index
+        // (follow so link equity still flows to the public pages they link to).
+        $seo = ['title' => $pageTitle, 'robots' => 'noindex, follow'];
+        return view('website.auth.register', compact('pageTitle', 'seo'));
     }
 
 

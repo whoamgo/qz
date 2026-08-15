@@ -19,6 +19,27 @@ use Illuminate\Support\Facades\Route;
 | helpers.php, SiteController and the legacy template call route('home') and
 | friends. Reusing the names keeps every one of those call sites working.
 */
+/*
+| Discovery endpoints. Served through Laravel (not static files) so the sitemap
+| tracks the database and both use the configured app URL in every environment.
+| Declared first so the exact paths win over any dynamic route.
+*/
+Route::namespace('Website')->group(function () {
+    Route::get('sitemap.xml', 'SitemapController@index')->name('sitemap');
+    Route::get('robots.txt', 'SitemapController@robots')->name('robots');
+});
+
+/*
+| Auth lives under the /user prefix (routes/user.php), but the conventional
+| bare paths /login and /register are what Google, browsers and external links
+| assume — and they otherwise fall through to web.php's /{slug} catch-all and
+| 404. Permanent-redirect them to the real pages. route() is used (not a static
+| string) so the target stays correct under the /qz subpath locally and at the
+| domain root in production.
+*/
+Route::get('login', fn() => redirect()->route('user.login', [], 301))->name('login.redirect');
+Route::get('register', fn() => redirect()->route('user.register', [], 301))->name('register.redirect');
+
 Route::namespace('Website')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::get('exams', 'ExamController@index')->name('exams');
