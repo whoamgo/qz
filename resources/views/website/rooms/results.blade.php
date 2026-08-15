@@ -4,9 +4,21 @@
     <link href="{{ wAsset('assets/web/css/rooms.css') }}" rel="stylesheet">
 @endpush
 
+@php
+    $negative = (float) ($room->quiz->negative_marking ?? 0);
+    $resultFaqs = [
+        ['question' => 'How is the winner decided?', 'answer' => 'The player with the highest score is ranked first. If two players have the same score, the one who finished faster is ranked higher.'],
+        ['question' => 'What does a score like 2 / 5 mean?', 'answer' => 'It is your score out of the total marks for this quiz — you earn ' . rtrim(rtrim(number_format((float)($room->quiz->marks_per_correct ?: 1), 2), '0'), '.') . ' mark(s) for each correct answer.'],
+        ['question' => 'Why do I see a percentage?', 'answer' => 'The percentage is your score shown as a share of the total marks available in the quiz.'],
+        ['question' => 'What do the ✓ and ✗ mean?', 'answer' => 'They are your correct (✓) and wrong (✗) answers. The clock next to them is the time you took to finish.'],
+        ['question' => 'When are the final results shown?', 'answer' => 'Ranks update live as each player finishes. Once every player has finished, the standings lock in as the final results.'],
+        ['question' => 'Do I still earn XP from a room quiz?', 'answer' => 'Yes — you earn the same XP and badges as any normal quiz you play.'],
+    ];
+@endphp
+
 @section('content')
 <section class="w-section">
-    <div class="container" style="max-width: 720px;">
+    <div class="container" style="max-width: 1040px;">
 
         <div class="text-center mb-4">
             <span class="w-badge w-badge-primary mb-2"><i class="bi bi-trophy"></i> Room Leaderboard</span>
@@ -14,30 +26,73 @@
             <p class="w-muted">{{ $room->category->name }} · Room {{ $room->room_code }}</p>
         </div>
 
-        <div class="w-card">
-            <div class="w-card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="w-card-title mb-0" id="wBoardTitle">
-                        {{ $board['status'] === 'completed' ? 'Final Results' : 'Live Standings' }}
-                    </h2>
-                    <span class="w-badge w-badge-primary">
-                        <span id="wFinished">{{ $board['finished'] }}</span> / {{ $board['total'] }} finished
-                    </span>
+        <div class="row g-4 align-items-start">
+            {{-- Left: the leaderboard --}}
+            <div class="col-lg-7 col-xl-8">
+                <div class="w-card">
+                    <div class="w-card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="w-card-title mb-0" id="wBoardTitle">
+                                {{ $board['status'] === 'completed' ? 'Final Results' : 'Live Standings' }}
+                            </h2>
+                            <span class="w-badge w-badge-primary">
+                                <span id="wFinished">{{ $board['finished'] }}</span> / {{ $board['total'] }} finished
+                            </span>
+                        </div>
+
+                        <ol class="w-board" id="wBoard"></ol>
+
+                        <p class="w-text-sm w-muted text-center mt-3 mb-0 d-none" id="wBoardWait">
+                            <span class="spinner-border spinner-border-sm"></span> Waiting for players to finish…
+                        </p>
+                    </div>
                 </div>
 
-                <ol class="w-board" id="wBoard"></ol>
-
-                <p class="w-text-sm w-muted text-center mt-3 mb-0 d-none" id="wBoardWait">
-                    <span class="spinner-border spinner-border-sm"></span> Waiting for players to finish…
-                </p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ route('website.rooms.create') }}" class="btn w-btn-outline flex-grow-1"><i class="bi bi-plus-circle"></i> New Room</a>
+                    <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline flex-grow-1">Browse Quizzes</a>
+                </div>
             </div>
-        </div>
 
-        <div class="d-flex gap-2 mt-3">
-            <a href="{{ route('website.rooms.create') }}" class="btn w-btn-outline flex-grow-1">
-                <i class="bi bi-plus-circle"></i> New Room
-            </a>
-            <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline flex-grow-1">Browse Quizzes</a>
+            {{-- Right: how ranking works + FAQ --}}
+            <div class="col-lg-5 col-xl-4">
+                <div class="w-card mb-3">
+                    <div class="w-card-body">
+                        <h2 class="w-card-title"><i class="bi bi-info-circle"></i> How ranking works</h2>
+                        <ul class="w-rules">
+                            <li>
+                                <span class="w-rule-num">1</span>
+                                <div><strong>Score comes first</strong><br>
+                                    <span class="w-text-sm w-muted">Players are ranked by total score — more correct answers means a higher rank.</span></div>
+                            </li>
+                            <li>
+                                <span class="w-rule-num">2</span>
+                                <div><strong>Faster finish breaks ties</strong><br>
+                                    <span class="w-text-sm w-muted">If two players score the same, whoever finished quicker is ranked higher.</span></div>
+                            </li>
+                            <li>
+                                <span class="w-rule-num">3</span>
+                                <div><strong>Live, then final</strong><br>
+                                    <span class="w-text-sm w-muted">Ranks update live as players finish; positions lock once everyone is done.</span></div>
+                            </li>
+                            @if ($negative > 0)
+                            <li>
+                                <span class="w-rule-num"><i class="bi bi-dash"></i></span>
+                                <div><strong>Negative marking</strong><br>
+                                    <span class="w-text-sm w-muted">{{ rtrim(rtrim(number_format($negative, 2), '0'), '.') }} is deducted for each wrong answer, so guessing can lower your score.</span></div>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="w-card">
+                    <div class="w-card-body">
+                        <h2 class="w-card-title"><i class="bi bi-question-circle"></i> Result FAQ</h2>
+                        <x-website::faq-accordion :faqs="$resultFaqs" id="wResultFaq" :title="null" />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

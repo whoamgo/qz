@@ -288,6 +288,21 @@ class RoomController extends BaseWebsiteController {
     }
 
     /**
+     * A GET on /start (browser back button, a reload, or a typed URL) would
+     * otherwise throw "Method Not Allowed". Send the user to the right place
+     * for the room's current state instead.
+     */
+    public function startRedirect(QuizRoom $room) {
+        Gate::authorize('view', $room);
+
+        return match ($room->status) {
+            QuizRoom::STATUS_STARTED   => redirect()->route('website.rooms.play', $room->id),
+            QuizRoom::STATUS_COMPLETED => redirect()->route('website.rooms.results', $room->id),
+            default                    => redirect()->route('website.rooms.waiting', $room->id),
+        };
+    }
+
+    /**
      * Enter the actual quiz. Each participant gets their own attempt of the same
      * quiz (reusing the existing engine); the attempt is linked to their room row.
      */
@@ -323,7 +338,7 @@ class RoomController extends BaseWebsiteController {
     /** Live room leaderboard, viewable once the quiz has started. */
     public function results(QuizRoom $room) {
         Gate::authorize('view', $room);
-        $room->load(['quiz:id,title', 'category:id,name']);
+        $room->load(['quiz:id,title,marks_per_correct,negative_marking', 'category:id,name']);
 
         if ($room->status === QuizRoom::STATUS_WAITING) {
             return redirect()->route('website.rooms.waiting', $room->id);
