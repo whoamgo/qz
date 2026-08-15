@@ -69,6 +69,7 @@ class Email extends NotifyProcess implements Notifiable{
 			'smtp'=>'sendSmtpMail',
 			'sendgrid'=>'sendSendGridMail',
 			'mailjet'=>'sendMailjetMail',
+			'brevo'=>'sendBrevoMail',
 		];
 		return $methods[$name];
 	}
@@ -121,6 +122,40 @@ class Email extends NotifyProcess implements Notifiable{
 	    if($response->statusCode() != 202){
 	    	throw new Exception(json_decode($response->body())->errors[0]->message);
 
+	    }
+	}
+
+	/**
+	 * Send via Brevo's (Sendinblue) transactional email HTTP API.
+	 * The API key comes from config/services.php (BREVO_API_KEY in .env),
+	 * never from the database, so the credential stays out of the app data.
+	 */
+	protected function sendBrevoMail()
+	{
+	    // Prefer the key entered in the admin panel; fall back to BREVO_API_KEY
+	    // in .env when the panel field is left empty.
+	    $apiKey = (gs('mail_config')->appkey ?? null) ?: config('services.brevo.key');
+	    if (!$apiKey) {
+	        throw new \Exception('Brevo API key is not configured. Enter it in Admin → Email Settings, or set BREVO_API_KEY in .env.');
+	    }
+
+	    $from = $this->getEmailFrom();
+
+	    $response = \Illuminate\Support\Facades\Http::withHeaders([
+	        'api-key'      => $apiKey,
+	        'accept'       => 'application/json',
+	        'content-type' => 'application/json',
+	    ])->post('https://api.brevo.com/v3/smtp/email', [
+	        'sender'      => ['email' => $from['email'], 'name' => $from['name']],
+	        'to'          => [['email' => $this->email, 'name' => $this->receiverName]],
+	        'subject'     => $this->subject,
+	        'htmlContent' => $this->finalMessage,
+	    ]);
+
+	    // Brevo returns 201 Created on success; surface its error body otherwise
+	    // so it lands in the notification error log like the other drivers.
+	    if (!$response->successful()) {
+	        throw new \Exception('Brevo API error: ' . $response->body());
 	    }
 	}
 

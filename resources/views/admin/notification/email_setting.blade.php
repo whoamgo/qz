@@ -16,6 +16,7 @@
                                 <option value="smtp" @if (gs('mail_config')->name == 'smtp') selected @endif>@lang('SMTP')</option>
                                 <option value="sendgrid" @if (gs('mail_config')->name == 'sendgrid') selected @endif>@lang('SendGrid API')</option>
                                 <option value="mailjet" @if (gs('mail_config')->name == 'mailjet') selected @endif>@lang('Mailjet API')</option>
+                                <option value="brevo" @if (gs('mail_config')->name == 'brevo') selected @endif>@lang('Brevo API')</option>
                             </select>
                         </div>
                         <div class="row mt-4 d-none configForm" id="smtp">
@@ -80,6 +81,16 @@
                                     <label>@lang('Api Secret Key') </label>
                                     <input type="text" class="form-control" placeholder="@lang('Mailjet Api Secret Key')" name="secret_key" value="{{ gs('mail_config')->secret_key ?? '' }}">
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4 d-none configForm" id="brevo">
+                            <div class="col-md-12">
+                                <h6 class="mb-2">@lang('Brevo API Configuration')</h6>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>@lang('API Key') </label>
+                                <input type="text" class="form-control" placeholder="xkeysib-..." name="brevo_key" value="{{ gs('mail_config')->appkey ?? '' }}">
+                                <small class="text--muted">@lang('Leave empty to use BREVO_API_KEY from your .env file. The sender email must be a verified sender in Brevo, and your server IP must be authorised in Brevo (or IP restriction disabled).')</small>
                             </div>
                         </div>
                         <button type="submit" class="btn btn--primary w-100 h-45">@lang('Submit')</button>

@@ -28,26 +28,33 @@ class QuizAttemptService {
      * Returns the user's open attempt for this quiz, or starts a new one.
      * Reusing the open attempt is what makes "Continue Learning" work.
      */
-    public function startOrResume(User $user, Quiz $quiz): QuizAttempt {
-        $existing = QuizAttempt::where('user_id', $user->id)
-            ->where('quiz_id', $quiz->id)
-            ->inProgress()
-            ->latest('id')
-            ->first();
+    public function startOrResume(User $user, Quiz $quiz, array $options = []): QuizAttempt {
+        // Multiplayer rooms force a fresh attempt (force_new) so a lingering
+        // solo attempt of the same quiz is never reused with the room's rules.
+        if (empty($options['force_new'])) {
+            $existing = QuizAttempt::where('user_id', $user->id)
+                ->where('quiz_id', $quiz->id)
+                ->inProgress()
+                ->latest('id')
+                ->first();
 
-        if ($existing) {
-            return $existing;
+            if ($existing) {
+                return $existing;
+            }
         }
 
-        return DB::transaction(function () use ($user, $quiz) {
+        return DB::transaction(function () use ($user, $quiz, $options) {
             $pool = $quiz->questions()->get();
 
             // Question limit: serve a random subset of the bank for this
             // attempt. 0, or a limit larger than the bank, means serve
             // everything. The bank itself is never modified — the selection
             // is recorded per attempt in quiz_attempt_answers, so the user
-            // sees a stable set if they reload mid-attempt.
-            $take = $quiz->effectiveQuestionCount($pool->count());
+            // sees a stable set if they reload mid-attempt. An explicit
+            // question_limit (rooms) overrides the quiz default.
+            $take = !empty($options['question_limit'])
+                ? min((int) $options['question_limit'], $pool->count())
+                : $quiz->effectiveQuestionCount($pool->count());
 
             $questions = $take < $pool->count()
                 ? $pool->shuffle()->take($take)->values()   // random, no repeats
@@ -58,6 +65,7 @@ class QuizAttemptService {
                 'quiz_id'         => $quiz->id,
                 'status'          => QuizAttempt::STATUS_IN_PROGRESS,
                 'total_questions' => $questions->count(),
+                'time_limit'      => $options['time_limit'] ?? null,   // null → quiz default
                 'started_at'      => now(),
             ]);
 

@@ -31,4 +31,10 @@ return [
         ],
     ],
 
+    // Brevo (formerly Sendinblue) transactional email API. Key lives only in
+    // .env — never hard-coded. Used by App\Notify\Email::sendBrevoMail().
+    'brevo' => [
+        'key' => env('BREVO_API_KEY'),
+    ],
+
 ];

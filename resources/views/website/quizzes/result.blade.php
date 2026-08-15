@@ -79,6 +79,11 @@
 
                 {{-- Actions --}}
                 <div class="d-flex flex-wrap gap-2 mb-4">
+                    @if (!empty($roomLeaderboardUrl))
+                        <a href="{{ $roomLeaderboardUrl }}" class="btn btn-success">
+                            <i class="bi bi-trophy"></i> View Room Leaderboard
+                        </a>
+                    @endif
                     @if ($quiz->show_correct_answers)
                         <a href="{{ route('website.quiz.review', $attempt->id) }}" class="btn w-btn-primary">
                             <i class="bi bi-list-check"></i> Review Answers

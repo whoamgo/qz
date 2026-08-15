@@ -122,6 +122,34 @@
         </div>
     </section>
 
+    {{-- 1b. Play Live banner (compact teaser → dedicated landing page) --}}
+    <section class="w-section" style="padding-top: var(--w-space-6); padding-bottom: 0;">
+        <div class="container">
+            <div class="w-live-banner">
+                <div class="w-live-banner-text">
+                    <span class="w-live-tag"><i class="bi bi-broadcast"></i> New · Multiplayer</span>
+                    <h2>Play Live with Friends</h2>
+                    <p>Create a room, share a code, and race friends through the same quiz — with a live leaderboard.</p>
+                    <div class="w-live-chips">
+                        <span>Create</span><i class="bi bi-chevron-right"></i>
+                        <span>Share Code</span><i class="bi bi-chevron-right"></i>
+                        <span>Play</span><i class="bi bi-chevron-right"></i>
+                        <span>Win</span>
+                    </div>
+                </div>
+                <div class="w-live-banner-cta">
+                    <a href="{{ route('website.rooms.create') }}" class="btn w-btn-light btn-lg px-4">
+                        <i class="bi bi-controller me-2"></i>Create a Room
+                    </a>
+                    <a href="{{ route('website.rooms.join') }}" class="btn w-live-btn-ghost btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Join a Room
+                    </a>
+                    <a href="{{ route('website.play.live') }}" class="w-live-how">See how it works <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- 2. Signed-in: continue learning + progress --}}
     @auth
         @if ($continueLearning->count() || $userStats)
@@ -378,6 +406,7 @@
             </div>
         </div>
     </section>
+
 
     {{-- 8. Leaderboard --}}
     @if ($leaders->count())

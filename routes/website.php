@@ -122,4 +122,26 @@ Route::namespace('Website')->name('website.')->group(function () {
 
     // ------------------------------------------------------------- bookmarks
     Route::middleware('auth')->post('bookmark/toggle', 'BookmarkController@toggle')->name('bookmark.toggle');
+
+    // --------------------------------------------------- multiplayer rooms
+    // Public, indexable "how it works" landing page — the marketing entry point.
+    Route::get('play-live', 'RoomController@landing')->name('play.live');
+
+    Route::middleware('auth')->prefix('rooms')->name('rooms.')->controller('RoomController')->group(function () {
+        Route::get('create', 'create')->name('create');
+        Route::get('quizzes', 'quizzesByCategory')->name('quizzes');   // AJAX: ?category_id=
+        Route::post('/', 'store')->name('store');
+
+        Route::get('join', 'join')->name('join');
+        Route::post('preview', 'preview')->name('preview');            // AJAX
+        Route::post('join', 'joinStore')->name('join.store');
+
+        Route::get('{room}/waiting', 'waiting')->name('waiting');
+        Route::get('{room}/status', 'status')->name('status');         // AJAX poll
+        Route::get('{room}/play', 'play')->name('play');
+        Route::get('{room}/results', 'results')->name('results');
+        Route::get('{room}/results/data', 'resultsData')->name('results.data'); // AJAX poll
+        Route::post('{room}/start', 'start')->name('start');
+        Route::post('{room}/leave', 'leave')->name('leave');
+    });
 });

@@ -74,6 +74,7 @@ class SitemapController extends BaseWebsiteController {
         $add(route('website.current.affairs.weekly'), 'weekly', '0.6');
         $add(route('website.current.affairs.monthly'), 'monthly', '0.6');
         $add(route('website.leaderboard'), 'daily', '0.6');
+        $add(route('website.play.live'), 'monthly', '0.6');
         $add(route('blog'), 'weekly', '0.6');
         $add(route('website.about'), 'monthly', '0.3');
         $add(route('website.privacy'), 'yearly', '0.2');

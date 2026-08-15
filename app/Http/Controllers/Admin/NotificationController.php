@@ -139,7 +139,8 @@ class NotificationController extends Controller
     public function emailSettingUpdate(Request $request)
     {
         $request->validate([
-            'email_method' => 'required|in:php,smtp,sendgrid,mailjet',
+            'email_method' => 'required|in:php,smtp,sendgrid,mailjet,brevo',
+            'brevo_key' => 'nullable|string',
             'host' => 'required_if:email_method,smtp',
             'port' => 'required_if:email_method,smtp',
             'username' => 'required_if:email_method,smtp',
@@ -169,6 +170,10 @@ class NotificationController extends Controller
         } else if ($request->email_method == 'mailjet') {
             $request->merge(['name' => 'mailjet']);
             $data = $request->only('name', 'public_key', 'secret_key');
+        } else if ($request->email_method == 'brevo') {
+            // The API key is stored as `appkey` so App\Notify\Email::sendBrevoMail()
+            // can read it. Left empty here, it falls back to BREVO_API_KEY in .env.
+            $data = ['name' => 'brevo', 'appkey' => $request->brevo_key];
         }
         $general = gs();
         $general->mail_config = $data;

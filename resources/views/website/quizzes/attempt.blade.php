@@ -120,7 +120,7 @@
 
                 <div class="w-instr-meta">
                     <div><strong>{{ count($questions) }}</strong><span>Questions</span></div>
-                    <div><strong>{{ $quiz->time_limit ? $quiz->time_limit . ' min' : '∞' }}</strong><span>Duration</span></div>
+                    <div><strong>{{ ($timeLimit ?? $quiz->time_limit) ? ($timeLimit ?? $quiz->time_limit) . ' min' : '∞' }}</strong><span>Duration</span></div>
                     <div><strong>{{ $quiz->pass_percentage }}%</strong><span>To pass</span></div>
                 </div>
 
@@ -154,7 +154,7 @@
             window.QuizAttempt.init({
                 questions:  @json($questions),
                 remaining:  @json($remaining),
-                timeLimit:  @json((int) $quiz->time_limit),
+                timeLimit:  @json((int) ($timeLimit ?? $quiz->time_limit)),
                 startedAt:  {{ $attempt->started_at ? $attempt->started_at->timestamp * 1000 : 'Date.now()' }},
                 answerUrl:  "{{ route('website.quiz.answer', $attempt->id) }}",
                 reviewUrl:  "{{ route('website.quiz.mark.review', $attempt->id) }}",

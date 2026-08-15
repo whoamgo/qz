@@ -10,7 +10,7 @@ class QuizAttempt extends Model {
     const STATUS_ABANDONED   = 'abandoned';
 
     protected $fillable = [
-        'user_id', 'quiz_id', 'status', 'total_questions', 'correct_count',
+        'user_id', 'quiz_id', 'status', 'total_questions', 'time_limit', 'correct_count',
         'wrong_count', 'skipped_count', 'score', 'total_marks', 'percentage',
         'passed', 'time_taken', 'xp_awarded', 'xp_breakdown',
         'started_at', 'submitted_at',
@@ -52,12 +52,15 @@ class QuizAttempt extends Model {
 
     /** Seconds still available, or null when the quiz is untimed. */
     public function remainingSeconds(): ?int {
-        $limit = (int) ($this->quiz->time_limit ?? 0);
+        // A per-attempt time_limit (set by multiplayer rooms) wins over the
+        // quiz's default; null falls back to the quiz.
+        $limit = (int) ($this->time_limit ?? $this->quiz->time_limit ?? 0);
         if ($limit <= 0) {
             return null;
         }
 
-        $elapsed = $this->started_at ? now()->diffInSeconds($this->started_at) : 0;
+        // started_at → now keeps elapsed positive across Carbon versions.
+        $elapsed = $this->started_at ? (int) $this->started_at->diffInSeconds(now()) : 0;
         return max(0, ($limit * 60) - $elapsed);
     }
 

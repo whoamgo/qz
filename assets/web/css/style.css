@@ -262,6 +262,44 @@ textarea:focus-visible,
 .w-step-link i { transition: transform var(--w-transition); }
 .w-step-link:hover i { transform: translateX(3px); }
 
+/* --------------------------------------------------- Play Live banner --- */
+.w-live-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--w-space-5); flex-wrap: wrap;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #9333ea 100%);
+    color: #fff; border-radius: var(--w-radius-lg); padding: var(--w-space-6);
+    position: relative; overflow: hidden;
+}
+.w-live-banner::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.18), transparent 45%),
+                radial-gradient(circle at 10% 90%, rgba(255,255,255,.10), transparent 40%);
+}
+.w-live-banner-text { position: relative; z-index: 1; max-width: 560px; }
+.w-live-banner-text h2 { color: #fff; margin: 0.5rem 0; }
+.w-live-banner-text p { color: rgba(255,255,255,.9); margin-bottom: var(--w-space-3); }
+.w-live-tag {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: var(--w-fs-xs); font-weight: 700;
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+    padding: 0.3rem 0.75rem; border-radius: var(--w-radius-pill);
+}
+.w-live-chips { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.w-live-chips span {
+    background: rgba(255,255,255,.15); border-radius: var(--w-radius-pill);
+    padding: 0.25rem 0.75rem; font-size: var(--w-fs-sm); font-weight: 600;
+}
+.w-live-chips i { opacity: 0.7; font-size: 0.75rem; }
+.w-live-banner-cta { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--w-space-2); min-width: 220px; }
+.w-live-btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,.55); color: #fff; }
+.w-live-btn-ghost:hover { background: rgba(255,255,255,.14); color: #fff; }
+.w-live-how { color: #fff; text-align: center; font-weight: 600; font-size: var(--w-fs-sm); text-decoration: none; opacity: 0.9; }
+.w-live-how:hover { opacity: 1; color: #fff; }
+@media (max-width: 767.98px) {
+    .w-live-banner { padding: var(--w-space-5); }
+    .w-live-banner-cta { width: 100%; }
+}
+
 /* ---------------------------------------- Independence Day balloons ----- */
 /* A one-off festive burst on the first home-page open. Purely decorative,
    drawn in CSS (no images), non-interactive, and removed after 5s by JS. */

@@ -147,6 +147,8 @@ class QuizController extends BaseWebsiteController {
         $quiz      = $attempt->quiz;
         $questions = $this->attempts->questionsForAttempt($attempt);
         $remaining = $attempt->remainingSeconds();
+        // Effective clock: a room may have set a per-attempt limit.
+        $timeLimit = (int) ($attempt->time_limit ?? $quiz->time_limit);
 
         // A timed attempt whose clock already expired is submitted immediately
         // rather than letting the user keep answering.
@@ -161,7 +163,7 @@ class QuizController extends BaseWebsiteController {
             'robots' => 'noindex, nofollow',
         ]);
 
-        return view('website.quizzes.attempt', compact('seo', 'attempt', 'quiz', 'questions', 'remaining'));
+        return view('website.quizzes.attempt', compact('seo', 'attempt', 'quiz', 'questions', 'remaining', 'timeLimit'));
     }
 
     /** AJAX: persists one selection. Never returns whether it was correct. */
@@ -250,7 +252,14 @@ class QuizController extends BaseWebsiteController {
 
         $seo = $this->seo(['title' => 'Result: ' . $quiz->title, 'robots' => 'noindex, nofollow']);
 
-        return view('website.quizzes.result', compact('seo', 'attempt', 'quiz', 'xp', 'nextLevel', 'recentBadges', 'related'));
+        // If this attempt was played inside a multiplayer room, offer a link
+        // back to that room's live leaderboard.
+        $roomLeaderboardUrl = \App\Models\QuizRoomParticipant::where('quiz_attempt_id', $attempt->id)
+            ->where('user_id', $user->id)
+            ->value('room_id');
+        $roomLeaderboardUrl = $roomLeaderboardUrl ? route('website.rooms.results', $roomLeaderboardUrl) : null;
+
+        return view('website.quizzes.result', compact('seo', 'attempt', 'quiz', 'xp', 'nextLevel', 'recentBadges', 'related', 'roomLeaderboardUrl'));
     }
 
     /** Answer review, gated on the quiz's own display settings. */
