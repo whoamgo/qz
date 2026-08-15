@@ -79,8 +79,13 @@ class CategoryController extends BaseWebsiteController {
         ];
 
         $seo = $this->seo([
-            'title'       => $category->name . ' Quizzes — Practice Questions and Mock Tests',
-            'description' => "Practice {$category->name} quizzes with {$questionTotal} questions. Free online practice with instant results, explanations and XP rewards.",
+            // Admin-entered SEO wins; otherwise fall back to the auto-generated copy.
+            'title'       => $category->meta_title ?: $category->name . ' Quizzes — Practice Questions and Mock Tests',
+            'description' => $category->meta_description ?: "Practice {$category->name} quizzes with {$questionTotal} questions. Free online practice with instant results, explanations and XP rewards.",
+            'keywords'    => $category->meta_keywords ?: null,
+            // A category with no published quizzes is a thin page — keep it out
+            // of the index (still followed so any links are crawled).
+            'robots'      => $latestQuizzes->total() > 0 ? 'index, follow' : 'noindex, follow',
             'canonical'   => route('website.category.show', $category->slug),
             'schema'      => [
                 $this->faqSchema($faqs),
@@ -117,8 +122,12 @@ class CategoryController extends BaseWebsiteController {
             ->get();
 
         $seo = $this->seo([
-            'title'       => $sub->name . ' Quiz — ' . $category->name . ' Practice Questions',
-            'description' => "Practice {$sub->name} questions from the {$category->name} category. {$questionTotal} questions available with explanations, instant scoring and XP rewards.",
+            // Admin-entered SEO wins; otherwise fall back to the auto-generated copy.
+            'title'       => $sub->meta_title ?: $sub->name . ' Quiz — ' . $category->name . ' Practice Questions',
+            'description' => $sub->meta_description ?: "Practice {$sub->name} questions from the {$category->name} category. {$questionTotal} questions available with explanations, instant scoring and XP rewards.",
+            'keywords'    => $sub->meta_keywords ?: null,
+            // A sub-category with no published quizzes is a thin page — noindex it.
+            'robots'      => $quizzes->total() > 0 ? 'index, follow' : 'noindex, follow',
             'canonical'   => route('website.subcategory.show', [$category->slug, $sub->slug]),
             'schema'      => [$this->breadcrumbSchema([
                 'Home'          => route('home'),

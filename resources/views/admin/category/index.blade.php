@@ -115,6 +115,24 @@
                             <label>@lang('Image')</label>
                             <x-image-uploader class="w-100" type="category" image="" :required=false />
                         </div>
+
+                        <hr>
+                        <h6 class="mb-3 text--primary"><i class="las la-search"></i> @lang('SEO Settings') <span class="text--info">(@lang('optional'))</span></h6>
+                        <div class="form-group">
+                            <label>@lang('Meta Title')</label>
+                            <input class="form-control" name="meta_title" type="text" maxlength="255" value="{{ old('meta_title') }}" placeholder="@lang('e.g. General Knowledge Quiz - Online MCQs | Quiz Mitra')">
+                            <small class="text--muted">@lang('Leave empty to auto-generate from the category name.')</small>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Meta Description')</label>
+                            <textarea class="form-control" name="meta_description" rows="2" maxlength="320" placeholder="@lang('A short, unique description shown in Google search results.')">{{ old('meta_description') }}</textarea>
+                            <small class="text--muted">@lang('Recommended 150–160 characters.')</small>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Meta Keywords')</label>
+                            <input class="form-control" name="meta_keywords" type="text" maxlength="255" value="{{ old('meta_keywords') }}" placeholder="@lang('comma, separated, keywords')">
+                        </div>
+
                         <button class="btn btn--primary w-100 h-45" type="submit">@lang('Submit')</button>
                     </div>
                 </form>
@@ -328,6 +346,9 @@
                 modal.find('[name=name]').val('');
                 modal.find('[name=parent_id]').val('').trigger('change');
                 modal.find('[name=icon]').val('');
+                modal.find('[name=meta_title]').val('');
+                modal.find('[name=meta_description]').val('');
+                modal.find('[name=meta_keywords]').val('');
                 modal.modal('show');
             });
 
@@ -338,6 +359,9 @@
                 modal.find('[name=name]').val(category.name);
                 modal.find('[name=parent_id]').val(category.parent_id || '').trigger('change');
                 modal.find('[name=icon]').val(category.icon || '');
+                modal.find('[name=meta_title]').val(category.meta_title || '');
+                modal.find('[name=meta_description]').val(category.meta_description || '');
+                modal.find('[name=meta_keywords]').val(category.meta_keywords || '');
                 modal.find('.image-upload-preview').attr('style', `background-image: url(${$(this).data('image')})`);
                 modal.modal('show')
             });

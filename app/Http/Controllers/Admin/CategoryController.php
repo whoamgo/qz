@@ -41,6 +41,9 @@ class CategoryController extends Controller {
             'parent_id' => "nullable|exists:categories,id",
             'image'     => ['nullable', new FileTypeValidate(['jpg', 'jpeg','avif','webp', 'png'])],
             'icon'      => "nullable|string|max:100",
+            'meta_title'       => "nullable|string|max:255",
+            'meta_description' => "nullable|string|max:320",
+            'meta_keywords'    => "nullable|string|max:255",
         ]);
 
         if ($id) {
@@ -60,10 +63,13 @@ class CategoryController extends Controller {
             }
         }
 
-        $category->name      = $request->name;
-        $category->slug      = slug($request->name);
-        $category->parent_id = $request->parent_id;
-        $category->icon      = $request->icon;
+        $category->name             = $request->name;
+        $category->slug             = slug($request->name);
+        $category->parent_id        = $request->parent_id;
+        $category->icon             = $request->icon;
+        $category->meta_title       = $request->meta_title;
+        $category->meta_description = $request->meta_description;
+        $category->meta_keywords    = $request->meta_keywords;
         $category->save();
 
         $notify[] = ['success', $notification];

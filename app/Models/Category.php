@@ -31,7 +31,7 @@ class Category extends Model {
         static::deleted($flush);
     }
 
-    protected $fillable = ['name', 'slug', 'status', 'image', 'icon', 'parent_id'];
+    protected $fillable = ['name', 'slug', 'status', 'image', 'icon', 'parent_id', 'meta_title', 'meta_description', 'meta_keywords'];
 
     public function exams() {
         return $this->hasMany(Exam::class);

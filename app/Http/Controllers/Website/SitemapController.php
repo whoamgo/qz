@@ -82,21 +82,36 @@ class SitemapController extends BaseWebsiteController {
         $add(route('contact'), 'yearly', '0.3');
 
         // ---- Categories & sub-categories --------------------------------
-        // One lean query, parents with their active children eager-loaded,
-        // so there is no N+1 while walking the taxonomy.
+        // Only taxonomy pages that actually hold published quizzes are listed;
+        // empty categories are thin pages and are kept out of the index. The
+        // id sets are fetched once (two lean DISTINCT queries) so filtering the
+        // whole tree stays O(1) with no N+1.
+        $quizCatIds = array_flip(
+            Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')
+                ->whereNotNull('category_id')->distinct()->pluck('category_id')->all()
+        );
+        $quizSubIds = array_flip(
+            Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')
+                ->whereNotNull('sub_category_id')->distinct()->pluck('sub_category_id')->all()
+        );
+
         $parents = Category::whereNull('parent_id')
             ->where('status', 1)
             ->with(['children' => fn($q) => $q->where('status', 1)])
             ->get(['id', 'slug', 'updated_at']);
 
         foreach ($parents as $parent) {
-            $add(route('website.category.show', $parent->slug), 'weekly', '0.7', $parent->updated_at);
+            if (isset($quizCatIds[$parent->id])) {
+                $add(route('website.category.show', $parent->slug), 'weekly', '0.7', $parent->updated_at);
+            }
 
             foreach ($parent->children as $child) {
-                $add(
-                    route('website.subcategory.show', [$parent->slug, $child->slug]),
-                    'weekly', '0.6', $child->updated_at
-                );
+                if (isset($quizSubIds[$child->id])) {
+                    $add(
+                        route('website.subcategory.show', [$parent->slug, $child->slug]),
+                        'weekly', '0.6', $child->updated_at
+                    );
+                }
             }
         }
 
