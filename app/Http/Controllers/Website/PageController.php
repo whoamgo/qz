@@ -10,19 +10,40 @@ use Illuminate\Support\Str;
 
 class PageController extends BaseWebsiteController {
     public function about() {
-        $content = getContent('about.content', true);
+        $content  = getContent('about.content', true);
+        $siteName = gs('site_name') ?: config('app.name');
+
+        // Real, cached headline numbers so the page never shows a hollow "0".
+        $stats = \Illuminate\Support\Facades\Cache::remember('website.about.stats', 3600, function () {
+            return [
+                'quizzes'    => \App\Models\Quiz::where('status', \App\Models\Quiz::STATUS_PUBLISHED)->has('questions')->count(),
+                'questions'  => \App\Models\BankQuestion::where('status', 1)->count(),
+                'categories' => \App\Models\Category::where('status', 1)->count(),
+                'members'    => \App\Models\User::count(),
+            ];
+        });
 
         return view('website.pages.about', [
             'seo' => $this->seo([
-                'title'       => 'About Us — Our Mission and How the Platform Works',
-                'description' => 'Learn about our mission to make competitive exam preparation accessible through free practice quizzes, instant feedback and gamified learning.',
+                'title'       => 'About Quiz Mitra — Free Quizzes for GK, Current Affairs & Exams',
+                'description' => 'Quiz Mitra is a free India-focused quiz platform for GK, Current Affairs, SSC, Banking, Railway and more — with instant feedback, XP, badges and live multiplayer rooms.',
                 'canonical'   => route('website.about'),
-                'schema'      => [$this->breadcrumbSchema([
-                    'Home' => route('home'), 'About' => route('website.about'),
-                ])],
+                'schema'      => [
+                    $this->breadcrumbSchema(['Home' => route('home'), 'About' => route('website.about')]),
+                    [
+                        '@context'    => 'https://schema.org',
+                        '@type'       => 'AboutPage',
+                        'name'        => 'About ' . $siteName,
+                        'url'         => route('website.about'),
+                        'description' => 'Learn about Quiz Mitra — a free platform for practising GK, Current Affairs and competitive-exam quizzes.',
+                        'publisher'   => ['@type' => 'Organization', 'name' => $siteName, 'url' => route('home')],
+                    ],
+                ],
             ]),
-            'content' => $content,
+            'content'  => $content,
             'counters' => Frontend::where('data_keys', 'counter.element')->get(),
+            'stats'    => $stats,
+            'siteName' => $siteName,
         ]);
     }
 
