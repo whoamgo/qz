@@ -4,6 +4,11 @@
     $metaTitle = $seo['title'] ?? $siteName;
     $metaDesc  = $seo['description'] ?? '';
     $canonical = $seo['canonical'] ?? url()->current();
+    // Always canonicalise to the configured host so www and non-www never
+    // produce two different canonical URLs for the same page.
+    if ($appHost = parse_url(config('app.url'), PHP_URL_HOST)) {
+        $canonical = preg_replace('#://[^/]+#', '://' . $appHost, $canonical, 1);
+    }
     $ogImage   = $seo['image'] ?? getImage(getFilePath('logoIcon') . '/logo.png');
 @endphp
 <!DOCTYPE html>

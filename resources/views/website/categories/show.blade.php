@@ -21,6 +21,24 @@
                         </p>
                     </div>
                 </div>
+
+                {{-- Intro copy: admin-entered description if present, otherwise a
+                     natural, useful summary. Adds real content for SEO. --}}
+                <div class="w-article-body w-muted">
+                    @if (!empty($category->meta_description))
+                        <p class="mb-0">{{ $category->meta_description }}</p>
+                    @else
+                        <p class="mb-0">
+                            Practise <strong>{{ $category->name }}</strong> with free online quizzes and mock tests on Quiz Mitra.
+                            @if ($subCategories->count())
+                                This section is organised into {{ $subCategories->count() }} topics, so you can focus on exactly what you need to revise.
+                            @endif
+                            Every question comes with a written explanation, so you learn the reasoning rather than memorising an answer key.
+                            Attempt any quiz to get an instant score, review your mistakes, earn XP and climb the leaderboard — a simple, free way to
+                            prepare for {{ $category->name }} sections in competitive exams and general-knowledge tests.
+                        </p>
+                    @endif
+                </div>
             </div>
         </div>
 

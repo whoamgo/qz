@@ -30,6 +30,36 @@ class SitemapController extends BaseWebsiteController {
         return response($xml, 200)->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 
+    /** GET /llms.txt — a concise map of the site for AI / LLM crawlers. */
+    public function llms() {
+        $name = gs('site_name') ?: config('app.name');
+        $lines = [
+            "# {$name}",
+            '',
+            '> ' . $name . ' is a free, India-focused quiz platform for General Knowledge, Current Affairs, '
+                . 'SSC, Banking, Railway and competitive-exam preparation — with instant scoring, written '
+                . 'explanations, XP, badges and live multiplayer quiz rooms.',
+            '',
+            '## Main pages',
+            '- [All Quizzes](' . route('website.quizzes') . '): browse and filter every published quiz',
+            '- [Categories](' . route('website.categories') . '): quizzes by subject and exam',
+            '- [Current Affairs](' . route('website.current.affairs.index') . '): daily, weekly and monthly GK updates',
+            '- [Mock Tests](' . route('website.mock.tests') . '): full-length timed practice tests',
+            '- [Play Live](' . route('website.play.live') . '): multiplayer quiz rooms with a live leaderboard',
+            '- [Leaderboard](' . route('website.leaderboard') . '): top performers by XP',
+            '- [About](' . route('website.about') . '): what ' . $name . ' is and how it works',
+            '',
+            '## Policies',
+            '- [Privacy Policy](' . route('website.privacy') . ')',
+            '- [Terms & Conditions](' . route('website.terms') . ')',
+            '',
+            'Sitemap: ' . url('sitemap.xml'),
+        ];
+
+        return response(implode("\n", $lines) . "\n", 200)
+            ->header('Content-Type', 'text/plain; charset=UTF-8');
+    }
+
     /** GET /robots.txt — crawl rules plus a pointer to the sitemap. */
     public function robots() {
         $lines = [

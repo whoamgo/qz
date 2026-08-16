@@ -11,10 +11,21 @@
         <div class="w-card mb-4">
             <div class="w-card-body">
                 <h1 class="mb-2">{{ $sub->name }}</h1>
-                <p class="w-muted mb-0">
+                <p class="w-muted mb-2">
                     Part of <a href="{{ route('website.category.show', $category->slug) }}">{{ $category->name }}</a>
                     &middot; {{ number_format($questionTotal) }} practice questions
                 </p>
+                <div class="w-article-body w-muted">
+                    @if (!empty($sub->meta_description))
+                        <p class="mb-0">{{ $sub->meta_description }}</p>
+                    @else
+                        <p class="mb-0">
+                            Sharpen your <strong>{{ $sub->name }}</strong> knowledge with focused practice from the {{ $category->name }} section.
+                            Each quiz is scored instantly and every question includes a written explanation, so you can spot weak areas and fix them fast.
+                            Attempt the quizzes below to earn XP, track your accuracy and prepare confidently for {{ $sub->name }} questions in your exam.
+                        </p>
+                    @endif
+                </div>
             </div>
         </div>
 

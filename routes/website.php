@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::namespace('Website')->group(function () {
     Route::get('sitemap.xml', 'SitemapController@index')->name('sitemap');
     Route::get('robots.txt', 'SitemapController@robots')->name('robots');
+    Route::get('llms.txt', 'SitemapController@llms')->name('llms');
     // Dynamic Open Graph card per quiz (for social share previews).
     Route::get('og/quiz/{slug}', 'OgImageController@quiz')->name('og.quiz');
 });

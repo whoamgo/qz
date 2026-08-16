@@ -5,6 +5,19 @@
 
     RewriteEngine On
 
+    # ---------------------------------------------------------------------
+    # Canonical host: force non-www + HTTPS on production (fixes the www vs
+    # non-www duplicate title/description/content the SEO audit reported).
+    # The rules are scoped to quizmitra.com, so localhost/dev is unaffected.
+    # To make www the canonical instead, swap the two blocks' targets.
+    # ---------------------------------------------------------------------
+    RewriteCond %{HTTP_HOST} ^www\.quizmitra\.com$ [NC]
+    RewriteRule ^ https://quizmitra.com%{REQUEST_URI} [L,R=301]
+
+    RewriteCond %{HTTP_HOST} quizmitra\.com [NC]
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
