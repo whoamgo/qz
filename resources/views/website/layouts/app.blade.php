@@ -22,6 +22,16 @@
     })(window,document,'script','dataLayer','GTM-MWWVGDG5');</script>
     <!-- End Google Tag Manager -->
 
+    <!-- Google tag (gtag.js) — GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXJMGKR77X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZXJMGKR77X');
+    </script>
+    <!-- End Google tag (gtag.js) -->
+
     {{-- Every page supplies its own title and description; none are shared. --}}
     <title>{{ $metaTitle }}{{ $metaTitle === $siteName ? '' : ' | ' . $siteName }}</title>
     <meta name="description" content="{{ $metaDesc }}">
