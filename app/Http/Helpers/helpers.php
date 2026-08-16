@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 function systemDetails() {
-    $system['name']          = 'viserexam';
+    $system['name']          = 'quizmitra';
     $system['version']       = '1.0';
     $system['build_version'] = '5.1.19';
     return $system;

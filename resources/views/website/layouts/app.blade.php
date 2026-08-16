@@ -56,7 +56,8 @@
     <meta name="twitter:description" content="{{ $metaDesc }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
 
-    <link rel="icon" href="{{ getImage(getFilePath('logoIcon') . '/favicon.png') }}" type="image/png">
+    <link rel="icon" href="{{ getImage(getFilePath('logoIcon') . '/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ getImage(getFilePath('logoIcon') . '/favicon.ico') }}" type="image/x-icon">
 
     {{-- Preconnect before the stylesheet request so fonts start earlier. --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
