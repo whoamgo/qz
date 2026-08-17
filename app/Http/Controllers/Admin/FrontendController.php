@@ -218,7 +218,7 @@ class FrontendController extends Controller
                 $path = 'assets/images/frontend/' . $key . '/seo';
                 $image = fileUploader($request->image, $path, getFileSize('seo'), $data?->seo_content?->image);
             } catch (\Exception $exp) {
-                $notify[] = ['error', 'Couldn\'t upload the image'];
+                 $notify[] = ['error', 'Couldn\'t upload the image ' . $exp->getMessage()];
                 return back()->withNotify($notify);
             }
         }
