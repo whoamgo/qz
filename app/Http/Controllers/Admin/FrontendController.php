@@ -130,7 +130,8 @@ class FrontendController extends Controller
                     try {
                         $inputContentValue[$imgKey] = $this->storeImage($imgJson, $type, $key, $imgData, $imgKey, $oldImage);
                     } catch (\Exception $exp) {
-                        $notify[] = ['error', 'Couldn\'t upload the image'];
+                        //$notify[] = ['error', 'Couldn\'t upload the image'];
+                        $notify[] = ['error', 'Couldn\'t upload the image ' . $exp->getMessage()];
                         return back()->withNotify($notify);
                     }
                 } else if ($content?->data_values?->$imgKey) {
