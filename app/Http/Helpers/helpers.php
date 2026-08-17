@@ -575,6 +575,15 @@ function certificateQr($slug) {
  * Used only by resources/views/website.
  */
 function wAsset($path) {
+    // In production, serve the pre-built minified sibling (foo.min.css / foo.min.js)
+    // when it exists. Local/debug keeps the readable originals for easier work.
+    // Regenerate the .min files with: npm run minify
+    if (!config('app.debug')) {
+        $min = preg_replace('/\.(css|js)$/', '.min.$1', $path);
+        if ($min !== $path && is_file(base_path($min))) {
+            $path = $min;
+        }
+    }
     $full = base_path($path);
     $version = is_file($full) ? filemtime($full) : null;
     return asset($path) . ($version ? '?v=' . $version : '');

@@ -6,14 +6,15 @@
         ['label' => __('Current Affairs'), 'route' => 'website.current.affairs.index', 'icon' => 'bi-newspaper'],
         ['label' => __('GK'),              'route' => 'website.category.show',         'icon' => 'bi-lightbulb', 'param' => 'general-knowledge'],
         ['label' => __('Play Live'),       'route' => 'website.play.live',             'icon' => 'bi-controller'],
-        ['label' => __('Leaderboard'),     'route' => 'website.leaderboard',           'icon' => 'bi-trophy'],
-        ['label' => __('Blog'),            'route' => 'blog',                  'icon' => 'bi-journal-text'],
         ['label' => __('Contact'),         'route' => 'contact',               'icon' => 'bi-envelope'],
     ];
 
     $wUser = auth()->user();
     $wXp   = $wUser?->xpProfile;
 @endphp
+
+<!-- ['label' => __('Leaderboard'),     'route' => 'website.leaderboard',           'icon' => 'bi-trophy'],
+        ['label' => __('Blog'),            'route' => 'blog',                  'icon' => 'bi-journal-text'], -->
 
 <header class="w-header">
     <div class="container">

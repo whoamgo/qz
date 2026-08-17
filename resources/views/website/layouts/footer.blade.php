@@ -68,7 +68,7 @@
                     <li><a href="{{ route('website.privacy') }}">@lang('Privacy Policy')</a></li>
                     <li><a href="{{ route('website.terms') }}">@lang('Terms & Conditions')</a></li>
                     <li><a href="{{ route('website.disclaimer') }}">@lang('Disclaimer')</a></li>
-                </ul>
+                 </ul>
             </div>
 
             {{-- Newsletter: its own column, after Company --}}

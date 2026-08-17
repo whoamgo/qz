@@ -3,11 +3,14 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "minify": "cleancss --batch --batch-suffix .min -o assets/web/css assets/web/css/*.css && for f in assets/web/js/*.js; do case \"$f\" in *.min.js) ;; *) terser \"$f\" -c -m -o \"${f%.js}.min.js\";; esac; done"
     },
     "devDependencies": {
         "axios": "^1.6.4",
+        "clean-css-cli": "^5.6.3",
         "laravel-vite-plugin": "^1.0",
+        "terser": "^5.50.0",
         "vite": "^5.0"
     }
 }

@@ -89,7 +89,15 @@ class SitemapController extends BaseWebsiteController {
         $urls = [];
 
         // ---- Static / landing pages -------------------------------------
-        $add = function (string $loc, string $freq, string $priority, $lastmod = null) use (&$urls) {
+        // Every loc is normalised to the configured scheme+host so it matches
+        // the page's canonical tag exactly (fixes "non-canonical URL in sitemap").
+        $appScheme = parse_url(config('app.url'), PHP_URL_SCHEME) ?: 'https';
+        $appHost   = parse_url(config('app.url'), PHP_URL_HOST);
+
+        $add = function (string $loc, string $freq, string $priority, $lastmod = null) use (&$urls, $appScheme, $appHost) {
+            if ($appHost) {
+                $loc = preg_replace('#^https?://[^/]+#', $appScheme . '://' . $appHost, $loc, 1);
+            }
             $urls[] = compact('loc', 'freq', 'priority', 'lastmod');
         };
 

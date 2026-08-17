@@ -35,7 +35,7 @@
     <i class="{{ $icon }}" aria-hidden="true"></i>
 @elseif ($hasImage)
     <img src="{{ getImage(getFilePath('category') . '/' . $category->image, getFileSize('category')) }}"
-         alt="" class="w-cat-img" loading="lazy">
+         alt="{{ $category->name }}" class="w-cat-img" loading="lazy">
 @elseif (!empty($category->name))
     {{-- No icon and no image: a lettered tile still reads as intentional. --}}
     <span class="w-cat-letter" style="background: {{ $tint }};" aria-hidden="true">{{ $letter }}</span>

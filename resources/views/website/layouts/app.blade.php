@@ -4,10 +4,11 @@
     $metaTitle = $seo['title'] ?? $siteName;
     $metaDesc  = $seo['description'] ?? '';
     $canonical = $seo['canonical'] ?? url()->current();
-    // Always canonicalise to the configured host so www and non-www never
-    // produce two different canonical URLs for the same page.
+    // Force the canonical to the configured scheme + host so it always matches
+    // the sitemap exactly (no www vs non-www, no http vs https mismatch).
+    $appScheme = parse_url(config('app.url'), PHP_URL_SCHEME) ?: 'https';
     if ($appHost = parse_url(config('app.url'), PHP_URL_HOST)) {
-        $canonical = preg_replace('#://[^/]+#', '://' . $appHost, $canonical, 1);
+        $canonical = preg_replace('#^https?://[^/]+#', $appScheme . '://' . $appHost, $canonical, 1);
     }
     $ogImage   = $seo['image'] ?? getImage(getFilePath('logoIcon') . '/logo.png');
 @endphp
