@@ -89,6 +89,14 @@
                     </div>
                 </div>
 
+                {{-- Public sample questions: real questions, answers and
+                     explanations, server-rendered so search engines can crawl
+                     the quiz content without login. Display-only — this never
+                     starts a scored attempt or exposes the full question bank. --}}
+                <div class="mt-4">
+                    <x-website::quiz-samples :quiz="$quiz" :questions="$sampleQuestions" />
+                </div>
+
                 {{-- FAQ --}}
                 <div class="mt-4">
                     <x-website::faq-accordion :faqs="$faqs" id="wQuizFaq" title="Frequently Asked Questions" />

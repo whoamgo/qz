@@ -52,6 +52,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->group('web',[
+            // Force the non-www canonical host (GET/HEAD only) before anything
+            // else runs, so www.quizmitra.com 301s to quizmitra.com even off
+            // Apache. Inert on localhost/staging and for POST (IPN callbacks).
+            \App\Http\Middleware\CanonicalHost::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,

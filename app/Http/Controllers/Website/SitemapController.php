@@ -75,6 +75,8 @@ class SitemapController extends BaseWebsiteController {
             'Disallow: /quiz/attempt/',
             'Disallow: /quiz/result/',
             'Disallow: /quiz/review/',
+            'Disallow: /rooms',
+            'Disallow: /ticket',
             'Disallow: /search',
             '',
             'Sitemap: ' . url('sitemap.xml'),

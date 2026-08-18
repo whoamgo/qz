@@ -7,10 +7,14 @@ use App\Models\Category;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Services\QuizAttemptService;
+use App\Services\QuizSampleService;
 use Illuminate\Http\Request;
 
 class QuizController extends BaseWebsiteController {
-    public function __construct(private QuizAttemptService $attempts) {}
+    public function __construct(
+        private QuizAttemptService $attempts,
+        private QuizSampleService $samples,
+    ) {}
 
     // --------------------------------------------------------------- listing
 
@@ -101,6 +105,11 @@ class QuizController extends BaseWebsiteController {
 
         $faqs = $this->quizFaqs($quiz);
 
+        // A small, stable set of real questions (with answers + explanations)
+        // rendered server-side so Google can crawl the quiz content without
+        // login. This is display-only — it never starts a scored attempt.
+        $sampleQuestions = $this->samples->forQuiz($quiz);
+
         $seo = $this->seo([
             'title'       => $quiz->title . ' — ' . ($quiz->category?->name ?? 'Quiz') . ' Practice Test',
             'description' => $quiz->description
@@ -109,8 +118,10 @@ class QuizController extends BaseWebsiteController {
             'type'        => 'article',
             // Branded, auto-generated OG card (quiz title + category) for social shares.
             'image'       => route('og.quiz', $quiz->slug),
-            'schema'      => [
-                $this->quizSchema($quiz),
+            'schema'      => array_values(array_filter([
+                // Quiz schema carries the same sample questions we render, so the
+                // structured data matches the visible page exactly.
+                $this->quizSchema($quiz, $sampleQuestions),
                 $this->faqSchema($faqs),
                 $this->breadcrumbSchema(array_filter([
                     'Home'    => route('home'),
@@ -118,10 +129,10 @@ class QuizController extends BaseWebsiteController {
                     $quiz->category?->name => $quiz->category ? route('website.category.show', $quiz->category->slug) : null,
                     $quiz->title => route('website.quiz.show', $quiz->slug),
                 ])),
-            ],
+            ])),
         ]);
 
-        return view('website.quizzes.show', compact('seo', 'quiz', 'related', 'openAttempt', 'lastAttempt', 'bookmarked', 'faqs'));
+        return view('website.quizzes.show', compact('seo', 'quiz', 'related', 'openAttempt', 'lastAttempt', 'bookmarked', 'faqs', 'sampleQuestions'));
     }
 
     // -------------------------------------------------------------- attempt
@@ -314,8 +325,17 @@ class QuizController extends BaseWebsiteController {
         ];
     }
 
-    private function quizSchema(Quiz $quiz): array {
-        return [
+    /**
+     * Quiz structured data (schema.org/Quiz). When sample questions are
+     * available, each is emitted as a schema.org/Question in `hasPart` with its
+     * correct answer (acceptedAnswer) and distractors (suggestedAnswer) — the
+     * SAME questions that are visibly rendered on the page, so the markup never
+     * describes content a user cannot see.
+     *
+     * @param  \Illuminate\Support\Collection|iterable|null  $sampleQuestions
+     */
+    private function quizSchema(Quiz $quiz, $sampleQuestions = null): array {
+        $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => 'Quiz',
             'name'        => $quiz->title,
@@ -325,5 +345,46 @@ class QuizController extends BaseWebsiteController {
             'numberOfQuestions' => $quiz->questions_count ?? $quiz->total_questions,
             'about'       => ['@type' => 'Thing', 'name' => $quiz->category?->name ?? 'General Knowledge'],
         ];
+
+        $questions = collect($sampleQuestions ?? [])
+            ->map(fn($q) => $this->questionSchema($q))
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($questions) {
+            $schema['hasPart'] = $questions;
+        }
+
+        return $schema;
+    }
+
+    /** One schema.org/Question, or null if it has no identifiable answer. */
+    private function questionSchema($question): ?array {
+        $options = $question->options ?? collect();
+        if ($options->isEmpty()) {
+            return null;
+        }
+
+        $correct = $options->first(fn($o) => $o->is_correct)
+            ?? $options->firstWhere('id', $question->correct_option_id);
+
+        if (!$correct) {
+            return null;
+        }
+
+        $wrong = $options
+            ->reject(fn($o) => $o->id === $correct->id)
+            ->map(fn($o) => ['@type' => 'Answer', 'text' => (string) $o->option_text])
+            ->values()
+            ->all();
+
+        return array_filter([
+            '@type'           => 'Question',
+            'eduQuestionType' => 'Multiple choice',
+            'text'            => (string) $question->question_text,
+            'acceptedAnswer'  => ['@type' => 'Answer', 'text' => (string) $correct->option_text],
+            'suggestedAnswer' => $wrong ?: null,
+        ]);
     }
 }
