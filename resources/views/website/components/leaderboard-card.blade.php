@@ -11,7 +11,7 @@
         @else {{ $rank }} @endif
     </span>
     <img class="w-avatar" src="{{ getImage(getFilePath('userProfile') . '/' . ($u->image ?? ''), getFileSize('userProfile')) }}"
-         alt="" width="36" height="36" loading="lazy">
+         alt="{{ $name }}" width="36" height="36" loading="lazy">
     <div class="flex-grow-1 min-width-0">
         <strong class="d-block text-truncate">{{ $name }} @if($isMe)<span class="w-badge w-badge-primary ms-1">You</span>@endif</strong>
         <small class="w-muted">Level {{ $row->level }}@if(!is_null($row->attempts)) &middot; {{ $row->attempts }} quizzes @endif</small>

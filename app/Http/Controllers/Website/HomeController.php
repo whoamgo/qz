@@ -96,7 +96,9 @@ class HomeController extends BaseWebsiteController {
         $faqs = $this->homeFaqs();
 
         $seo = $this->seo([
-            'title'       => (gs('site_name') ?: 'Quiz') . ' — Practice Quizzes for GK, Current Affairs & Competitive Exams',
+            // Kept to ~55 chars: the layout appends " | {site_name}", so the
+            // brand is NOT repeated here (avoids the 84-char, double-branded title).
+            'title'       => 'Free Quizzes for GK, Current Affairs & Exams',
             'description' => 'Practice free quizzes on General Knowledge, Current Affairs and competitive exams like SSC, Railway, Banking, UPSC and Defence. Earn XP, unlock badges and climb the leaderboard.',
             'canonical'   => route('home'),
             'schema'      => [$this->websiteSchema(), $this->organizationSchema(), $this->faqSchema($faqs)],

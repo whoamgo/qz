@@ -27,7 +27,7 @@
 
     <figcaption class="w-testimonial-foot">
         @if ($t->image)
-            <img src="{{ $t->image }}" alt="" class="w-testimonial-avatar" width="42" height="42" loading="lazy">
+            <img src="{{ $t->image }}" alt="{{ $t->name }}" class="w-testimonial-avatar" width="42" height="42" loading="lazy">
         @else
             <span class="w-testimonial-avatar w-testimonial-initials"
                   style="background: {{ $accent }};" aria-hidden="true">{{ $initials ?: '?' }}</span>
