@@ -43,7 +43,10 @@ Route::controller('SiteController')->group(function () {
     Route::get('cookie-policy', 'cookiePolicy')->name('cookie.policy');
     Route::get('/cookie/accept', 'cookieAccept')->name('cookie.accept');
 
-    Route::get('pricing', 'pricing')->name('pricing');
+    // Retired - Pricing page removed from the public site. Commented so /pricing
+    // 404s; the legacy nav/footer links to it are commented out too. Uncomment
+    // this line (and those links) to restore the page.
+    // Route::get('pricing', 'pricing')->name('pricing');
     // Retired - replaced by website.exams / website.blog / website.blog.show
     // Route::get('exams', 'exams')->name('exams');
     // Route::get('blog', 'blog')->name('blog');

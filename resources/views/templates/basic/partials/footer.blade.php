@@ -30,11 +30,13 @@
                                     @lang('Home')
                                 </a>
                             </li>
+                            {{-- Pricing page retired - route commented in web.php.
                             <li class="footer-menu__item">
                                 <a class="footer-menu__link" href="{{ route('pricing') }}">
                                     @lang('Pricing')
                                 </a>
                             </li>
+                            --}}
                             <li class="footer-menu__item">
                                 <a class="footer-menu__link" href="{{ route('blog') }}">
                                     @lang('Blogs')

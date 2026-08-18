@@ -38,9 +38,11 @@
                                 <a class="nav-link" aria-current="page" href="{{ route('pages', $data->slug) }}">{{ __($data->name) }}</a>
                             </li>
                         @endforeach
+                        {{-- Pricing page retired - route commented in web.php.
                         <li class="nav-item {{ menuActive('pricing') }}">
                             <a class="nav-link" href="{{ route('pricing') }}">@lang('Pricing')</a>
                         </li>
+                        --}}
                         <li class="nav-item {{ menuActive('exams') }}">
                             <a class="nav-link" href="{{ route('exams') }}">@lang('Exams')</a>
                         </li>

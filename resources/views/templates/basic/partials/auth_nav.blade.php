@@ -1,4 +1,6 @@
  <div class="header-auth">
+     {{-- Pricing page retired - route commented in web.php, so the Upgrade
+          button that linked to it is disabled to avoid a RouteNotFoundException.
      <div class="header-auth-item">
          <a href="{{ route('pricing') }}" class="btn btn--sm btn--base">
              <span class="icon">
@@ -11,6 +13,7 @@
              @lang('Upgrade')
          </a>
      </div>
+     --}}
      <div class="header-auth-item">
          <div class="header-auth-item-wrapper">
              <div class="header-auth-dropdown">

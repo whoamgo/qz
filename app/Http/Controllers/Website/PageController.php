@@ -9,6 +9,38 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class PageController extends BaseWebsiteController {
+    /**
+     * FAQ page, served through the new website layout. The questions and answers
+     * are the SAME CMS content the legacy template used (faq.content / faq.element),
+     * so nothing is duplicated or fabricated — only the presentation is upgraded.
+     */
+    public function faq() {
+        $heading = getContent('faq.content', true);
+
+        $faqs = collect(getContent('faq.element', false, null, true))
+            ->map(fn($f) => [
+                'question' => (string) ($f->data_values->question ?? ''),
+                'answer'   => (string) ($f->data_values->answer ?? ''),
+            ])
+            ->filter(fn($f) => $f['question'] !== '')
+            ->values()
+            ->all();
+
+        $seo = $this->seo([
+            'title'       => 'Frequently Asked Questions',
+            'description' => $heading?->data_values?->short_description
+                ?: 'Answers to common questions about ' . (gs('site_name') ?: 'Quiz Mitra')
+                   . ' — how quizzes work, XP and badges, pricing, accounts and exam preparation.',
+            'canonical'   => route('website.faq'),
+            'schema'      => array_values(array_filter([
+                $faqs ? $this->faqSchema($faqs) : null,
+                $this->breadcrumbSchema(['Home' => route('home'), 'FAQ' => route('website.faq')]),
+            ])),
+        ]);
+
+        return view('website.pages.faq', compact('seo', 'faqs', 'heading'));
+    }
+
     public function about() {
         $content  = getContent('about.content', true);
         $siteName = gs('site_name') ?: config('app.name');

@@ -43,6 +43,15 @@ Route::namespace('Website')->group(function () {
 Route::get('login', fn() => redirect()->route('user.login', [], 301))->name('login.redirect');
 Route::get('register', fn() => redirect()->route('user.register', [], 301))->name('register.redirect');
 
+/*
+| Pricing page retired. The named route is commented out in web.php, but a
+| legacy CMS "pricing" page still exists, so web.php's /{slug} catch-all would
+| otherwise resurrect it. Declaring the exact path here (this file loads first)
+| makes /pricing return 404 so it no longer appears anywhere on the site.
+| To restore Pricing: delete this line and uncomment the route in web.php.
+*/
+Route::get('pricing', fn() => abort(404));
+
 Route::namespace('Website')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::get('exams', 'ExamController@index')->name('exams');
@@ -97,6 +106,7 @@ Route::namespace('Website')->name('website.')->group(function () {
     // ---------------------------------------------------------- static pages
     Route::controller('PageController')->group(function () {
         Route::get('about', 'about')->name('about');
+        Route::get('faq', 'faq')->name('faq');
         Route::post('contact', 'contactSubmit')->name('contact.submit');
         Route::get('privacy-policy', 'privacy')->name('privacy');
         Route::get('terms-and-conditions', 'terms')->name('terms');
