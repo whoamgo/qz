@@ -1,43 +1,45 @@
 @extends('admin.layouts.master')
 @section('content')
-    <div class="login-main" style="background-image: url('{{ asset('assets/admin/images/login.jpg') }}')">
-        <div class="container custom-container d-flex justify-content-center">
-            <div class="login-area">
-                <div class="text-center mb-3">
-                    <h2 class="text-white mb-2">@lang('Verify Code')</h2>
-                    <p class="text-white mb-2">@lang('Please check your email and enter the verification code you got in your email.')</p>
-                </div>
-                <form action="{{ route('admin.password.verify.code') }}" method="POST" class="login-form w-100">
-                    @csrf
+    {{-- New gradient backdrop for visual consistency with the login screen.
+         The dark code-entry card and its 6-box widget are preserved exactly
+         because verification_code.css + the auto-submit JS are built for it. --}}
+    <div class="qz-login">
+        <div class="login-area">
+            <div class="text-center mb-3">
+                <h2 class="text-white mb-2">@lang('Verify Code')</h2>
+                <p class="text-white mb-2">@lang('Please check your email and enter the verification code you got in your email.')</p>
+            </div>
+            <form action="{{ route('admin.password.verify.code') }}" method="POST" class="login-form w-100">
+                @csrf
 
-                    <div class="code-box-wrapper d-flex w-100">
-                        <div class="form-group mb-3 flex-fill">
-                            <span class="text-white">@lang('Verification Code')</span>
-                            <div class="verification-code">
-                                <input type="text" name="code" class="overflow-hidden" autocomplete="off">
-                                <div class="boxes">
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                </div>
+                <div class="code-box-wrapper d-flex w-100">
+                    <div class="form-group mb-3 flex-fill">
+                        <span class="text-white">@lang('Verification Code')</span>
+                        <div class="verification-code">
+                            <input type="text" name="code" class="overflow-hidden" autocomplete="off">
+                            <div class="boxes">
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn cmn-btn w-100">@lang('Submit')</button>
-                    <div class="d-flex flex-wrap justify-content-between mt-3">
-                        <a href="{{ route('admin.password.reset') }}" class="forget-text">@lang('Try to send again')</a>
-                        <a href="{{ route('admin.login') }}" class="text-white"><i class="las la-sign-in-alt"></i>@lang('Back to Login')</a>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <button type="submit" class="btn cmn-btn w-100">@lang('Submit')</button>
+                <div class="d-flex flex-wrap justify-content-between mt-3">
+                    <a href="{{ route('admin.password.reset') }}" class="forget-text">@lang('Try to send again')</a>
+                    <a href="{{ route('admin.login') }}" class="text-white"><i class="las la-sign-in-alt"></i>@lang('Back to Login')</a>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
 
 @push('style')
+    @include('admin.auth.partials.auth-style')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/verification_code.css') }}">
 @endpush
 

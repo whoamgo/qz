@@ -5,6 +5,11 @@
         'Home' => route('home'), 'Blog' => route('blog'),
         ($values->title ?? 'Article') => route('blog.details', $blog->slug)]" />
 @endsection
+<style>
+    .w-article-body a { 
+        color: #0066da !important;
+    }
+</style>
 @section('content')
 <section class="w-section">
     <div class="container">
