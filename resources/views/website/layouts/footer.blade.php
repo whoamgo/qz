@@ -37,7 +37,7 @@
             </div>
 
             <div class="col-lg-2 col-md-6 col-6">
-                <h5>@lang('Categories')</h5>
+                <h2 class="w-footer-title">@lang('Categories')</h2>
                 <ul class="list-unstyled mb-0">
                     @foreach ($footerCats as $cat)
                         <li><a href="{{ route('website.category.show', $cat->slug) }}">{{ $cat->name }}</a></li>
@@ -48,7 +48,7 @@
 
 
             <div class="col-lg-2 col-md-6 col-6">
-                <h5>@lang('Practice')</h5>
+                <h2 class="w-footer-title">@lang('Practice')</h2>
                 <ul class="list-unstyled mb-0">
                     <li><a href="{{ route('website.quizzes') }}">@lang('All Quizzes')</a></li>
                     <li><a href="{{ route('website.current.affairs.today') }}">@lang('Today\'s Current Affairs')</a></li>
@@ -60,7 +60,7 @@
             </div>
 
             <div class="col-lg-2 col-md-6 col-6">
-                <h5>@lang('Company')</h5>
+                <h2 class="w-footer-title">@lang('Company')</h2>
                 <ul class="list-unstyled mb-0">
                     <li><a href="{{ route('website.about') }}">@lang('About Us')</a></li>
                     <li><a href="{{ route('contact') }}">@lang('Contact')</a></li>
@@ -74,7 +74,7 @@
             {{-- Newsletter: its own column, after Company --}}
             <div class="col-lg-3 col-md-6">
                 <div class="w-subscribe">
-                    <h5>@lang('Subscribe')</h5>
+                    <h2 class="w-footer-title">@lang('Subscribe')</h2>
                     <p class="w-text-sm mb-3">@lang('Join our community to receive updates')</p>
 
                     <form id="wSubscribeForm" data-action="{{ route('website.subscribe') }}" novalidate>

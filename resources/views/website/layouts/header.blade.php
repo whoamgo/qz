@@ -30,6 +30,7 @@
             <a href="{{ route('home') }}" class="w-logo notranslate d-flex align-items-center gap-2 flex-shrink-0">
                 <img src="{{ getImage(getFilePath('logoIcon') . '/logo.png') }}"
                      alt="{{ gs('site_name') }} logo" width="180" height="55"
+                     loading="eager" fetchpriority="high" decoding="async"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                 <span style="display:none;">{{ gs('site_name') ?: 'QuizHub' }}</span>
             </a>
@@ -127,7 +128,7 @@
 {{-- Mobile offcanvas navigation --}}
 <div class="offcanvas offcanvas-start w-offcanvas" tabindex="-1" id="wMobileMenu" aria-labelledby="wMobileMenuLabel">
     <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="wMobileMenuLabel">@lang('Menu')</h5>
+        <h2 class="offcanvas-title h5 mb-0" id="wMobileMenuLabel">@lang('Menu')</h2>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close menu"></button>
     </div>
     <div class="offcanvas-body">

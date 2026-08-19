@@ -499,7 +499,11 @@ textarea:focus-visible,
 /* -------------------------------------------------------------- footer --- */
 
 .w-footer { background: var(--w-bg-dark); color: #9ca3af; padding: var(--w-space-8) 0 0; }
-.w-footer h5 { color: #fff; font-size: var(--w-fs-base); margin-bottom: var(--w-space-4); }
+/* Footer column titles are <h2 class="w-footer-title"> for correct heading
+   order (they must not skip from the page's h2 sections straight to h5), but
+   keep the compact footer look. */
+.w-footer h5,
+.w-footer .w-footer-title { color: #fff; font-size: var(--w-fs-base); font-weight: 600; margin-top: 0; margin-bottom: var(--w-space-4); }
 .w-footer a { color: #9ca3af; font-size: var(--w-fs-sm); display: inline-block; padding: 0.2rem 0; }
 .w-footer a:hover { color: #fff; }
 .w-footer-bottom { border-top: 1px solid #1f2937; margin-top: var(--w-space-6); padding: var(--w-space-4) 0; font-size: var(--w-fs-sm); }
@@ -584,7 +588,8 @@ textarea:focus-visible,
 /* ------------------------------------------------------------ subscribe --- */
 
 .w-subscribe { margin-bottom: var(--w-space-5); max-width: 30rem; }
-.w-subscribe h5 { color: #fff; margin-bottom: var(--w-space-2); }
+.w-subscribe h5,
+.w-subscribe .w-footer-title { color: #fff; margin-bottom: var(--w-space-2); }
 .w-subscribe p { color: #9ca3af; }
 
 /* Pill field with the send button sitting inside it. */
@@ -688,17 +693,28 @@ textarea:focus-visible,
     box-shadow: 0 4px 12px rgba(16, 24, 40, 0.2);
 }
 
-/* Dots */
+/* Dots — the button is a 24×24 tap target (accessibility: touch targets need
+   at least 24px), while the visible dot stays small via an ::after marker. */
 .w-hero-slider-dots { margin-bottom: 0.6rem; }
 .w-hero-slider-dots [data-bs-target] {
+    position: relative;
+    width: 24px; height: 24px;
+    box-sizing: content-box;
+    border: 0;
+    background: transparent;
+    opacity: 1;
+    margin: 0 2px;
+}
+.w-hero-slider-dots [data-bs-target]::after {
+    content: "";
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
     width: 8px; height: 8px;
     border-radius: 50%;
-    border: 0;
     background: rgba(255, 255, 255, 0.55);
-    opacity: 1;
-    margin: 0 4px;
+    transition: width 0.2s ease, background 0.2s ease;
 }
-.w-hero-slider-dots .active {
+.w-hero-slider-dots .active::after {
     background: #fff;
     width: 22px;
     border-radius: var(--w-radius-pill);
