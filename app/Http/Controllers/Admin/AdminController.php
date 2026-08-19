@@ -6,8 +6,11 @@ use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\CurlRequest;
 use App\Models\AdminNotification;
+use App\Models\BankQuestion;
+use App\Models\Category;
 use App\Models\Deposit;
 use App\Models\Plan;
+use App\Models\Quiz;
 use App\Models\SupportTicket;
 use App\Models\User;
 use App\Models\UserLogin;
@@ -27,6 +30,12 @@ class AdminController extends Controller {
         $widget['email_unverified_users']  = User::emailUnverified()->count();
         $widget['mobile_unverified_users'] = User::mobileUnverified()->count();
 
+        // Quiz platform overview
+        $widget['total_quizzes']     = Quiz::count();
+        $widget['published_quizzes'] = Quiz::where('status', Quiz::STATUS_PUBLISHED)->count();
+        $widget['total_categories']  = Category::count();
+        $widget['total_questions']   = BankQuestion::count();
+
         $widget['total_plan']           = Plan::count();
         $widget['pending_tickets']      = SupportTicket::pending()->count();
         $widget['pending_notification'] = AdminNotification::where('is_read', Status::NO)->count();
@@ -45,24 +54,7 @@ class AdminController extends Controller {
             return collect($item)->count();
         })->sort()->reverse()->take(5);
 
-        $deposit['total_deposit_amount']   = Deposit::successful()->sum('amount');
-        $deposit['total_deposit_pending']  = Deposit::pending()->count();
-        $deposit['total_deposit_rejected'] = Deposit::rejected()->count();
-        $deposit['total_deposit_charge']   = Deposit::successful()->sum('charge');
-
-        $plans = Plan::withWhereHas('subscriptions', function ($query) {
-            $query->where('status', Status::PAYMENT_SUCCESS);
-        })->get();
-
-        $chartData = $plans->map(function ($plan) {
-            return [
-                'plan'             => $plan->name,
-                'total_subscribed' => $plan->subscriptions->count(),
-                'total_paid'       => $plan->subscriptions->sum('price'),
-            ];
-        });
-
-        return view('admin.dashboard', compact('pageTitle', 'widget', 'chart', 'deposit', 'chartData'));
+        return view('admin.dashboard', compact('pageTitle', 'widget', 'chart'));
     }
 
     public function depositAndWithdrawReport(Request $request) {

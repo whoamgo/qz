@@ -277,7 +277,7 @@ textarea:focus-visible,
 .w-live-banner {
     display: flex; align-items: center; justify-content: space-between;
     gap: var(--w-space-5); flex-wrap: wrap;
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #9333ea 100%);
+    background: linear-gradient(135deg, #002147 0%, #607D8B 55%, #002147 100%);
     color: #fff; border-radius: var(--w-radius-lg); padding: var(--w-space-6);
     position: relative; overflow: hidden;
 }
