@@ -302,6 +302,37 @@
         </section>
     @endif
 
+    {{-- 4b. Most Popular Quizzes — admin-curated slider ("Show in Most Popular"). --}}
+    @if ($featuredPopular->count())
+        <section class="w-section">
+            <div class="container">
+                <div class="w-section-head">
+                    <div>
+                        <h2>Most Popular Quizzes</h2>
+                        <p>Hand-picked quizzes our learners love the most.</p>
+                    </div>
+                    <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All quizzes</a>
+                </div>
+
+                <div class="w-pop-slider" data-pop-slider>
+                    <button type="button" class="w-pop-nav w-pop-prev" data-pop-prev aria-label="Previous quizzes">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="w-pop-track" data-pop-track>
+                        @foreach ($featuredPopular as $quiz)
+                            <div class="w-pop-slide"><x-website::quiz-card :quiz="$quiz" /></div>
+                        @endforeach
+                    </div>
+
+                    <button type="button" class="w-pop-nav w-pop-next" data-pop-next aria-label="More quizzes">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- 5. Popular quizzes --}}
     <section class="w-section">
         <div class="container">
@@ -552,6 +583,44 @@
     </section>
 
 @endsection
+
+{{-- Most Popular Quizzes slider: arrow controls + auto-hide when it fits. --}}
+@push('scripts')
+    <script>
+        (function () {
+            document.querySelectorAll('[data-pop-slider]').forEach(function (slider) {
+                var track = slider.querySelector('[data-pop-track]');
+                var prev  = slider.querySelector('[data-pop-prev]');
+                var next  = slider.querySelector('[data-pop-next]');
+                if (!track) { return; }
+
+                // Scroll by one "page" — as many whole cards as currently fit.
+                function stepBy() {
+                    var card = track.querySelector('.w-pop-slide');
+                    var cardW = card ? card.getBoundingClientRect().width : track.clientWidth;
+                    var styles = getComputedStyle(track);
+                    var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+                    var perView = Math.max(1, Math.floor((track.clientWidth + gap) / (cardW + gap)));
+                    return (cardW + gap) * perView;
+                }
+
+                function update() {
+                    var max = track.scrollWidth - track.clientWidth - 1;
+                    var fits = track.scrollWidth <= track.clientWidth + 1;
+                    slider.classList.toggle('w-pop-static', fits);
+                    if (prev) { prev.disabled = track.scrollLeft <= 0; }
+                    if (next) { next.disabled = track.scrollLeft >= max; }
+                }
+
+                if (prev) { prev.addEventListener('click', function () { track.scrollBy({ left: -stepBy(), behavior: 'smooth' }); }); }
+                if (next) { next.addEventListener('click', function () { track.scrollBy({ left: stepBy(), behavior: 'smooth' }); }); }
+                track.addEventListener('scroll', update, { passive: true });
+                window.addEventListener('resize', update);
+                update();
+            });
+        })();
+    </script>
+@endpush
 
 @if ($isIndependence)
     @push('scripts')

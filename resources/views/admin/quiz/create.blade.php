@@ -239,6 +239,22 @@
 
                         {{-- ============ STEP 4 — DISPLAY SETTINGS ============ --}}
                         <section class="qw-panel" data-panel="4">
+                            {{-- Home-page promotion: feature this quiz in the
+                                 Most Popular Quizzes slider on the website. --}}
+                            <div class="qw-toggle-card qw-toggle-feature mb-3">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                           name="is_popular" id="is_popular" value="1"
+                                           @checked(old('is_popular', $quiz?->is_popular ?? false))>
+                                    <label class="form-check-label fw-semibold" for="is_popular">
+                                        <i class="las la-star text-warning"></i> @lang('Show in Most Popular')
+                                    </label>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    @lang('Feature this quiz in the Most Popular Quizzes slider on the home page. Only published quizzes with questions appear there.')
+                                </small>
+                            </div>
+
                             <div class="row g-3">
                                 @foreach ([
                                     ['randomize_questions', 'Randomize Questions', 'Shuffle question order on every attempt', false],
@@ -336,6 +352,8 @@
 .qw-toggle-card:hover { border-color: #c7d2fe; }
 .qw-toggle-card .form-check-label { color: #334155; cursor: pointer; }
 .qw-toggle-card .form-check-input { cursor: pointer; }
+.qw-toggle-feature { border-color: #fcd34d; background: #fffbeb; }
+.qw-toggle-feature:hover { border-color: #f59e0b; }
 
 .qw-review { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem 1.25rem; }
 .qw-review strong { color: #0f172a; word-break: break-word; }

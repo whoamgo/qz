@@ -28,7 +28,7 @@ class Quiz extends Model {
         'question_limit', 'time_limit',
         'pass_percentage', 'marks_per_correct', 'negative_marking',
         'randomize_questions', 'randomize_options', 'show_result',
-        'show_correct_answers', 'show_explanation', 'status', 'image',
+        'show_correct_answers', 'show_explanation', 'status', 'is_popular', 'image',
         'start_at', 'end_at'
     ];
 
@@ -41,6 +41,7 @@ class Quiz extends Model {
         'show_result' => 'boolean',
         'show_correct_answers' => 'boolean',
         'show_explanation' => 'boolean',
+        'is_popular' => 'boolean',
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];
@@ -123,6 +124,11 @@ class Quiz extends Model {
 
     public function scopeArchived($query) {
         return $query->where('status', self::STATUS_ARCHIVED);
+    }
+
+    /** Quizzes an admin has flagged for the "Most Popular" home slider. */
+    public function scopePopular($query) {
+        return $query->where('is_popular', true);
     }
 
     public function difficultyBadge(): Attribute {

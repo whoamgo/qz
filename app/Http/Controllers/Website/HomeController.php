@@ -28,6 +28,18 @@ class HomeController extends BaseWebsiteController {
                 ->get();
         });
 
+        // Admin-curated "Most Popular" slider: only quizzes an admin has ticked
+        // "Show in Most Popular", ordered by how much they are actually played.
+        $featuredPopular = Cache::remember('website.home.featured', 900, function () {
+            return $this->publishedQuizzes()
+                ->popular()
+                ->withCount('attempts')
+                ->orderByDesc('attempts_count')
+                ->orderByDesc('id')
+                ->limit(12)
+                ->get();
+        });
+
         $latestQuizzes = Cache::remember('website.home.latest', 900, function () {
             return $this->publishedQuizzes()->latest('id')->limit(4)->get();
         });
@@ -114,7 +126,7 @@ class HomeController extends BaseWebsiteController {
         });
 
         return view('website.home.index', compact(
-            'seo', 'categories', 'todayQuiz', 'popularQuizzes', 'latestQuizzes',
+            'seo', 'categories', 'todayQuiz', 'popularQuizzes', 'featuredPopular', 'latestQuizzes',
             'examCategories', 'currentAffairs', 'continueLearning', 'userStats',
             'weakTopics', 'leaders', 'blogs', 'faqs', 'user',
             'testimonials', 'testimonialContent', 'heroSlides', 'heroContent', 'heroStats'

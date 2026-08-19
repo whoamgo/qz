@@ -711,6 +711,65 @@ textarea:focus-visible,
     .w-hero-slider .carousel-control-next { opacity: 1; }
 }
 
+/* ------------------------------------------------ most popular slider --- */
+/* Admin-curated "Most Popular Quizzes" carousel. A scroll-snap track (native
+   swipe on touch) with circular arrow buttons that page through whole cards.
+   Falls back to a plain scrollable row if JS is unavailable. */
+.w-pop-slider { position: relative; }
+.w-pop-track {
+    display: flex;
+    gap: var(--w-space-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 4px 2px var(--w-space-2);
+    -ms-overflow-style: none;   /* IE/Edge legacy */
+    scrollbar-width: none;      /* Firefox */
+}
+.w-pop-track::-webkit-scrollbar { display: none; }  /* WebKit */
+
+.w-pop-slide {
+    flex: 0 0 auto;
+    width: calc((100% - var(--w-space-3) * 3) / 4);  /* 4 per view on desktop */
+    scroll-snap-align: start;
+}
+
+.w-pop-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--w-border);
+    background: #fff;
+    color: var(--w-primary);
+    display: grid; place-items: center;
+    font-size: 1.1rem;
+    box-shadow: var(--w-shadow);
+    transition: background var(--w-transition), color var(--w-transition), opacity var(--w-transition);
+}
+.w-pop-nav:hover:not(:disabled) { background: var(--w-primary); color: #fff; }
+.w-pop-nav:disabled { opacity: 0.35; cursor: default; }
+.w-pop-prev { left: -18px; }
+.w-pop-next { right: -18px; }
+/* When every card already fits, the arrows are pointless — hide them. */
+.w-pop-slider.w-pop-static .w-pop-nav { display: none; }
+
+@media (max-width: 1199.98px) {
+    .w-pop-slide { width: calc((100% - var(--w-space-3) * 2) / 3); }  /* 3 per view */
+}
+@media (max-width: 991.98px) {
+    .w-pop-slide { width: calc((100% - var(--w-space-3)) / 2); }      /* 2 per view */
+    .w-pop-prev { left: 4px; }
+    .w-pop-next { right: 4px; }
+}
+@media (max-width: 575.98px) {
+    .w-pop-slide { width: 84%; }                                      /* ~1, peek next */
+    /* Touch swipe is the primary control on phones; arrows would cover the card. */
+    .w-pop-nav { display: none; }
+}
+
 /* Hero search: the suggestion panel must sit above the slider and hero art. */
 .w-hero-search { position: relative; z-index: 20; }
 .w-hero-search .w-suggest {

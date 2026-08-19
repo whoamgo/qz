@@ -10,6 +10,7 @@ use App\Models\Quiz;
 use App\Models\QuizBankQuestion;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class QuizController extends Controller {
@@ -119,6 +120,7 @@ class QuizController extends Controller {
             'show_result'         => 'nullable|boolean',
             'show_correct_answers' => 'nullable|boolean',
             'show_explanation'   => 'nullable|boolean',
+            'is_popular'          => 'nullable|boolean',
             'status'              => 'required|in:draft,published,archived',
             'image'               => [$imgValidation, 'image', new FileTypeValidate(['jpeg', 'jpg', 'png', 'webp'])],
         ]);
@@ -164,10 +166,15 @@ class QuizController extends Controller {
             $quiz->show_result = $request->boolean('show_result');
             $quiz->show_correct_answers = $request->boolean('show_correct_answers');
             $quiz->show_explanation = $request->boolean('show_explanation');
+            $quiz->is_popular = $request->boolean('is_popular');
             $quiz->status = $request->status;
 
             $quiz->save();
             DB::commit();
+
+            // The home page caches its quiz listings; drop them so an admin's
+            // Most Popular / publish change shows up without waiting for the TTL.
+            $this->clearHomeQuizCache();
 
             $notify[] = ['success', $message];
             return to_route('admin.quiz.show', $quiz->id)->withNotify($notify);
@@ -217,6 +224,7 @@ class QuizController extends Controller {
         }
 
         $quiz->save();
+        $this->clearHomeQuizCache();
 
         $notify[] = ['success', 'Quiz status changed successfully'];
         return back()->withNotify($notify);
@@ -225,6 +233,7 @@ class QuizController extends Controller {
     public function delete($id) {
         $quiz = Quiz::findOrFail($id);
         $quiz->delete();
+        $this->clearHomeQuizCache();
 
         $notify[] = ['success', 'Quiz deleted successfully'];
         return back()->withNotify($notify);
@@ -233,9 +242,21 @@ class QuizController extends Controller {
     public function restore($id) {
         $quiz = Quiz::onlyTrashed()->findOrFail($id);
         $quiz->restore();
+        $this->clearHomeQuizCache();
 
         $notify[] = ['success', 'Quiz restored successfully'];
         return back()->withNotify($notify);
+    }
+
+    /**
+     * Forget the home-page quiz caches so an admin change (Most Popular flag,
+     * publish/unpublish, delete/restore) is reflected on the next home render
+     * instead of after the cache TTL expires.
+     */
+    private function clearHomeQuizCache(): void {
+        foreach (['website.home.featured', 'website.home.popular', 'website.home.latest'] as $key) {
+            Cache::forget($key);
+        }
     }
 
     public function preview($id) {
