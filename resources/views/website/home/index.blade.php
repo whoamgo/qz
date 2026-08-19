@@ -338,10 +338,10 @@
         <div class="container">
             <div class="w-section-head">
                 <div>
-                    <h2>Popular Quizzes</h2>
+                    <h2>Mitra Quizzes</h2>
                     <p>Most attempted quizzes across all categories.</p>
                 </div>
-                <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All quizzes</a>
+                <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All Mitra Quizzes</a>
             </div>
 
             @if ($popularQuizzes->count())
