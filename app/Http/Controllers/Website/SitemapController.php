@@ -61,31 +61,40 @@ class SitemapController extends BaseWebsiteController {
     }
 
     /** GET /robots.txt — crawl rules plus a pointer to the sitemap. */
-    public function robots() {
+    public function robots()
+    {
         $lines = [
             'User-agent: *',
             'Allow: /',
+
             '',
-            '# Private, personalised or non-indexable areas',
+            '# Private and non-indexable areas',
             'Disallow: /admin',
             'Disallow: /user/login',
             'Disallow: /user/register',
             'Disallow: /password',
             'Disallow: /profile',
+
+            '',
+            '# User-specific quiz pages',
             'Disallow: /quiz/attempt/',
             'Disallow: /quiz/result/',
             'Disallow: /quiz/review/',
             'Disallow: /rooms',
             'Disallow: /ticket',
-            'Disallow: /search',
+
             '',
+            '# Internal search pages',
+            'Disallow: /search',
+
+            '',
+            '# Sitemap',
             'Sitemap: ' . url('sitemap.xml'),
         ];
 
         return response(implode("\n", $lines) . "\n", 200)
             ->header('Content-Type', 'text/plain; charset=UTF-8');
     }
-
     /** Assembles the full sitemap XML string from live data. */
     protected function buildSitemap(): string {
         $urls = [];
