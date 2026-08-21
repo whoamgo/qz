@@ -142,6 +142,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="{{ wAsset('assets/web/js/common.js') }}"></script>
+    {{-- First-party click / event tracker (data-track-click + window.QzTrack). --}}
+    <script src="{{ wAsset('assets/web/js/analytics-track.js') }}" defer></script>
     <script src="{{ wAsset('assets/web/js/app.js') }}" defer></script>
     <script src="{{ wAsset('assets/web/js/animations.js') }}" defer></script>
     <script src="{{ wAsset('assets/web/js/search.js') }}" defer></script>

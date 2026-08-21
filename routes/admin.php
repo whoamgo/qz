@@ -26,6 +26,17 @@ Route::namespace('Auth')->group(function () {
 });
 
 Route::middleware('admin')->group(function () {
+
+    // ------------------------------------------------------- Website Analytics
+    Route::controller('AnalyticsController')->prefix('analytics')->name('analytics.')->group(function () {
+        Route::get('/', 'dashboard')->name('dashboard');
+        Route::get('pages', 'pages')->name('pages');
+        Route::get('clicks', 'clicks')->name('clicks');
+        Route::get('countries', 'countries')->name('countries');
+        Route::get('events', 'events')->name('events');
+        Route::post('clear', 'clear')->name('clear');
+    });
+
     Route::controller('AdminController')->group(function () {
         Route::get('dashboard', 'dashboard')->name('dashboard');
         Route::get('chart/deposit-withdraw', 'depositAndWithdrawReport')->name('chart.deposit.withdraw');

@@ -82,8 +82,10 @@
             {{-- Account area --}}
             <div class="d-flex align-items-center gap-2 ms-auto ms-lg-0 flex-shrink-0">
                 @guest
-                    <a href="{{ route('user.login') }}" class="btn w-btn-outline btn-sm d-none d-sm-inline-flex">@lang('Login')</a>
-                    <a href="{{ route('user.register') }}" class="btn w-btn-primary btn-sm">@lang('Register')</a>
+                    <a href="{{ route('user.login') }}" class="btn w-btn-outline btn-sm d-none d-sm-inline-flex"
+                       data-track-click="true" data-track-event="login_clicked" data-track-name="Login" data-track-category="auth">@lang('Login')</a>
+                    <a href="{{ route('user.register') }}" class="btn w-btn-primary btn-sm"
+                       data-track-click="true" data-track-event="register_clicked" data-track-name="Register" data-track-category="auth">@lang('Register')</a>
                 @else
                     <span class="w-xp-pill notranslate d-none d-md-inline-flex" title="Total XP">
                         <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>

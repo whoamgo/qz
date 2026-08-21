@@ -33,6 +33,14 @@ class AppServiceProvider extends ServiceProvider {
             'website'
         );
 
+        // Request throttle for the public analytics tracking endpoint. Configurable
+        // via ANALYTICS_ENDPOINT_THROTTLE; keyed per IP so it never affects others.
+        \Illuminate\Support\Facades\RateLimiter::for('analytics-track', function ($request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(
+                (int) config('analytics.endpoint_throttle_per_minute', 90)
+            )->by($request->ip());
+        });
+
         if (!cache()->get('SystemInstalled')) {
             $envFilePath = base_path('.env');
             if (!file_exists($envFilePath)) {

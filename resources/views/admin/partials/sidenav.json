@@ -26,6 +26,42 @@
         "route_name": "admin.dashboard",
         "menu_active": "admin.dashboard"
     },
+    "analytics": {
+        "keyword": [
+            "Analytics", "Traffic", "Page Views", "Clicks", "Visitors",
+            "Statistics", "Geography", "Countries", "Insights", "Reports"
+        ],
+        "title": "Analytics",
+        "icon": "las la-chart-line",
+        "menu_active": "admin.analytics.*",
+        "submenu": [
+            {
+                "title": "Dashboard",
+                "route_name": "admin.analytics.dashboard",
+                "menu_active": "admin.analytics.dashboard"
+            },
+            {
+                "title": "Page Analytics",
+                "route_name": "admin.analytics.pages",
+                "menu_active": "admin.analytics.pages"
+            },
+            {
+                "title": "Click Analytics",
+                "route_name": "admin.analytics.clicks",
+                "menu_active": "admin.analytics.clicks"
+            },
+            {
+                "title": "Countries",
+                "route_name": "admin.analytics.countries",
+                "menu_active": "admin.analytics.countries"
+            },
+            {
+                "title": "Events (Raw)",
+                "route_name": "admin.analytics.events",
+                "menu_active": "admin.analytics.events"
+            }
+        ]
+    },
     "category": {
         "keyword": [
             "Categories",

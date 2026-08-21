@@ -44,6 +44,16 @@ Route::get('login', fn() => redirect()->route('user.login', [], 301))->name('log
 Route::get('register', fn() => redirect()->route('user.register', [], 301))->name('register.redirect');
 
 /*
+| Public analytics tracking endpoint (clicks + business events). CSRF-protected
+| by the web group and throttled by the "analytics-track" limiter so a flood can
+| never reach application logic. Dedup / rate-limit / bot handling all live in
+| App\Services\AnalyticsTrackingService.
+*/
+Route::post('track/event', 'Website\AnalyticsTrackController@store')
+    ->middleware('throttle:analytics-track')
+    ->name('analytics.track');
+
+/*
 | Pricing page retired. The named route is commented out in web.php, but a
 | legacy CMS "pricing" page still exists, so web.php's /{slug} catch-all would
 | otherwise resurrect it. Declaring the exact path here (this file loads first)

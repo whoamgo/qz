@@ -116,7 +116,10 @@
                             @else
                                 <form action="{{ route('website.quiz.start', $quiz->slug) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn w-btn-primary btn-lg w-100 mb-2">
+                                    <button type="submit" class="btn w-btn-primary btn-lg w-100 mb-2"
+                                            data-track-click="true" data-track-event="quiz_started"
+                                            data-track-name="Start Quiz" data-track-category="quiz"
+                                            data-track-id="{{ $quiz->slug }}">
                                         <i class="bi bi-play-fill"></i> Start Quiz
                                     </button>
                                 </form>

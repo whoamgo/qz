@@ -63,6 +63,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\LanguageMiddleware::class,
             \App\Http\Middleware\ActiveTemplateMiddleware::class,
+            // First-party page-view tracking. Terminable + self-skipping
+            // (admin/api/auth/ajax are ignored), so it records only public page
+            // views and does so AFTER the response is sent (no added latency).
+            \App\Http\Middleware\TrackPageView::class,
         ]);
 
         $middleware->alias([
