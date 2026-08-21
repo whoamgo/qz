@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Quiz;
 use App\Models\QuizBankQuestion;
 use App\Rules\FileTypeValidate;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -269,5 +270,65 @@ class QuizController extends Controller {
 
         $pageTitle = "Preview: " . $quiz->title;
         return view('admin.quiz.preview', compact('pageTitle', 'quiz'));
+    }
+
+    /* ---------------------------------------------------------------- SEO --- */
+
+    /** Full SEO editor for a quiz. */
+    public function seo($id) {
+        $quiz      = Quiz::with('category')->findOrFail($id);
+        $pageTitle = 'SEO — ' . $quiz->title;
+
+        $questionCount = $quiz->questions()->count();
+        $seoScore  = app(SeoService::class)->score($quiz, $questionCount);
+        $publicUrl = route('website.quiz.show', $quiz->slug);
+
+        return view('admin.quiz.seo', compact('pageTitle', 'quiz', 'seoScore', 'publicUrl', 'questionCount'));
+    }
+
+    /** Saves quiz SEO fields. Soft-validates schema JSON (warns, never blocks). */
+    public function seoUpdate(Request $request, $id) {
+        $quiz = Quiz::findOrFail($id);
+
+        $request->validate([
+            'meta_title'          => 'nullable|string|max:255',
+            'meta_description'    => 'nullable|string|max:320',
+            'meta_keywords'       => 'nullable|string|max:255',
+            'seo_h1'              => 'nullable|string|max:255',
+            'seo_intro'           => 'nullable|string|max:1000',
+            'seo_content'         => 'nullable|string',
+            'canonical_url'       => 'nullable|url|max:512',
+            'og_title'            => 'nullable|string|max:255',
+            'og_description'      => 'nullable|string|max:320',
+            'og_image'            => 'nullable|url|max:512',
+            'twitter_title'       => 'nullable|string|max:255',
+            'twitter_description' => 'nullable|string|max:320',
+            'schema_json'         => 'nullable|string',
+        ]);
+
+        $schemaWarning = null;
+        if (filled($request->schema_json)) {
+            json_decode($request->schema_json);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $schemaWarning = 'Schema JSON is invalid and will be ignored on the frontend until fixed.';
+            }
+        }
+
+        $quiz->fill($request->only([
+            'meta_title', 'meta_description', 'meta_keywords', 'seo_h1', 'seo_intro',
+            'seo_content', 'canonical_url', 'og_title', 'og_description', 'og_image',
+            'twitter_title', 'twitter_description', 'schema_json',
+        ]));
+        $quiz->robots_index   = $request->boolean('robots_index');
+        $quiz->robots_follow  = $request->boolean('robots_follow');
+        $quiz->seo_score      = app(SeoService::class)->score($quiz, $quiz->questions()->count());
+        $quiz->seo_updated_at = now();
+        $quiz->save();
+
+        $notify[] = ['success', 'SEO settings saved successfully'];
+        if ($schemaWarning) {
+            $notify[] = ['warning', $schemaWarning];
+        }
+        return back()->withNotify($notify);
     }
 }

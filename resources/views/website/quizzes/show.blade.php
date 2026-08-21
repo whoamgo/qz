@@ -34,9 +34,11 @@
                             @endif
                         </div>
 
-                        <h1 class="mb-3">{{ $quiz->title }}</h1>
+                        <h1 class="mb-3">{{ $seoContent['h1'] }}</h1>
 
-                        @if ($quiz->description)
+                        @if (!empty($seoContent['intro']))
+                            <p class="w-muted">{{ $seoContent['intro'] }}</p>
+                        @elseif ($quiz->description)
                             <p class="w-muted">{{ $quiz->description }}</p>
                         @endif
 
@@ -96,6 +98,13 @@
                 <div class="mt-4">
                     <x-website::quiz-samples :quiz="$quiz" :questions="$sampleQuestions" />
                 </div>
+
+                {{-- Admin SEO content (sanitised server-side). --}}
+                @if (!empty($seoContent['content']))
+                    <div class="w-card mt-4"><div class="w-card-body">
+                        <div class="w-article-body w-seo-content">{!! $seoContent['content'] !!}</div>
+                    </div></div>
+                @endif
 
                 {{-- FAQ --}}
                 <div class="mt-4">

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Quiz;
 use App\Rules\FileTypeValidate;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -78,6 +80,80 @@ class CategoryController extends Controller {
 
     public function status($id) {
         return Category::changeStatus($id);
+    }
+
+    /* ---------------------------------------------------------------- SEO --- */
+
+    /** Full SEO editor for a category / sub-category. */
+    public function seo($id) {
+        $category  = Category::with('parent')->findOrFail($id);
+        $pageTitle = 'SEO — ' . $category->name;
+
+        $quizCount = $this->publishedQuizCount($category);
+        $seoScore  = app(SeoService::class)->score($category, $quizCount);
+
+        // Public URL powering the Google-style preview + self-canonical hint.
+        $publicUrl = $category->parent_id
+            ? route('website.subcategory.show', [optional($category->parent)->slug, $category->slug])
+            : route('website.category.show', $category->slug);
+
+        return view('admin.category.seo', compact('pageTitle', 'category', 'seoScore', 'publicUrl', 'quizCount'));
+    }
+
+    /** Saves the SEO fields. Soft-validates schema JSON (warns, never blocks). */
+    public function seoUpdate(Request $request, $id) {
+        $category = Category::findOrFail($id);
+
+        $request->validate([
+            'meta_title'          => 'nullable|string|max:255',
+            'meta_description'    => 'nullable|string|max:320',
+            'meta_keywords'       => 'nullable|string|max:255',
+            'seo_h1'              => 'nullable|string|max:255',
+            'seo_intro'           => 'nullable|string|max:1000',
+            'seo_content'         => 'nullable|string',
+            'seo_bottom_content'  => 'nullable|string',
+            'canonical_url'       => 'nullable|url|max:512',
+            'og_title'            => 'nullable|string|max:255',
+            'og_description'      => 'nullable|string|max:320',
+            'og_image'            => 'nullable|url|max:512',
+            'twitter_title'       => 'nullable|string|max:255',
+            'twitter_description' => 'nullable|string|max:320',
+            'schema_json'         => 'nullable|string',
+        ]);
+
+        // Advisory only: invalid JSON is saved but flagged; the frontend simply
+        // ignores it (SeoService::customSchema returns null) until corrected.
+        $schemaWarning = null;
+        if (filled($request->schema_json)) {
+            json_decode($request->schema_json);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $schemaWarning = 'Schema JSON is invalid and will be ignored on the frontend until fixed.';
+            }
+        }
+
+        $category->fill($request->only([
+            'meta_title', 'meta_description', 'meta_keywords', 'seo_h1', 'seo_intro',
+            'seo_content', 'seo_bottom_content', 'canonical_url', 'og_title', 'og_description',
+            'og_image', 'twitter_title', 'twitter_description', 'schema_json',
+        ]));
+        $category->robots_index   = $request->boolean('robots_index');
+        $category->robots_follow  = $request->boolean('robots_follow');
+        $category->seo_score      = app(SeoService::class)->score($category, $this->publishedQuizCount($category));
+        $category->seo_updated_at = now();
+        $category->save();
+
+        $notify[] = ['success', 'SEO settings saved successfully'];
+        if ($schemaWarning) {
+            $notify[] = ['warning', $schemaWarning];
+        }
+        return back()->withNotify($notify);
+    }
+
+    /** Published-with-questions quiz count for a category or sub-category. */
+    private function publishedQuizCount(Category $category): int {
+        $column = $category->parent_id ? 'sub_category_id' : 'category_id';
+        return Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')
+            ->where($column, $category->id)->count();
     }
 
     public function import(Request $request) {

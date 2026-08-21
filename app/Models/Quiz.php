@@ -29,7 +29,12 @@ class Quiz extends Model {
         'pass_percentage', 'marks_per_correct', 'negative_marking',
         'randomize_questions', 'randomize_options', 'show_result',
         'show_correct_answers', 'show_explanation', 'status', 'is_popular', 'image',
-        'start_at', 'end_at'
+        'start_at', 'end_at',
+        // Admin-managed SEO (empty = generated fallback via SeoService)
+        'meta_title', 'meta_description', 'meta_keywords', 'seo_h1', 'seo_intro',
+        'seo_content', 'canonical_url', 'og_title', 'og_description', 'og_image',
+        'twitter_title', 'twitter_description', 'robots_index', 'robots_follow',
+        'schema_json', 'seo_score', 'seo_updated_at',
     ];
 
     protected $casts = [
@@ -44,6 +49,10 @@ class Quiz extends Model {
         'is_popular' => 'boolean',
         'start_at' => 'datetime',
         'end_at' => 'datetime',
+        'robots_index' => 'boolean',
+        'robots_follow' => 'boolean',
+        'seo_score' => 'integer',
+        'seo_updated_at' => 'datetime',
     ];
 
     public function category() {

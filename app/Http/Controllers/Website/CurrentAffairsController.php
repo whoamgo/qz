@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Website;
 
 use App\Models\BankQuestion;
 use App\Models\Category;
+use App\Services\SeoService;
 
 /**
  * Current Affairs is the "current-affairs" parent category and its
@@ -13,6 +14,8 @@ use App\Models\Category;
  * store in this installation.
  */
 class CurrentAffairsController extends BaseWebsiteController {
+    public function __construct(private SeoService $seoService) {}
+
     /** Sub-category slugs treated as the day/week/month digests. */
     const PERIOD_SLUGS = [
         'today'   => ['today-current-affairs-quiz', 'daily-current-affairs'],
@@ -51,27 +54,48 @@ class CurrentAffairsController extends BaseWebsiteController {
             ['question' => 'Are Current Affairs quizzes useful for competitive exams?', 'answer' => 'Yes. Current affairs carries significant weight in SSC, Banking, Railway, UPSC, Defence and State PSC examinations.'],
         ];
 
-        $seo = $this->seo([
-            'title'       => 'Current Affairs Quiz — Daily, Weekly and Monthly GK Updates',
-            'description' => 'Practice daily, weekly and monthly current affairs quizzes covering national and international news, government schemes, appointments, awards, sports and economy.',
-            'canonical'   => route('website.current.affairs.index'),
-            'schema'      => [
+        // The Current Affairs hub is the "current-affairs" category, so its
+        // admin-managed SEO (Phase 1) applies here, with curated fallbacks.
+        $meta = $this->seoService->categoryMeta($category, [
+            'canonical'     => route('website.current.affairs.index'),
+            'quizCount'     => $latest->total(),
+            'questionTotal' => (int) $questionCounts->sum(),
+            'parent'        => null,
+            'isSub'         => false,
+            'image'         => $category->image ? getImage(getFilePath('category') . '/' . $category->image, getFileSize('category')) : null,
+        ]);
+        if (blank($category->meta_title)) {
+            $meta['title'] = $meta['og_title'] = $meta['twitter_title'] = 'Current Affairs Quiz — Daily, Weekly and Monthly GK Updates';
+        }
+        if (blank($category->meta_description)) {
+            $meta['description'] = $meta['og_description'] = $meta['twitter_description'] = 'Practice daily, weekly and monthly current affairs quizzes covering national and international news, government schemes, appointments, awards, sports and economy.';
+        }
+        $seoContent = $this->seoService->categoryContent($category, ['isSub' => false]);
+        if (blank($category->seo_h1)) {
+            $seoContent['h1'] = 'Current Affairs';
+        }
+
+        $seo = $this->seo(array_merge($meta, [
+            'schema' => array_merge($meta['schema'], [
                 $this->faqSchema($faqs),
                 $this->breadcrumbSchema([
                     'Home'            => route('home'),
                     'Current Affairs' => route('website.current.affairs.index'),
                 ]),
-            ],
-        ]);
+            ]),
+        ]));
 
-        return view('website.current-affairs.index', compact('seo', 'category', 'topics', 'quizCounts', 'questionCounts', 'latest', 'faqs'));
+        return view('website.current-affairs.index', compact('seo', 'seoContent', 'category', 'topics', 'quizCounts', 'questionCounts', 'latest', 'faqs'));
     }
 
     public function today() {
+        // Dynamic dated SEO (auto-updates every day) — builds a fresh, unique
+        // title/description without editing anything (spec §39).
+        $date = now()->format('d M Y');
         return $this->period(
             'today',
-            "Today's Current Affairs Quiz — Daily GK Questions",
-            'Attempt today\'s current affairs quiz with the latest national and international news questions, updated daily with detailed explanations.',
+            "Daily Current Affairs Quiz – {$date} | Today's GK Questions",
+            "Attempt the current affairs quiz for {$date} with the latest national and international news questions, updated daily with detailed explanations.",
             route('website.current.affairs.today'),
             "Today's Current Affairs",
             'website.current-affairs.today'

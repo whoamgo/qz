@@ -62,6 +62,27 @@
             }
         ]
     },
+    "seo_manager": {
+        "keyword": [
+            "SEO", "SEO Manager", "Meta", "Search Engine", "SEO Health",
+            "Bulk SEO", "SEO Score", "Duplicate Titles", "Meta Description"
+        ],
+        "title": "SEO Manager",
+        "icon": "las la-search-plus",
+        "menu_active": "admin.seo.manager.*",
+        "submenu": [
+            {
+                "title": "SEO Dashboard",
+                "route_name": "admin.seo.manager.dashboard",
+                "menu_active": "admin.seo.manager.dashboard"
+            },
+            {
+                "title": "Bulk SEO Editor",
+                "route_name": "admin.seo.manager.bulk",
+                "menu_active": "admin.seo.manager.bulk"
+            }
+        ]
+    },
     "category": {
         "keyword": [
             "Categories",

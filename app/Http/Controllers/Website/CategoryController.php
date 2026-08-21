@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Website;
 
 use App\Models\BankQuestion;
 use App\Models\Category;
+use App\Services\SeoService;
 
 class CategoryController extends BaseWebsiteController {
+    public function __construct(private SeoService $seoService) {}
+
     public function index() {
         $categories = Category::whereNull('parent_id')
             ->where('status', 1)
@@ -78,27 +81,31 @@ class CategoryController extends BaseWebsiteController {
             ['question' => 'Do I earn XP in this category?', 'answer' => 'Yes. Completing any quiz awards XP, which counts towards your level, badges and leaderboard rank.'],
         ];
 
-        $seo = $this->seo([
-            // Admin-entered SEO wins; otherwise fall back to the auto-generated copy.
-            'title'       => $category->meta_title ?: $category->name . ' Quizzes — Practice Questions and Mock Tests',
-            'description' => $category->meta_description ?: "Practice {$category->name} quizzes with {$questionTotal} questions. Free online practice with instant results, explanations and XP rewards.",
-            'keywords'    => $category->meta_keywords ?: null,
-            // A category with no published quizzes is a thin page — keep it out
-            // of the index (still followed so any links are crawled).
-            'robots'      => $latestQuizzes->total() > 0 ? 'index, follow' : 'noindex, follow',
-            'canonical'   => route('website.category.show', $category->slug),
-            'schema'      => [
+        // Admin-managed SEO (fields on the category) with generated fallbacks;
+        // thin-page noindex protection is preserved inside SeoService::robots().
+        $meta = $this->seoService->categoryMeta($category, [
+            'canonical'     => route('website.category.show', $category->slug),
+            'quizCount'     => $latestQuizzes->total(),
+            'questionTotal' => $questionTotal,
+            'parent'        => null,
+            'isSub'         => false,
+            'image'         => $category->image ? getImage(getFilePath('category') . '/' . $category->image, getFileSize('category')) : null,
+        ]);
+        $seoContent = $this->seoService->categoryContent($category, ['isSub' => false]);
+
+        $seo = $this->seo(array_merge($meta, [
+            'schema' => array_merge($meta['schema'], [
                 $this->faqSchema($faqs),
                 $this->breadcrumbSchema([
                     'Home'          => route('home'),
                     'Categories'    => route('website.categories'),
                     $category->name => route('website.category.show', $category->slug),
                 ]),
-            ],
-        ]);
+            ]),
+        ]));
 
         return view('website.categories.show', compact(
-            'seo', 'category', 'subCategories', 'subQuizCounts',
+            'seo', 'seoContent', 'category', 'subCategories', 'subQuizCounts',
             'popularQuizzes', 'latestQuizzes', 'questionTotal', 'faqs'
         ));
     }
@@ -121,22 +128,27 @@ class CategoryController extends BaseWebsiteController {
             ->limit(12)
             ->get();
 
-        $seo = $this->seo([
-            // Admin-entered SEO wins; otherwise fall back to the auto-generated copy.
-            'title'       => $sub->meta_title ?: $sub->name . ' Quiz — ' . $category->name . ' Practice Questions',
-            'description' => $sub->meta_description ?: "Practice {$sub->name} questions from the {$category->name} category. {$questionTotal} questions available with explanations, instant scoring and XP rewards.",
-            'keywords'    => $sub->meta_keywords ?: null,
-            // A sub-category with no published quizzes is a thin page — noindex it.
-            'robots'      => $quizzes->total() > 0 ? 'index, follow' : 'noindex, follow',
-            'canonical'   => route('website.subcategory.show', [$category->slug, $sub->slug]),
-            'schema'      => [$this->breadcrumbSchema([
-                'Home'          => route('home'),
-                'Categories'    => route('website.categories'),
-                $category->name => route('website.category.show', $category->slug),
-                $sub->name      => route('website.subcategory.show', [$category->slug, $sub->slug]),
-            ])],
+        $meta = $this->seoService->categoryMeta($sub, [
+            'canonical'     => route('website.subcategory.show', [$category->slug, $sub->slug]),
+            'quizCount'     => $quizzes->total(),
+            'questionTotal' => $questionTotal,
+            'parent'        => $category,
+            'isSub'         => true,
+            'image'         => $sub->image ? getImage(getFilePath('category') . '/' . $sub->image, getFileSize('category')) : null,
         ]);
+        $seoContent = $this->seoService->categoryContent($sub, ['isSub' => true]);
 
-        return view('website.categories.subcategory', compact('seo', 'category', 'sub', 'quizzes', 'questionTotal', 'siblings'));
+        $seo = $this->seo(array_merge($meta, [
+            'schema' => array_merge($meta['schema'], [
+                $this->breadcrumbSchema([
+                    'Home'          => route('home'),
+                    'Categories'    => route('website.categories'),
+                    $category->name => route('website.category.show', $category->slug),
+                    $sub->name      => route('website.subcategory.show', [$category->slug, $sub->slug]),
+                ]),
+            ]),
+        ]));
+
+        return view('website.categories.subcategory', compact('seo', 'seoContent', 'category', 'sub', 'quizzes', 'questionTotal', 'siblings'));
     }
 }

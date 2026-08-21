@@ -66,14 +66,34 @@ class BlogController extends BaseWebsiteController {
         $body        = (string) ($values->description ?? '');
         $readingTime = max(1, (int) ceil(str_word_count(strip_tags($body)) / 200));
 
+        // Blog SEO is admin-managed via the Frontend Manager (frontends.seo_content:
+        // description, social_title, social_description, keywords, image, meta_robots).
+        // Consume all of it here with sensible fallbacks.
         $seoContent = $blog->seo_content;
+        $title    = $values->title ?? 'Article';
+        $metaDesc = $seoContent->description ?? Str::limit(strip_tags($body), 158, '');
+        $keywords = null;
+        if (!empty($seoContent->keywords)) {
+            $keywords = is_array($seoContent->keywords) ? implode(', ', $seoContent->keywords) : $seoContent->keywords;
+        }
+        $seoImage = !empty($seoContent->image)
+            ? getImage('assets/images/frontend/blog/seo/' . $seoContent->image, getFileSize('seo'))
+            : (!empty($values->image) ? frontendImage('blog', $values->image) : null);
+        $ogTitle = $seoContent->social_title ?: $title;
+        $ogDesc  = $seoContent->social_description ?: $metaDesc;
 
         $seo = $this->seo([
-            'title'       => $values->title ?? 'Article',
-            'description' => $seoContent->description ?? Str::limit(strip_tags($body), 158, ''),
-            'canonical'   => route('blog.details', $blog->slug),
-            'type'        => 'article',
-            'image'       => !empty($values->image) ? frontendImage('blog', $values->image) : null,
+            'title'               => $title,
+            'description'         => $metaDesc,
+            'keywords'            => $keywords,
+            'robots'              => $seoContent->meta_robots ?: 'index, follow',
+            'canonical'           => route('blog.details', $blog->slug),
+            'type'                => 'article',
+            'image'               => $seoImage,
+            'og_title'            => $ogTitle,
+            'og_description'      => $ogDesc,
+            'twitter_title'       => $ogTitle,
+            'twitter_description' => $ogDesc,
             'schema'      => [
                 [
                     '@context'      => 'https://schema.org',

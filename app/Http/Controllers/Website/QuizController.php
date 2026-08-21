@@ -8,12 +8,14 @@ use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Services\QuizAttemptService;
 use App\Services\QuizSampleService;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 
 class QuizController extends BaseWebsiteController {
     public function __construct(
         private QuizAttemptService $attempts,
         private QuizSampleService $samples,
+        private SeoService $seoService,
     ) {}
 
     // --------------------------------------------------------------- listing
@@ -110,15 +112,17 @@ class QuizController extends BaseWebsiteController {
         // login. This is display-only — it never starts a scored attempt.
         $sampleQuestions = $this->samples->forQuiz($quiz);
 
-        $seo = $this->seo([
-            'title'       => $quiz->title . ' — ' . ($quiz->category?->name ?? 'Quiz') . ' Practice Test',
-            'description' => $quiz->description
-                ?: "Attempt the {$quiz->title} quiz with " . $quiz->effectiveQuestionCount($quiz->questions_count) . " questions in {$quiz->time_limit} minutes. Difficulty: " . ucfirst($quiz->difficulty) . '.',
-            'canonical'   => route('website.quiz.show', $quiz->slug),
-            'type'        => 'article',
+        // Admin-managed SEO (fields on the quiz) with generated fallbacks.
+        $meta = $this->seoService->quizMeta($quiz, [
+            'canonical'     => route('website.quiz.show', $quiz->slug),
+            'questionCount' => $quiz->effectiveQuestionCount($quiz->questions_count),
             // Branded, auto-generated OG card (quiz title + category) for social shares.
-            'image'       => route('og.quiz', $quiz->slug),
-            'schema'      => array_values(array_filter([
+            'image'         => route('og.quiz', $quiz->slug),
+        ]);
+        $seoContent = $this->seoService->quizContent($quiz);
+
+        $seo = $this->seo(array_merge($meta, [
+            'schema' => array_values(array_filter(array_merge($meta['schema'], [
                 // Quiz schema carries the same sample questions we render, so the
                 // structured data matches the visible page exactly.
                 $this->quizSchema($quiz, $sampleQuestions),
@@ -129,10 +133,10 @@ class QuizController extends BaseWebsiteController {
                     $quiz->category?->name => $quiz->category ? route('website.category.show', $quiz->category->slug) : null,
                     $quiz->title => route('website.quiz.show', $quiz->slug),
                 ])),
-            ])),
-        ]);
+            ]))),
+        ]));
 
-        return view('website.quizzes.show', compact('seo', 'quiz', 'related', 'openAttempt', 'lastAttempt', 'bookmarked', 'faqs', 'sampleQuestions'));
+        return view('website.quizzes.show', compact('seo', 'seoContent', 'quiz', 'related', 'openAttempt', 'lastAttempt', 'bookmarked', 'faqs', 'sampleQuestions'));
     }
 
     // -------------------------------------------------------------- attempt

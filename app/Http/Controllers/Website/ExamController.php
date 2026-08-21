@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Website;
 
 use App\Models\BankQuestion;
 use App\Models\Category;
+use App\Services\SeoService;
 
 /**
  * "Exams" on the public site are the exam-oriented parent categories
@@ -11,6 +12,7 @@ use App\Models\Category;
  * This is separate from the legacy Exam Manager module.
  */
 class ExamController extends BaseWebsiteController {
+    public function __construct(private SeoService $seoService) {}
     public function index() {
         $exams = $this->examCategoryQuery()
             ->withCount(['children as sub_count' => fn($q) => $q->where('status', 1)])
@@ -86,22 +88,43 @@ class ExamController extends BaseWebsiteController {
             ['question' => 'Are mock tests timed?', 'answer' => 'Each quiz shows its own time limit on the quiz card and detail page. Timed quizzes submit automatically when the clock runs out.'],
         ];
 
-        $seo = $this->seo([
-            'title'       => $exam->name . ' Preparation — Quizzes, Mock Tests & Previous Year Questions',
-            'description' => "Free {$exam->name} preparation with {$questionTotal} practice questions, plus mock tests and previous year papers.",
-            'canonical'   => route('website.exam.show', $exam->slug),
-            'schema'      => [
+        // Exam pages ARE top-level categories, so admin-managed category SEO
+        // (Phase 1) applies here too. A curated exam-specific title/description
+        // is used as the fallback when the admin has left those blank.
+        $quizCount = $this->publishedQuizzes()->where('category_id', $exam->id)->count();
+        $meta = $this->seoService->categoryMeta($exam, [
+            'canonical'     => route('website.exam.show', $exam->slug),
+            'quizCount'     => $quizCount,
+            'questionTotal' => $questionTotal,
+            'parent'        => null,
+            'isSub'         => false,
+            'image'         => $exam->image ? getImage(getFilePath('category') . '/' . $exam->image, getFileSize('category')) : null,
+        ]);
+        if (blank($exam->meta_title)) {
+            $meta['title'] = $meta['og_title'] = $meta['twitter_title'] = $exam->name . ' Preparation — Quizzes, Mock Tests & Previous Year Questions';
+        }
+        if (blank($exam->meta_description)) {
+            $meta['description'] = $meta['og_description'] = $meta['twitter_description'] = "Free {$exam->name} preparation with {$questionTotal} practice questions, plus mock tests and previous year papers.";
+        }
+        $seoContent = $this->seoService->categoryContent($exam, ['isSub' => false]);
+        // Preserve the exam-specific H1 wording as the fallback (admin seo_h1 wins).
+        if (blank($exam->seo_h1)) {
+            $seoContent['h1'] = $exam->name . ' Preparation';
+        }
+
+        $seo = $this->seo(array_merge($meta, [
+            'schema' => array_merge($meta['schema'], [
                 $this->faqSchema($faqs),
                 $this->breadcrumbSchema([
                     'Home'      => route('home'),
                     'Exams'     => route('exams'),
                     $exam->name => route('website.exam.show', $exam->slug),
                 ]),
-            ],
-        ]);
+            ]),
+        ]));
 
         return view('website.exams.show', compact(
-            'seo', 'exam', 'subjects', 'popularQuizzes', 'latestQuizzes',
+            'seo', 'seoContent', 'exam', 'subjects', 'popularQuizzes', 'latestQuizzes',
             'mockTests', 'pyqs', 'currentAffairs', 'questionTotal', 'faqs'
         ));
     }

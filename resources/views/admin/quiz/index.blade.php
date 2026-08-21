@@ -155,6 +155,9 @@
                                                     <a class="dropdown-item" href="{{ route('admin.quiz.create', $quiz->id) }}">
                                                         <i class="la la-pencil"></i> @lang('Edit')
                                                     </a>
+                                                    <a class="dropdown-item" href="{{ route('admin.quiz.seo', $quiz->id) }}">
+                                                        <i class="la la-search"></i> @lang('SEO')
+                                                    </a>
                                                     @if($quiz->status == \App\Models\Quiz::STATUS_PUBLISHED)
                                                         <button class="dropdown-item confirmationBtn" data-action="{{ route('admin.quiz.status', $quiz->id) }}" data-question="@lang('Are you sure to unpublish this quiz?')">
                                                             <i class="la la-eye-slash"></i> @lang('Unpublish')

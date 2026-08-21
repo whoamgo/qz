@@ -7,8 +7,8 @@
     <div class="container">
         <div class="w-section-head">
             <div>
-                <h1>Current Affairs</h1>
-                <p>Daily, weekly and monthly news quizzes for competitive exams.</p>
+                <h1>{{ $seoContent['h1'] ?? 'Current Affairs' }}</h1>
+                <p>{{ $seoContent['intro'] ?? 'Daily, weekly and monthly news quizzes for competitive exams.' }}</p>
             </div>
         </div>
 
@@ -36,6 +36,18 @@
         @include('website.partials.quiz-grid', ['quizzes' => $latest, 'emptyIcon' => 'bi-newspaper'])
 
         <div class="mt-5"><x-website::faq-accordion :faqs="$faqs" id="wCaFaq" /></div>
+
+        {{-- Admin SEO content (sanitised server-side). --}}
+        @if (!empty($seoContent['content']))
+            <div class="w-card mt-4"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['content'] !!}</div>
+            </div></div>
+        @endif
+        @if (!empty($seoContent['bottom']))
+            <div class="w-card mt-4"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['bottom'] !!}</div>
+            </div></div>
+        @endif
     </div>
 </section>
 @endsection

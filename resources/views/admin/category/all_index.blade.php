@@ -75,6 +75,9 @@
                                                         <i class="las la-sitemap"></i>
                                                     </a>
                                                 @endif
+                                                <a href="{{ route('admin.category.seo', $category->id) }}" class="btn btn-sm btn-outline--warning" title="@lang('Manage SEO')">
+                                                    <i class="las la-search"></i> @lang('SEO')
+                                                </a>
                                                 <button class="btn btn-sm btn-outline--primary editButton" data-category="{{ $category }}" data-image="{{ getImage(getFilepath('category') . '/' . $category->image) }}">
                                                     <i class="la la-pencil"></i> @lang('Edit')
                                                 </button>

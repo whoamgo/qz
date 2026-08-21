@@ -54,14 +54,23 @@ abstract class BaseWebsiteController extends Controller {
     protected function seo(array $data): array {
         $siteName = gs('site_name') ?: config('app.name');
 
+        $title = $data['title'] ?? $siteName;
+        $description = \Illuminate\Support\Str::limit(strip_tags($data['description'] ?? ''), 158, '');
+
         return [
-            'title'       => $data['title'] ?? $siteName,
-            'description' => \Illuminate\Support\Str::limit(strip_tags($data['description'] ?? ''), 158, ''),
+            'title'       => $title,
+            'description' => $description,
             'keywords'    => $data['keywords'] ?? null,
             'canonical'   => $data['canonical'] ?? url()->current(),
             'image'       => $data['image'] ?? null,
             'robots'      => $data['robots'] ?? 'index, follow',
             'type'        => $data['type'] ?? 'website',
+            // Optional per-page social overrides. Default to the page title/description
+            // so existing pages are unaffected; SEO-managed pages can override them.
+            'og_title'            => $data['og_title'] ?? $title,
+            'og_description'      => \Illuminate\Support\Str::limit(strip_tags($data['og_description'] ?? $description), 200, ''),
+            'twitter_title'       => $data['twitter_title'] ?? ($data['og_title'] ?? $title),
+            'twitter_description' => \Illuminate\Support\Str::limit(strip_tags($data['twitter_description'] ?? ($data['og_description'] ?? $description)), 200, ''),
             'schema'      => $data['schema'] ?? [],
             'breadcrumbs' => $data['breadcrumbs'] ?? [],
         ];

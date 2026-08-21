@@ -38,8 +38,16 @@
     </script>
     <!-- End Google tag (gtag.js) -->
 
-    {{-- Every page supplies its own title and description; none are shared. --}}
-    <title>{{ $metaTitle }}{{ $metaTitle === $siteName ? '' : ' | ' . $siteName }}</title>
+    {{-- Every page supplies its own title and description; none are shared.
+         The brand suffix is appended only when the title does not already
+         contain it (spaces ignored), so admin titles that include "Quiz Mitra"
+         are never double-branded. --}}
+    @php
+        $brandKey = \Illuminate\Support\Str::of($siteName)->lower()->replace(' ', '')->toString();
+        $titleKey = \Illuminate\Support\Str::of($metaTitle)->lower()->replace(' ', '')->toString();
+        $appendBrand = $metaTitle !== $siteName && $brandKey !== '' && !str_contains($titleKey, $brandKey);
+    @endphp
+    <title>{{ $metaTitle }}{{ $appendBrand ? ' | ' . $siteName : '' }}</title>
     <meta name="description" content="{{ $metaDesc }}">
     @if (!empty($seo['keywords']))
         <meta name="keywords" content="{{ $seo['keywords'] }}">
@@ -49,8 +57,8 @@
 
     <meta property="og:site_name" content="{{ $siteName }}">
     <meta property="og:type" content="{{ $seo['type'] ?? 'website' }}">
-    <meta property="og:title" content="{{ $metaTitle }}">
-    <meta property="og:description" content="{{ $metaDesc }}">
+    <meta property="og:title" content="{{ $seo['og_title'] ?? $metaTitle }}">
+    <meta property="og:description" content="{{ $seo['og_description'] ?? $metaDesc }}">
     <meta property="og:url" content="{{ $canonical }}">
     <meta property="og:image" content="{{ $ogImage }}">
 
@@ -58,8 +66,8 @@
     @if (config('seo.twitter_site'))
         <meta name="twitter:site" content="{{ config('seo.twitter_site') }}">
     @endif
-    <meta name="twitter:title" content="{{ $metaTitle }}">
-    <meta name="twitter:description" content="{{ $metaDesc }}">
+    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $metaTitle }}">
+    <meta name="twitter:description" content="{{ $seo['twitter_description'] ?? $metaDesc }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
 
     <link rel="icon" href="{{ getImage(getFilePath('logoIcon') . '/favicon.ico') }}" type="image/x-icon">

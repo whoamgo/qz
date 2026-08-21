@@ -16,7 +16,7 @@
                     @if ($isIndependence)
                         <span class="w-independence-badge">🇮🇳 Happy Independence Day</span>
                     @endif
-                    <h1>Test Your Knowledge. Learn. Practice. Compete.</h1>
+                    <h1>Free Online Quizzes for GK & Competitive Exams</h1>
                     <p class="mb-4">
                         Practice GK, Current Affairs and Competitive Exam quizzes — earn XP, unlock
                         badges, and now <strong>play live with friends</strong> in real-time quiz rooms.

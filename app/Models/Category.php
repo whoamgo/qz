@@ -31,7 +31,22 @@ class Category extends Model {
         static::deleted($flush);
     }
 
-    protected $fillable = ['name', 'slug', 'status', 'image', 'icon', 'parent_id', 'meta_title', 'meta_description', 'meta_keywords'];
+    protected $fillable = [
+        'name', 'slug', 'status', 'image', 'icon', 'parent_id',
+        // Core meta (pre-existing)
+        'meta_title', 'meta_description', 'meta_keywords',
+        // Extended, admin-managed SEO content set
+        'seo_h1', 'seo_intro', 'seo_content', 'seo_bottom_content', 'canonical_url',
+        'og_title', 'og_description', 'og_image', 'twitter_title', 'twitter_description',
+        'robots_index', 'robots_follow', 'schema_json', 'seo_score', 'seo_updated_at',
+    ];
+
+    protected $casts = [
+        'robots_index'   => 'boolean',
+        'robots_follow'  => 'boolean',
+        'seo_score'      => 'integer',
+        'seo_updated_at' => 'datetime',
+    ];
 
     public function exams() {
         return $this->hasMany(Exam::class);

@@ -10,13 +10,15 @@
     <div class="container">
         <div class="w-card mb-4">
             <div class="w-card-body">
-                <h1 class="mb-2">{{ $sub->name }}</h1>
+                <h1 class="mb-2">{{ $seoContent['h1'] }}</h1>
                 <p class="w-muted mb-2">
                     Part of <a href="{{ route('website.category.show', $category->slug) }}">{{ $category->name }}</a>
                     &middot; {{ number_format($questionTotal) }} practice questions
                 </p>
                 <div class="w-article-body w-muted">
-                    @if (!empty($sub->meta_description))
+                    @if (!empty($seoContent['intro']))
+                        <p class="mb-0">{{ $seoContent['intro'] }}</p>
+                    @elseif (!empty($sub->meta_description))
                         <p class="mb-0">{{ $sub->meta_description }}</p>
                     @else
                         <p class="mb-0">
@@ -34,6 +36,18 @@
             'emptyTitle' => 'No quizzes for this topic yet',
             'emptyMessage' => 'There are ' . number_format($questionTotal) . ' questions in the bank for this topic, but no quiz has been published from them yet.',
         ])
+
+        {{-- Admin SEO content (sanitised server-side). --}}
+        @if (!empty($seoContent['content']))
+            <div class="w-card mt-5"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['content'] !!}</div>
+            </div></div>
+        @endif
+        @if (!empty($seoContent['bottom']))
+            <div class="w-card mt-4"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['bottom'] !!}</div>
+            </div></div>
+        @endif
     </div>
 </section>
 @endsection

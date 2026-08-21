@@ -14,7 +14,7 @@
                         @include('website.partials.category-icon', ['category' => $category])
                     </span>
                     <div>
-                        <h1 class="mb-1">{{ $category->name }} Quizzes</h1>
+                        <h1 class="mb-1">{{ $seoContent['h1'] }}</h1>
                         <p class="w-muted mb-0">
                             @if ($subCategories->count()){{ $subCategories->count() }} topics &middot; @endif
                             {{ number_format($questionTotal) }} practice questions
@@ -22,10 +22,12 @@
                     </div>
                 </div>
 
-                {{-- Intro copy: admin-entered description if present, otherwise a
-                     natural, useful summary. Adds real content for SEO. --}}
+                {{-- Intro copy: admin SEO intro wins, then meta description,
+                     otherwise a natural generated summary. --}}
                 <div class="w-article-body w-muted">
-                    @if (!empty($category->meta_description))
+                    @if (!empty($seoContent['intro']))
+                        <p class="mb-0">{{ $seoContent['intro'] }}</p>
+                    @elseif (!empty($category->meta_description))
                         <p class="mb-0">{{ $category->meta_description }}</p>
                     @else
                         <p class="mb-0">
@@ -69,9 +71,23 @@
         <div class="w-section-head"><div><h2>All {{ $category->name }} Quizzes</h2></div></div>
         @include('website.partials.quiz-grid', ['quizzes' => $latestQuizzes])
 
+        {{-- Main admin SEO content (already sanitised server-side). --}}
+        @if (!empty($seoContent['content']))
+            <div class="w-card mt-5"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['content'] !!}</div>
+            </div></div>
+        @endif
+
         <div class="mt-5">
             <x-website::faq-accordion :faqs="$faqs" id="wCatFaq" />
         </div>
+
+        {{-- Bottom admin SEO content (sanitised). --}}
+        @if (!empty($seoContent['bottom']))
+            <div class="w-card mt-4"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['bottom'] !!}</div>
+            </div></div>
+        @endif
     </div>
 </section>
 @endsection

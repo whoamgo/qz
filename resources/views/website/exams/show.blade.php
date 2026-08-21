@@ -9,7 +9,10 @@
     <div class="container">
         <div class="w-card mb-4">
             <div class="w-card-body">
-                <h1 class="mb-2">{{ $exam->name }} Preparation</h1>
+                <h1 class="mb-2">{{ $seoContent['h1'] ?? ($exam->name . ' Preparation') }}</h1>
+                @if (!empty($seoContent['intro']))
+                    <p class="w-muted mb-2">{{ $seoContent['intro'] }}</p>
+                @endif
                 <p class="w-muted mb-3">
                     {{ number_format($questionTotal) }} practice questions
                 </p>
@@ -64,6 +67,18 @@
         @endif
 
         <x-website::faq-accordion :faqs="$faqs" id="wExamFaq" />
+
+        {{-- Admin SEO content (sanitised server-side). --}}
+        @if (!empty($seoContent['content']))
+            <div class="w-card mt-4"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['content'] !!}</div>
+            </div></div>
+        @endif
+        @if (!empty($seoContent['bottom']))
+            <div class="w-card mt-4"><div class="w-card-body">
+                <div class="w-article-body w-seo-content">{!! $seoContent['bottom'] !!}</div>
+            </div></div>
+        @endif
     </div>
 </section>
 @endsection

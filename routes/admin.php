@@ -91,6 +91,8 @@ Route::middleware('admin')->group(function () {
         Route::get('index', 'index')->name('index');
         Route::get('all', 'allCategories')->name('all');
         Route::get('sub/{parentId}', 'subCategories')->name('sub');
+        Route::get('seo/{id}', 'seo')->name('seo');
+        Route::post('seo/{id}', 'seoUpdate')->name('seo.update');
         Route::post('store/{id?}', 'store')->name('store');
         Route::post('status/{id}', 'status')->name('status');
         Route::post('import', 'import')->name('import');
@@ -127,6 +129,8 @@ Route::middleware('admin')->group(function () {
         Route::post('delete/{id}', 'delete')->name('delete');
         Route::post('restore/{id}', 'restore')->name('restore');
         Route::get('preview/{id}', 'preview')->name('preview');
+        Route::get('seo/{id}', 'seo')->name('seo');
+        Route::post('seo/{id}', 'seoUpdate')->name('seo.update');
     });
 
     Route::controller('QuestionBankController')->name('question-bank.')->prefix('question-bank')->group(function () {
@@ -425,6 +429,13 @@ Route::middleware('admin')->group(function () {
 
     // SEO
     Route::get('seo', 'FrontendController@seoEdit')->name('seo');
+
+    // SEO Manager (advisory dashboard + bulk editor + generate-missing)
+    Route::controller('SeoController')->prefix('seo-manager')->name('seo.manager.')->group(function () {
+        Route::get('/', 'dashboard')->name('dashboard');
+        Route::get('bulk', 'bulk')->name('bulk');
+        Route::post('generate', 'generate')->name('generate');
+    });
 
     // Frontend
     Route::name('frontend.')->prefix('frontend')->group(function () {
