@@ -80,6 +80,8 @@
                     </div>
                 </div>
 
+                @include('admin.seo._keyword_fields', ['model' => $quiz])
+
                 <div class="card mb-3">
                     <div class="card-header"><h6 class="mb-0">SEO Content</h6></div>
                     <div class="card-body">

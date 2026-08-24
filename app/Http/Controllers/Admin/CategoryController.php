@@ -119,6 +119,10 @@ class CategoryController extends Controller {
             'twitter_title'       => 'nullable|string|max:255',
             'twitter_description' => 'nullable|string|max:320',
             'schema_json'         => 'nullable|string',
+            'primary_keyword'     => 'nullable|string|max:191',
+            'secondary_keywords'  => 'nullable|string|max:2000',
+            'search_intent'       => 'nullable|string|max:40',
+            'seo_priority'        => 'nullable|in:P0,P1,P2,P3',
         ]);
 
         // Advisory only: invalid JSON is saved but flagged; the frontend simply
@@ -135,6 +139,7 @@ class CategoryController extends Controller {
             'meta_title', 'meta_description', 'meta_keywords', 'seo_h1', 'seo_intro',
             'seo_content', 'seo_bottom_content', 'canonical_url', 'og_title', 'og_description',
             'og_image', 'twitter_title', 'twitter_description', 'schema_json',
+            'primary_keyword', 'secondary_keywords', 'search_intent', 'seo_priority',
         ]));
         $category->robots_index   = $request->boolean('robots_index');
         $category->robots_follow  = $request->boolean('robots_follow');

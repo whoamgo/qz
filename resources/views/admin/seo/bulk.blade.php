@@ -44,6 +44,9 @@
                         <th>@lang('Name')</th>
                         <th>@lang('SEO Title')</th>
                         <th>@lang('Meta Description')</th>
+                        <th>@lang('Primary Keyword')</th>
+                        <th>@lang('Intent')</th>
+                        <th>@lang('Priority')</th>
                         <th>@lang('Score')</th>
                         <th>@lang('Action')</th>
                     </tr>
@@ -51,9 +54,11 @@
                 <tbody>
                     @forelse ($rows as $row)
                         @php
+                            $pk = $intent = $priority = null;
                             if ($type === 'quiz') {
                                 $editUrl = route('admin.quiz.seo', $row->id);
                                 $name = $row->title; $mt = $row->meta_title; $md = $row->meta_description; $score = $row->seo_score;
+                                $pk = $row->primary_keyword; $intent = $row->search_intent; $priority = $row->seo_priority;
                             } elseif ($type === 'blog') {
                                 $editUrl = route('admin.frontend.sections.element.seo', ['blog', $row->id]);
                                 $name = $row->data_values->title ?? $row->slug; $mt = null; $md = $row->seo_content->description ?? null; $score = null;
@@ -61,6 +66,7 @@
                                 $editUrl = route('admin.category.seo', $row->id);
                                 $name = ($type === 'subcategory' && $row->parent) ? $row->parent->name . ' → ' . $row->name : $row->name;
                                 $mt = $row->meta_title; $md = $row->meta_description; $score = $row->seo_score;
+                                $pk = $row->primary_keyword; $intent = $row->search_intent; $priority = $row->seo_priority;
                             }
                         @endphp
                         <tr>
@@ -77,6 +83,9 @@
                             <td class="text-truncate" style="max-width:300px;">
                                 @if (filled($md)) {{ $md }} @else <span class="badge badge--warning">@lang('auto')</span> @endif
                             </td>
+                            <td>@if (filled($pk)){{ $pk }}@else<span class="text-muted">—</span>@endif</td>
+                            <td>@if (filled($intent))<span class="badge badge--primary">{{ $intent }}</span>@else<span class="text-muted">—</span>@endif</td>
+                            <td>@if (filled($priority))<span class="badge badge--dark">{{ $priority }}</span>@else<span class="text-muted">—</span>@endif</td>
                             <td>
                                 @if (!is_null($score))
                                     <span class="badge badge--{{ $score >= 80 ? 'success' : ($score >= 50 ? 'warning' : 'danger') }}">{{ $score }}</span>
@@ -85,7 +94,7 @@
                             <td><a href="{{ $editUrl }}" class="btn btn-sm btn-outline--primary"><i class="las la-pencil"></i> @lang('Edit SEO')</a></td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center text-muted py-4">@lang('No records found.')</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted py-4">@lang('No records found.')</td></tr>
                     @endforelse
                 </tbody>
             </table></div>

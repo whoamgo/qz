@@ -131,6 +131,9 @@ Route::middleware('admin')->group(function () {
         Route::get('preview/{id}', 'preview')->name('preview');
         Route::get('seo/{id}', 'seo')->name('seo');
         Route::post('seo/{id}', 'seoUpdate')->name('seo.update');
+        // One-click Daily Current Affairs publisher.
+        Route::get('daily-current-affairs', 'dailyForm')->name('daily');
+        Route::post('daily-current-affairs', 'dailyStore')->name('daily.store');
     });
 
     Route::controller('QuestionBankController')->name('question-bank.')->prefix('question-bank')->group(function () {
@@ -433,6 +436,7 @@ Route::middleware('admin')->group(function () {
     // SEO Manager (advisory dashboard + bulk editor + generate-missing)
     Route::controller('SeoController')->prefix('seo-manager')->name('seo.manager.')->group(function () {
         Route::get('/', 'dashboard')->name('dashboard');
+        Route::get('opportunities', 'opportunities')->name('opportunities');
         Route::get('bulk', 'bulk')->name('bulk');
         Route::post('generate', 'generate')->name('generate');
     });

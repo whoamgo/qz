@@ -35,6 +35,8 @@ class Quiz extends Model {
         'seo_content', 'canonical_url', 'og_title', 'og_description', 'og_image',
         'twitter_title', 'twitter_description', 'robots_index', 'robots_follow',
         'schema_json', 'seo_score', 'seo_updated_at',
+        // Phase 2 — keyword / intent / priority
+        'primary_keyword', 'secondary_keywords', 'search_intent', 'seo_priority',
     ];
 
     protected $casts = [

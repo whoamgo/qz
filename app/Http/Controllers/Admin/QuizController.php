@@ -304,6 +304,10 @@ class QuizController extends Controller {
             'twitter_title'       => 'nullable|string|max:255',
             'twitter_description' => 'nullable|string|max:320',
             'schema_json'         => 'nullable|string',
+            'primary_keyword'     => 'nullable|string|max:191',
+            'secondary_keywords'  => 'nullable|string|max:2000',
+            'search_intent'       => 'nullable|string|max:40',
+            'seo_priority'        => 'nullable|in:P0,P1,P2,P3',
         ]);
 
         $schemaWarning = null;
@@ -318,6 +322,7 @@ class QuizController extends Controller {
             'meta_title', 'meta_description', 'meta_keywords', 'seo_h1', 'seo_intro',
             'seo_content', 'canonical_url', 'og_title', 'og_description', 'og_image',
             'twitter_title', 'twitter_description', 'schema_json',
+            'primary_keyword', 'secondary_keywords', 'search_intent', 'seo_priority',
         ]));
         $quiz->robots_index   = $request->boolean('robots_index');
         $quiz->robots_follow  = $request->boolean('robots_follow');
@@ -330,5 +335,74 @@ class QuizController extends Controller {
             $notify[] = ['warning', $schemaWarning];
         }
         return back()->withNotify($notify);
+    }
+
+    /* ------------------------------------------- Daily Current Affairs one-click */
+
+    public function dailyForm(\App\Services\DailyCurrentAffairsService $svc) {
+        $pageTitle = 'Daily Current Affairs — Quick Publish';
+        $today     = now()->format('Y-m-d');
+        $existing  = $svc->existingForDate(now());
+        return view('admin.quiz.daily', compact('pageTitle', 'today', 'existing'));
+    }
+
+    /** Handles both "Preview" (parse only) and "Publish" (parse + create). */
+    public function dailyStore(Request $request, \App\Services\DailyCurrentAffairsService $svc) {
+        $request->validate([
+            'date'            => 'required|date',
+            'difficulty'      => 'required|in:easy,medium,hard',
+            'time_limit'      => 'required|integer|min:0|max:600',
+            'pass_percentage' => 'required|integer|min:0|max:100',
+            'questions'       => 'required|string',
+            'action'          => 'required|in:preview,publish',
+        ]);
+
+        $pageTitle = 'Daily Current Affairs — Quick Publish';
+        $date      = \Carbon\Carbon::parse($request->date);
+        $today     = $request->date;
+        $parsed    = $svc->parse($request->questions);
+        $existing  = $svc->existingForDate($date);
+
+        // Preview mode: show the parsed result, never touch the database.
+        if ($request->action === 'preview') {
+            return view('admin.quiz.daily', [
+                'pageTitle' => $pageTitle, 'today' => $today, 'existing' => $existing, 'preview' => $parsed,
+            ])->withInput();
+        }
+
+        // Publish mode — refuse on parse errors or an existing quiz for the date.
+        if ($parsed['errors']) {
+            $notify[] = ['error', 'Fix the parsing issues below before publishing.'];
+            return view('admin.quiz.daily', [
+                'pageTitle' => $pageTitle, 'today' => $today, 'existing' => $existing, 'preview' => $parsed,
+            ])->withInput()->withNotify($notify);
+        }
+        if (empty($parsed['questions'])) {
+            $notify[] = ['error', 'No questions were parsed. Check the format and try Preview.'];
+            return back()->withInput()->withNotify($notify);
+        }
+        if ($existing) {
+            $notify[] = ['error', "A daily quiz for {$date->format('d F Y')} already exists. Edit it instead."];
+            return back()->withInput()->withNotify($notify);
+        }
+
+        try {
+            $quiz = $svc->create($date, $parsed['questions'], [
+                'difficulty'      => $request->difficulty,
+                'time_limit'      => (int) $request->time_limit,
+                'pass_percentage' => (int) $request->pass_percentage,
+                'publish'         => $request->boolean('publish', true),
+            ]);
+        } catch (\Throwable $e) {
+            $notify[] = ['error', 'Could not create the quiz: ' . $e->getMessage()];
+            return back()->withInput()->withNotify($notify);
+        }
+
+        $this->clearHomeQuizCache();
+
+        $count = count($parsed['questions']);
+        $state = ($request->boolean('publish', true)) ? 'published' : 'saved as draft';
+        $notify[] = ['success', "Daily Current Affairs quiz for {$date->format('d F Y')} {$state} with {$count} questions."];
+        return to_route('admin.quiz.show', $quiz->id)->withNotify($notify);
     }
 }

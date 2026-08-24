@@ -77,6 +77,11 @@
                 "menu_active": "admin.seo.manager.dashboard"
             },
             {
+                "title": "SEO Opportunities",
+                "route_name": "admin.seo.manager.opportunities",
+                "menu_active": "admin.seo.manager.opportunities"
+            },
+            {
                 "title": "Bulk SEO Editor",
                 "route_name": "admin.seo.manager.bulk",
                 "menu_active": "admin.seo.manager.bulk"
@@ -163,6 +168,14 @@
                 "title": "Add New Quiz",
                 "route_name": "admin.quiz.create",
                 "menu_active": "admin.quiz.create"
+            },
+            {
+                "keyword": [
+                    "Daily Current Affairs", "Quick Publish", "Daily Quiz", "Today Current Affairs"
+                ],
+                "title": "Daily Current Affairs",
+                "route_name": "admin.quiz.daily",
+                "menu_active": "admin.quiz.daily"
             },
             {
                 "keyword": [

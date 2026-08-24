@@ -101,6 +101,121 @@ class SeoController extends Controller {
         return $merged->filter(fn($c) => $c > 1);
     }
 
+    /* ====================================================== opportunities */
+
+    /**
+     * SEO Opportunity Dashboard (§26-28): actionable, data-driven lists derived
+     * entirely from the existing taxonomy + quiz inventory. No page is created;
+     * this only surfaces where real content exists but SEO work is missing.
+     */
+    public function opportunities() {
+        $pageTitle = 'SEO Opportunities';
+
+        // Published-with-questions quiz counts + question counts, grouped once.
+        $quizByCat = Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')->whereNotNull('category_id')
+            ->groupBy('category_id')->selectRaw('category_id, COUNT(*) c')->pluck('c', 'category_id');
+        $quizBySub = Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')->whereNotNull('sub_category_id')
+            ->groupBy('sub_category_id')->selectRaw('sub_category_id, COUNT(*) c')->pluck('c', 'sub_category_id');
+        $qByCat = BankQuestion::where('status', 1)->whereNotNull('category_id')->groupBy('category_id')->selectRaw('category_id, COUNT(*) c')->pluck('c', 'category_id');
+        $qBySub = BankQuestion::where('status', 1)->whereNotNull('sub_category_id')->groupBy('sub_category_id')->selectRaw('sub_category_id, COUNT(*) c')->pluck('c', 'sub_category_id');
+
+        $cats = Category::get([
+            'id', 'parent_id', 'name', 'slug', 'status', 'seo_content',
+            'meta_title', 'primary_keyword', 'robots_index',
+        ]);
+        $slugById   = $cats->pluck('slug', 'id');
+        $statusById = $cats->pluck('status', 'id');
+
+        $missingContent = collect();
+        $missingKeyword = collect();
+        $thin           = collect();
+        $orphans        = collect();
+
+        foreach ($cats as $c) {
+            $isSub     = (bool) $c->parent_id;
+            $quizzes   = (int) ($isSub ? ($quizBySub[$c->id] ?? 0) : ($quizByCat[$c->id] ?? 0));
+            $questions = (int) ($isSub ? ($qBySub[$c->id] ?? 0) : ($qByCat[$c->id] ?? 0));
+
+            $url = $isSub && isset($slugById[$c->parent_id])
+                ? route('website.subcategory.show', [$slugById[$c->parent_id], $c->slug])
+                : route('website.category.show', $c->slug);
+
+            $row = (object) [
+                'id' => $c->id, 'name' => $c->name, 'is_sub' => $isSub, 'url' => $url,
+                'quizzes' => $quizzes, 'questions' => $questions, 'edit' => route('admin.category.seo', $c->id),
+            ];
+
+            $hasQuizzes = $quizzes > 0;
+            $hasContent = filled($c->seo_content);
+
+            // Missing content: real inventory but no rich SEO content — biggest win.
+            if ($hasQuizzes && !$hasContent) {
+                $missingContent->push($row);
+            }
+            // Missing keyword mapping: real inventory but no primary keyword set.
+            if ($hasQuizzes && blank($c->primary_keyword)) {
+                $missingKeyword->push($row);
+            }
+            // Thin: active in nav but no quizzes and no content (currently noindexed).
+            if ($c->status == 1 && !$hasQuizzes && !$hasContent) {
+                $thin->push($row);
+            }
+            // Orphan: active sub-category with quizzes but its parent is inactive,
+            // so it is unreachable from the normal category navigation.
+            if ($isSub && $c->status == 1 && $hasQuizzes && ($statusById[$c->parent_id] ?? 0) != 1) {
+                $orphans->push($row);
+            }
+        }
+
+        $byQuiz = fn($col) => $col->sortByDesc('quizzes')->values();
+        $missingContent = $byQuiz($missingContent);
+        $missingKeyword = $byQuiz($missingKeyword);
+
+        // Keyword cannibalisation: same primary_keyword on more than one entity.
+        $kwCats = Category::whereNotNull('primary_keyword')->where('primary_keyword', '!=', '')
+            ->groupBy('primary_keyword')->havingRaw('COUNT(*) > 1')->selectRaw('primary_keyword k, COUNT(*) c')->pluck('c', 'k');
+        $kwQuiz = Quiz::whereNotNull('primary_keyword')->where('primary_keyword', '!=', '')
+            ->groupBy('primary_keyword')->havingRaw('COUNT(*) > 1')->selectRaw('primary_keyword k, COUNT(*) c')->pluck('c', 'k');
+        $kwCannibal = collect();
+        foreach ([$kwCats, $kwQuiz] as $set) {
+            foreach ($set as $k => $n) { $kwCannibal[$k] = ($kwCannibal[$k] ?? 0) + $n; }
+        }
+        $kwCannibal = $kwCannibal->filter(fn($n) => $n > 1);
+
+        // Exam/category dual-URL pairs (§6): every top-level active category is
+        // reachable at BOTH /category/{slug} and /exams/{slug}. Recommend one
+        // canonical (admin can set canonical_url to consolidate).
+        $dualUrls = Category::whereNull('parent_id')->where('status', 1)->orderBy('name')
+            ->get(['id', 'name', 'slug', 'canonical_url'])
+            ->map(fn($c) => (object) [
+                'name' => $c->name,
+                'category_url' => route('website.category.show', $c->slug),
+                'exam_url'     => route('website.exam.show', $c->slug),
+                'has_canonical' => filled($c->canonical_url),
+                'edit' => route('admin.category.seo', $c->id),
+            ]);
+
+        $summary = [
+            'missing_content' => $missingContent->count(),
+            'missing_keyword' => $missingKeyword->count(),
+            'thin'            => $thin->count(),
+            'orphans'         => $orphans->count(),
+            'dup_keywords'    => $kwCannibal->count(),
+            'dual_urls'       => $dualUrls->count(),
+        ];
+
+        return view('admin.seo.opportunities', [
+            'pageTitle'      => $pageTitle,
+            'summary'        => $summary,
+            'missingContent' => $missingContent->take(50),
+            'missingKeyword' => $missingKeyword->take(50),
+            'thin'           => $thin->take(50),
+            'orphans'        => $orphans,
+            'kwCannibal'     => $kwCannibal,
+            'dualUrls'       => $dualUrls,
+        ]);
+    }
+
     /* ============================================================= bulk view */
 
     public function bulk(Request $request) {
