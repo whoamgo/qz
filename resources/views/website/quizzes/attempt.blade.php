@@ -11,7 +11,7 @@
         <div class="d-flex align-items-center gap-3 flex-wrap">
             <div class="flex-grow-1" style="min-width: 180px;">
                 <div class="d-flex justify-content-between w-text-sm mb-1">
-                    <strong class="text-truncate">{{ $quiz->title }}</strong>
+                    <strong class="text-truncate">{{ $quiz->tr('title') }}</strong>
                     <span id="wProgressLabel" class="w-muted flex-shrink-0 ms-2">0 / {{ count($questions) }} answered</span>
                 </div>
                 <div class="w-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
@@ -116,7 +116,7 @@
                 </h2>
             </div>
             <div class="modal-body">
-                <p class="w-muted mb-3 text-truncate"><strong>{{ $quiz->title }}</strong></p>
+                <p class="w-muted mb-3 text-truncate"><strong>{{ $quiz->tr('title') }}</strong></p>
 
                 <div class="w-instr-meta">
                     <div><strong>{{ count($questions) }}</strong><span>Questions</span></div>

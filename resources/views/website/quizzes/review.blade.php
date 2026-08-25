@@ -6,8 +6,8 @@
 
 @section('breadcrumb')
     <x-website::breadcrumbs :trail="[
-        'Home' => route('home'),
-        $quiz->title => route('website.quiz.show', $quiz->slug),
+        'Home' => locale_route('home'),
+        $quiz->tr('title') => locale_route('website.quiz.show', $quiz->slug),
         'Answer Review' => route('website.quiz.review', $attempt->id),
     ]" />
 @endsection
@@ -18,11 +18,11 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
                 <h1 class="h3 mb-1">Answer Review</h1>
-                <p class="w-muted mb-0">{{ $quiz->title }}</p>
+                <p class="w-muted mb-0">{{ $quiz->tr('title') }}</p>
             </div>
             <div class="d-flex gap-2">
                 <a href="{{ route('website.quiz.result', $attempt->id) }}" class="btn w-btn-outline btn-sm">Back to result</a>
-                <a href="{{ route('website.quiz.show', $quiz->slug) }}" class="btn w-btn-primary btn-sm">Retake quiz</a>
+                <a href="{{ locale_route('website.quiz.show', $quiz->slug) }}" class="btn w-btn-primary btn-sm">Retake quiz</a>
             </div>
         </div>
 
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="w-review-body">
-                    <p class="fw-semibold mb-3">{{ $q->question_text }}</p>
+                    <p class="fw-semibold mb-3">{{ $q->tr('question_text') }}</p>
 
                     @foreach ($q->options as $option)
                         @php
@@ -71,7 +71,7 @@
                         @endphp
                         <div class="w-review-option {{ $cls }}">
                             <span class="w-option-key">{{ chr(65 + $loop->index) }}</span>
-                            <span class="flex-grow-1">{{ $option->option_text }}</span>
+                            <span class="flex-grow-1">{{ $option->tr('option_text') }}</span>
                             @if ($isCorrect)
                                 <span class="w-badge w-badge-free flex-shrink-0"><i class="bi bi-check"></i> Correct answer</span>
                             @elseif ($isChosen)
@@ -80,9 +80,9 @@
                         </div>
                     @endforeach
 
-                    @if ($quiz->show_explanation && $q->explanation)
+                    @if ($quiz->show_explanation && $q->tr('explanation'))
                         <div class="w-explanation mt-3">
-                            <strong><i class="bi bi-lightbulb"></i> Explanation:</strong> {{ $q->explanation }}
+                            <strong><i class="bi bi-lightbulb"></i> Explanation:</strong> {{ $q->tr('explanation') }}
                         </div>
                     @endif
 

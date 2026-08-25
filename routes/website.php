@@ -174,3 +174,70 @@ Route::namespace('Website')->name('website.')->group(function () {
         Route::get('{room}/replay', 'startRedirect');
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Hindi (/hi) mirror of the indexable public content routes
+|--------------------------------------------------------------------------
+| Additive only. These reuse the SAME controllers — Hindi vs English is decided
+| by the locale, which LanguageMiddleware sets to "hi" for any /hi URL. The
+| route NAMES are the English names with an "hi." prefix (home -> hi.home,
+| website.quiz.show -> hi.website.quiz.show), so locale_route()/locale_switch_url()
+| can map an English page to its Hindi twin and back by adding/stripping "hi.".
+|
+| Only GET content pages are mirrored. The auth-gated, non-indexed journey
+| (quiz start/attempt/result/review, rooms, profile, bookmarks) has NO /hi twin;
+| it stays on the English URLs and simply inherits the visitor's chosen language
+| from the session (see config/locale.php session_paths). POST endpoints
+| (subscribe, contact submit) likewise keep their single English route.
+*/
+Route::prefix(config('locale.prefix', 'hi'))->name('hi.')->namespace('Website')->group(function () {
+
+    // Mirror of the five original-named top-level pages.
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::get('exams', 'ExamController@index')->name('exams');
+    Route::get('blog', 'BlogController@index')->name('blog');
+    Route::get('blog/{slug}', 'BlogController@show')->name('blog.details');
+    Route::get('contact', 'PageController@contact')->name('contact');
+
+    // Mirror of the website.* content pages (names become hi.website.*).
+    Route::name('website.')->group(function () {
+
+        Route::controller('QuizController')->group(function () {
+            Route::get('quizzes', 'index')->name('quizzes');
+            Route::get('quiz/{slug}', 'show')->name('quiz.show');
+        });
+
+        Route::controller('CategoryController')->group(function () {
+            Route::get('categories', 'index')->name('categories');
+            Route::get('category/{slug}', 'show')->name('category.show');
+            Route::get('category/{parent}/{child}', 'subCategory')->name('subcategory.show');
+        });
+
+        Route::controller('ExamController')->group(function () {
+            Route::get('exams/{slug}', 'show')->name('exam.show');
+            Route::get('mock-tests', 'mockTests')->name('mock.tests');
+            Route::get('pyq', 'pyq')->name('pyq');
+        });
+
+        Route::controller('CurrentAffairsController')->prefix('current-affairs')->name('current.affairs.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('today', 'today')->name('today');
+            Route::get('weekly', 'weekly')->name('weekly');
+            Route::get('monthly', 'monthly')->name('monthly');
+        });
+
+        Route::get('leaderboard', 'LeaderboardController@index')->name('leaderboard');
+
+        Route::controller('PageController')->group(function () {
+            Route::get('about', 'about')->name('about');
+            Route::get('faq', 'faq')->name('faq');
+            Route::get('privacy-policy', 'privacy')->name('privacy');
+            Route::get('terms-and-conditions', 'terms')->name('terms');
+            Route::get('disclaimer', 'disclaimer')->name('disclaimer');
+        });
+
+        Route::get('search', 'SearchController@index')->name('search');
+        Route::get('play-live', 'RoomController@landing')->name('play.live');
+    });
+});

@@ -615,3 +615,117 @@ function frontendThumb($sectionName, $image, $size = null) {
 
     return $size ? route('placeholder.image', $size) : asset('assets/images/default.png');
 }
+
+/*
+|--------------------------------------------------------------------------
+| Locale-aware URL helpers (English root <-> /hi mirror)
+|--------------------------------------------------------------------------
+| The /hi routes are the English route names with an "hi." prefix (see
+| routes/website.php). These two helpers let views build links that keep the
+| visitor in their current language and let the header switch between the two.
+*/
+
+if (!function_exists('locale_route')) {
+    /**
+     * Like route(), but resolves to the current locale's URL. On a /hi page it
+     * returns the "hi." twin of $name when one exists; otherwise (and on the
+     * English root) it falls back to the plain English route. Never throws for a
+     * route that simply has no Hindi twin.
+     *
+     * @param  array|string  $parameters
+     */
+    function locale_route(string $name, $parameters = [], ?string $locale = null): string
+    {
+        $default = config('locale.default', 'en');
+        $locale ??= app()->getLocale();
+
+        if ($locale !== $default) {
+            $twin = \Illuminate\Support\Str::startsWith($name, 'hi.') ? $name : $locale . '.' . $name;
+            if (\Illuminate\Support\Facades\Route::has($twin)) {
+                return route($twin, $parameters);
+            }
+        }
+
+        // English root, or no twin: use the base English name (strip any "hi.").
+        $base = \Illuminate\Support\Str::startsWith($name, 'hi.') ? substr($name, 3) : $name;
+        return \Illuminate\Support\Facades\Route::has($base) ? route($base, $parameters) : route($name, $parameters);
+    }
+}
+
+if (!function_exists('locale_switch_url')) {
+    /**
+     * URL of the CURRENT page in $target locale, for the header language switch.
+     * Maps the current route to its twin by adding/stripping the "hi." prefix and
+     * reusing the current route parameters. Falls back to the locale home when the
+     * current page has no twin (e.g. the quiz-play journey, which has no /hi URL).
+     */
+    function locale_switch_url(string $target): string
+    {
+        $default = config('locale.default', 'en');
+        $prefix  = config('locale.prefix', 'hi');
+
+        $current = \Illuminate\Support\Facades\Route::currentRouteName();
+        $params  = ($route = request()->route()) ? $route->parameters() : [];
+
+        // Base (English) name for the current page.
+        $base = ($current && \Illuminate\Support\Str::startsWith($current, $prefix . '.'))
+            ? substr($current, strlen($prefix) + 1)
+            : $current;
+
+        if ($target === $default) {
+            return ($base && \Illuminate\Support\Facades\Route::has($base)) ? route($base, $params) : url('/');
+        }
+
+        $twin = $prefix . '.' . $base;
+        return ($base && \Illuminate\Support\Facades\Route::has($twin)) ? route($twin, $params) : url('/' . $prefix);
+    }
+}
+
+if (!function_exists('hreflang_alternates')) {
+    /**
+     * hreflang alternates for the CURRENT page: [hreflang => absolute URL], or an
+     * empty array for a single-language page (no /hi twin — e.g. quiz-play, auth,
+     * admin). Emitted in <head> so search engines pair the English and Hindi
+     * versions and serve each user the right one. URLs are normalised to the
+     * configured host so they match the page's canonical exactly.
+     */
+    function hreflang_alternates(): array
+    {
+        $default = config('locale.default', 'en');
+        $prefix  = config('locale.prefix', 'hi');
+
+        $current = \Illuminate\Support\Facades\Route::currentRouteName();
+        if (!$current) {
+            return [];
+        }
+
+        $base = \Illuminate\Support\Str::startsWith($current, $prefix . '.')
+            ? substr($current, strlen($prefix) + 1)
+            : $current;
+        $twin = $prefix . '.' . $base;
+
+        // Only translatable pages (both the English route and its /hi twin exist).
+        if (!\Illuminate\Support\Facades\Route::has($base) || !\Illuminate\Support\Facades\Route::has($twin)) {
+            return [];
+        }
+
+        $params = ($r = request()->route()) ? $r->parameters() : [];
+
+        $norm = function (string $url): string {
+            $scheme = parse_url(config('app.url'), PHP_URL_SCHEME) ?: 'https';
+            if ($host = parse_url(config('app.url'), PHP_URL_HOST)) {
+                return preg_replace('#^https?://[^/]+#', $scheme . '://' . $host, $url, 1);
+            }
+            return $url;
+        };
+
+        $en = $norm(route($base, $params));
+        $hi = $norm(route($twin, $params));
+
+        return [
+            $default    => $en,   // en
+            $prefix     => $hi,   // hi
+            'x-default' => $en,   // default to English
+        ];
+    }
+}

@@ -24,18 +24,18 @@
 
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         @if ($todayQuiz)
-                            <a href="{{ route('website.quiz.show', $todayQuiz->slug) }}" class="btn w-btn-light btn-lg px-4">
+                            <a href="{{ locale_route('website.quiz.show', $todayQuiz->slug) }}" class="btn w-btn-light btn-lg px-4">
                                 <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i>Start Today's Quiz
                             </a>
                         @else
-                            <a href="{{ route('website.quizzes') }}" class="btn w-btn-light btn-lg px-4">
+                            <a href="{{ locale_route('website.quizzes') }}" class="btn w-btn-light btn-lg px-4">
                                 <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i>Browse Quizzes
                             </a>
                         @endif
-                        <a href="{{ route('website.play.live') }}" class="btn btn-outline-light btn-lg px-4">
+                        <a href="{{ locale_route('website.play.live') }}" class="btn btn-outline-light btn-lg px-4">
                             <i class="bi bi-controller me-2" aria-hidden="true"></i>Play Live <span class="w-hero-new">New</span>
                         </a>
-                        <a href="{{ route('exams') }}" class="btn btn-outline-light btn-lg px-4">Explore Exams</a>
+                        <a href="{{ locale_route('exams') }}" class="btn btn-outline-light btn-lg px-4">Explore Exams</a>
                     </div>
 
                     {{-- Trust badges (real, cached numbers) --}}
@@ -47,13 +47,13 @@
 
                     {{-- Hero search with live suggestions --}}
                     <div class="w-search-wrap w-hero-search" style="max-width: 520px;">
-                        <form action="{{ route('website.search') }}" method="GET" role="search">
+                        <form action="{{ locale_route('website.search') }}" method="GET" role="search">
                             <i class="bi bi-search w-search-icon" aria-hidden="true"></i>
                             <input type="search" name="q" class="form-control form-control-lg w-search-input"
                                    placeholder="Search a topic or quiz..." autocomplete="off"
                                    value="{{ request('q') }}" aria-label="Search quizzes"
                                    aria-autocomplete="list" aria-controls="wHeroSuggest"
-                                   data-suggest-url="{{ route('website.search.suggest') }}">
+                                   data-suggest-url="{{ locale_route('website.search.suggest') }}">
                         </form>
                         <div class="w-suggest" id="wHeroSuggest" role="listbox" aria-label="Search suggestions"></div>
                     </div>
@@ -148,13 +148,13 @@
                     </div>
                 </div>
                 <div class="w-live-banner-cta">
-                    <a href="{{ route('website.rooms.create') }}" class="btn w-btn-light btn-lg px-4">
+                    <a href="{{ locale_route('website.rooms.create') }}" class="btn w-btn-light btn-lg px-4">
                         <i class="bi bi-controller me-2"></i>Create a Room
                     </a>
-                    <a href="{{ route('website.rooms.join') }}" class="btn w-live-btn-ghost btn-lg px-4">
+                    <a href="{{ locale_route('website.rooms.join') }}" class="btn w-live-btn-ghost btn-lg px-4">
                         <i class="bi bi-box-arrow-in-right me-2"></i>Join a Room
                     </a>
-                    <a href="{{ route('website.play.live') }}" class="w-live-how">See how it works <i class="bi bi-arrow-right"></i></a>
+                    <a href="{{ locale_route('website.play.live') }}" class="w-live-how">See how it works <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -180,9 +180,9 @@
                                             <div class="w-card">
                                                 <div class="w-card-body">
                                                     <span class="w-badge w-badge-primary mb-2">In progress</span>
-                                                    <h3 class="w-card-title">{{ $attempt->quiz->title }}</h3>
-                                                    <p class="w-text-sm w-muted mb-3">{{ $attempt->quiz->category?->name }}</p>
-                                                    <a href="{{ route('website.quiz.attempt', $attempt->id) }}" class="btn w-btn-primary btn-sm mt-auto">
+                                                    <h3 class="w-card-title">{{ $attempt->quiz->tr('title') }}</h3>
+                                                    <p class="w-text-sm w-muted mb-3">{{ $attempt->quiz->category?->tr('name') }}</p>
+                                                    <a href="{{ locale_route('website.quiz.attempt', $attempt->id) }}" class="btn w-btn-primary btn-sm mt-auto">
                                                         Resume <i class="bi bi-arrow-right"></i>
                                                     </a>
                                                 </div>
@@ -230,7 +230,7 @@
                                             @foreach ($weakTopics as $topic)
                                                 <div class="mb-3">
                                                     <div class="d-flex justify-content-between w-text-sm mb-1">
-                                                        <a href="{{ route('website.category.show', $topic->slug) }}">{{ $topic->name }}</a>
+                                                        <a href="{{ locale_route('website.category.show', $topic->slug) }}">{{ $topic->tr('name') }}</a>
                                                         <span class="w-muted">{{ round($topic->avg_score) }}%</span>
                                                     </div>
                                                     <div class="w-progress">
@@ -260,8 +260,8 @@
                         <div class="row align-items-center g-4">
                             <div class="col-md-8">
                                 <span class="w-badge w-badge-primary mb-2"><i class="bi bi-calendar-check"></i> Quiz of the day</span>
-                                <h2 class="mb-2">{{ $todayQuiz->title }}</h2>
-                                <p class="w-muted mb-3">{{ \Illuminate\Support\Str::limit($todayQuiz->description, 160) }}</p>
+                                <h2 class="mb-2">{{ $todayQuiz->tr('title') }}</h2>
+                                <p class="w-muted mb-3">{{ \Illuminate\Support\Str::limit($todayQuiz->tr('description'), 160) }}</p>
                                 <div class="w-meta">
                                     <span><i class="bi bi-question-circle"></i> {{ $todayQuiz->total_questions }} questions</span>
                                     <span><i class="bi bi-clock"></i> {{ $todayQuiz->time_limit ?: '—' }} min</span>
@@ -269,7 +269,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4 text-md-end">
-                                <a href="{{ route('website.quiz.show', $todayQuiz->slug) }}" class="btn w-btn-primary btn-lg w-100">
+                                <a href="{{ locale_route('website.quiz.show', $todayQuiz->slug) }}" class="btn w-btn-primary btn-lg w-100">
                                     <i class="bi bi-play-fill"></i> Take Today's Quiz
                                 </a>
                             </div>
@@ -289,12 +289,12 @@
                         <h2>Popular Exams</h2>
                         <p>Targeted preparation for major competitive examinations.</p>
                     </div>
-                    <a href="{{ route('exams') }}" class="btn w-btn-outline btn-sm">View all</a>
+                    <a href="{{ locale_route('exams') }}" class="btn w-btn-outline btn-sm">View all</a>
                 </div>
                 <div class="row g-3">
                     @foreach ($examCategories as $exam)
                         <div class="col-6 col-md-4 col-lg-3">
-                            <x-website::category-card :category="$exam" :url="route('website.exam.show', $exam->slug)" />
+                            <x-website::category-card :category="$exam" :url="locale_route('website.exam.show', $exam->slug)" />
                         </div>
                     @endforeach
                 </div>
@@ -311,7 +311,7 @@
                         <h2>Most Popular Quizzes</h2>
                         <p>Hand-picked quizzes our learners love the most.</p>
                     </div>
-                    <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All quizzes</a>
+                    <a href="{{ locale_route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All quizzes</a>
                 </div>
 
                 <div class="w-pop-slider" data-pop-slider>
@@ -341,7 +341,7 @@
                     <h2>Mitra Quizzes</h2>
                     <p>Most attempted quizzes across all categories.</p>
                 </div>
-                <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All Mitra Quizzes</a>
+                <a href="{{ locale_route('website.quizzes') }}" class="btn w-btn-outline btn-sm">All Mitra Quizzes</a>
             </div>
 
             @if ($popularQuizzes->count())
@@ -366,13 +366,13 @@
                         <h2>Current Affairs</h2>
                         <p>Stay updated with daily, weekly and monthly news quizzes.</p>
                     </div>
-                    <a href="{{ route('website.current.affairs.index') }}" class="btn w-btn-outline btn-sm">View all</a>
+                    <a href="{{ locale_route('website.current.affairs.index') }}" class="btn w-btn-outline btn-sm">View all</a>
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 mb-4">
-                    <a href="{{ route('website.current.affairs.today') }}" class="btn w-btn-primary btn-sm"><i class="bi bi-calendar-day"></i> Today</a>
-                    <a href="{{ route('website.current.affairs.weekly') }}" class="btn w-btn-outline btn-sm"><i class="bi bi-calendar-week"></i> Weekly</a>
-                    <a href="{{ route('website.current.affairs.monthly') }}" class="btn w-btn-outline btn-sm"><i class="bi bi-calendar-month"></i> Monthly</a>
+                    <a href="{{ locale_route('website.current.affairs.today') }}" class="btn w-btn-primary btn-sm"><i class="bi bi-calendar-day"></i> Today</a>
+                    <a href="{{ locale_route('website.current.affairs.weekly') }}" class="btn w-btn-outline btn-sm"><i class="bi bi-calendar-week"></i> Weekly</a>
+                    <a href="{{ locale_route('website.current.affairs.monthly') }}" class="btn w-btn-outline btn-sm"><i class="bi bi-calendar-month"></i> Monthly</a>
                 </div>
 
                 <div class="row g-3">
@@ -392,7 +392,7 @@
                     <h2>Explore Categories</h2>
                     <p>Browse {{ $categories->count() }} subject areas and their topics.</p>
                 </div>
-                <a href="{{ route('website.categories') }}" class="btn w-btn-outline btn-sm">All categories</a>
+                <a href="{{ locale_route('website.categories') }}" class="btn w-btn-outline btn-sm">All categories</a>
             </div>
             <div class="row g-3">
                 @foreach ($categories->take(12) as $cat)
@@ -419,8 +419,8 @@
                 @foreach ([
                     ['bi-person-plus-fill', 'Create Account', 'Register free in seconds — just your name and email, no fees.', 'Register', route('user.register')],
                     ['bi-box-arrow-in-right', 'Log In', 'Sign in to save your progress, streaks and every XP point you earn.', 'Login', route('user.login')],
-                    ['bi-play-circle-fill', 'Play Quizzes', 'Attempt GK, Current Affairs, SSC, Banking and mock-test quizzes.', 'Browse quizzes', route('website.quizzes')],
-                    ['bi-trophy-fill', 'Earn XP & Rewards', 'Score XP on every quiz, unlock badges and climb the leaderboard.', 'Leaderboard', route('website.leaderboard')],
+                    ['bi-play-circle-fill', 'Play Quizzes', 'Attempt GK, Current Affairs, SSC, Banking and mock-test quizzes.', 'Browse quizzes', locale_route('website.quizzes')],
+                    ['bi-trophy-fill', 'Earn XP & Rewards', 'Score XP on every quiz, unlock badges and climb the leaderboard.', 'Leaderboard', locale_route('website.leaderboard')],
                 ] as $i => [$icon, $title, $text, $cta, $link])
                     <div class="col-6 col-lg-3">
                         <div class="w-step-card">
@@ -440,7 +440,7 @@
                         <i class="bi bi-lightning-charge-fill me-2" aria-hidden="true"></i>Start Earning XP — It's Free
                     </a>
                 @else
-                    <a href="{{ route('website.quizzes') }}" class="btn w-btn-primary btn-lg px-4">
+                    <a href="{{ locale_route('website.quizzes') }}" class="btn w-btn-primary btn-lg px-4">
                         <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i>Play a Quiz & Earn XP
                     </a>
                 @endguest
@@ -460,7 +460,7 @@
                                 <h2>Top Performers</h2>
                                 <p>Highest XP earners across the platform.</p>
                             </div>
-                            <a href="{{ route('website.leaderboard') }}" class="btn w-btn-outline btn-sm">Full leaderboard</a>
+                            <a href="{{ locale_route('website.leaderboard') }}" class="btn w-btn-outline btn-sm">Full leaderboard</a>
                         </div>
                         <div class="w-card">
                             @foreach ($leaders as $i => $row)
@@ -509,7 +509,7 @@
                         <h2>Latest Articles</h2>
                         <p>Preparation strategy, study guides and exam tips.</p>
                     </div>
-                    <a href="{{ route('blog') }}" class="btn w-btn-outline btn-sm">Visit blog</a>
+                    <a href="{{ locale_route('blog') }}" class="btn w-btn-outline btn-sm">Visit blog</a>
                 </div>
                 <div class="row g-4">
                     @foreach ($blogs as $blog)

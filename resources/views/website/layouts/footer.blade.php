@@ -14,7 +14,7 @@
         <div class="row g-4 align-items-start">
 
             <div class="col-lg-3 col-md-6">
-                <a href="{{ route('home') }}" class="d-inline-block mb-3">
+                <a href="{{ locale_route('home') }}" class="d-inline-block mb-3">
                     <img src="{{ getImage(getFilePath('logoIcon') . '/logo.png') }}"
                          alt="{{ gs('site_name') }}" width="130" height="40" loading="lazy">
                 </a>
@@ -40,9 +40,9 @@
                 <h2 class="w-footer-title">@lang('Categories')</h2>
                 <ul class="list-unstyled mb-0">
                     @foreach ($footerCats as $cat)
-                        <li><a href="{{ route('website.category.show', $cat->slug) }}">{{ $cat->name }}</a></li>
+                        <li><a href="{{ locale_route('website.category.show', $cat->slug) }}">{{ $cat->tr('name') }}</a></li>
                     @endforeach
-                    <li><a href="{{ route('website.categories') }}" class="fw-semibold">View all &rarr;</a></li>
+                    <li><a href="{{ locale_route('website.categories') }}" class="fw-semibold">View all &rarr;</a></li>
                 </ul>
             </div>
 
@@ -50,24 +50,24 @@
             <div class="col-lg-2 col-md-6 col-6">
                 <h2 class="w-footer-title">@lang('Practice')</h2>
                 <ul class="list-unstyled mb-0">
-                    <li><a href="{{ route('website.quizzes') }}">@lang('All Quizzes')</a></li>
-                    <li><a href="{{ route('website.current.affairs.today') }}">@lang('Today\'s Current Affairs')</a></li>
-                    <li><a href="{{ route('website.current.affairs.weekly') }}">@lang('Weekly Current Affairs')</a></li>
-                    <li><a href="{{ route('website.mock.tests') }}">@lang('Mock Tests')</a></li>
-                    <li><a href="{{ route('website.pyq') }}">@lang('Previous Year Questions')</a></li>
-                    <li><a href="{{ route('website.leaderboard') }}">@lang('Leaderboard')</a></li>
+                    <li><a href="{{ locale_route('website.quizzes') }}">@lang('All Quizzes')</a></li>
+                    <li><a href="{{ locale_route('website.current.affairs.today') }}">@lang('Today\'s Current Affairs')</a></li>
+                    <li><a href="{{ locale_route('website.current.affairs.weekly') }}">@lang('Weekly Current Affairs')</a></li>
+                    <li><a href="{{ locale_route('website.mock.tests') }}">@lang('Mock Tests')</a></li>
+                    <li><a href="{{ locale_route('website.pyq') }}">@lang('Previous Year Questions')</a></li>
+                    <li><a href="{{ locale_route('website.leaderboard') }}">@lang('Leaderboard')</a></li>
                 </ul>
             </div>
 
             <div class="col-lg-2 col-md-6 col-6">
                 <h2 class="w-footer-title">@lang('Company')</h2>
                 <ul class="list-unstyled mb-0">
-                    <li><a href="{{ route('website.about') }}">@lang('About Us')</a></li>
-                    <li><a href="{{ route('contact') }}">@lang('Contact')</a></li>
-                    <li><a href="{{ route('blog') }}">@lang('Blog')</a></li>
-                    <li><a href="{{ route('website.privacy') }}">@lang('Privacy Policy')</a></li>
-                    <li><a href="{{ route('website.terms') }}">@lang('Terms & Conditions')</a></li>
-                    <li><a href="{{ route('website.disclaimer') }}">@lang('Disclaimer')</a></li>
+                    <li><a href="{{ locale_route('website.about') }}">@lang('About Us')</a></li>
+                    <li><a href="{{ locale_route('contact') }}">@lang('Contact')</a></li>
+                    <li><a href="{{ locale_route('blog') }}">@lang('Blog')</a></li>
+                    <li><a href="{{ locale_route('website.privacy') }}">@lang('Privacy Policy')</a></li>
+                    <li><a href="{{ locale_route('website.terms') }}">@lang('Terms & Conditions')</a></li>
+                    <li><a href="{{ locale_route('website.disclaimer') }}">@lang('Disclaimer')</a></li>
                  </ul>
             </div>
 

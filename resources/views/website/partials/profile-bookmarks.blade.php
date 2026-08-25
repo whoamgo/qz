@@ -19,13 +19,13 @@
     @foreach ($questionBookmarks as $bm)
         @continue(!$bm->question)
         <div class="w-card mb-3"><div class="w-card-body">
-            <p class="fw-semibold mb-2">{{ $bm->question->question_text }}</p>
+            <p class="fw-semibold mb-2">{{ $bm->question->tr('question_text') }}</p>
             <div class="w-meta mb-2">
                 <span><i class="bi bi-folder2"></i> {{ $bm->question->category->name ?? '—' }}</span>
                 <span class="w-badge w-badge-{{ $bm->question->difficulty }}">{{ ucfirst($bm->question->difficulty) }}</span>
             </div>
-            @if ($bm->question->explanation)
-                <div class="w-explanation"><strong>Explanation:</strong> {{ $bm->question->explanation }}</div>
+            @if ($bm->question->tr('explanation'))
+                <div class="w-explanation"><strong>Explanation:</strong> {{ $bm->question->tr('explanation') }}</div>
             @endif
         </div></div>
     @endforeach

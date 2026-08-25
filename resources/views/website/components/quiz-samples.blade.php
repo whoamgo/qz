@@ -45,14 +45,14 @@
                     @endphp
                     <article class="w-sq-item">
                         <span class="w-sq-num">Question {{ $loop->iteration }}</span>
-                        <h3 class="w-sq-q">{{ $q->question_text }}</h3>
+                        <h3 class="w-sq-q">{{ $q->tr('question_text') }}</h3>
 
                         <ul class="w-sq-options">
                             @foreach ($q->options as $option)
                                 @php $isCorrect = $option->id === $correctId; @endphp
                                 <li class="w-sq-option {{ $isCorrect ? 'is-correct' : '' }}">
                                     <span class="w-sq-key" aria-hidden="true">{{ chr(65 + $loop->index) }}</span>
-                                    <span class="flex-grow-1">{{ $option->option_text }}</span>
+                                    <span class="flex-grow-1">{{ $option->tr('option_text') }}</span>
                                     @if ($isCorrect)
                                         <span class="w-badge w-badge-free w-sq-answer-tag">
                                             <i class="bi bi-check-lg" aria-hidden="true"></i> Correct answer
@@ -62,10 +62,10 @@
                             @endforeach
                         </ul>
 
-                        @if (filled($q->explanation))
+                        @if (filled($q->tr('explanation')))
                             <div class="w-sq-explanation">
                                 <strong><i class="bi bi-lightbulb" aria-hidden="true"></i> Explanation:</strong>
-                                <span class="w-muted">{{ $q->explanation }}</span>
+                                <span class="w-muted">{{ $q->tr('explanation') }}</span>
                             </div>
                         @endif
                     </article>
@@ -96,9 +96,9 @@
             @if ($quiz->category)
                 <p class="w-muted mt-3 mb-0">
                     Explore more:
-                    <a href="{{ route('website.category.show', $quiz->category->slug) }}">All {{ $quiz->category->name }} quizzes</a>
+                    <a href="{{ locale_route('website.category.show', $quiz->category->slug) }}">All {{ $quiz->category->tr('name') }} quizzes</a>
                     @if ($quiz->subCategory)
-                        &middot; <a href="{{ route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]) }}">{{ $quiz->subCategory->name }}</a>
+                        &middot; <a href="{{ locale_route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]) }}">{{ $quiz->subCategory->tr('name') }}</a>
                     @endif
                 </p>
             @endif

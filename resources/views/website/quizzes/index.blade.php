@@ -1,7 +1,7 @@
 @extends('website.layouts.app')
 
 @section('breadcrumb')
-    <x-website::breadcrumbs :trail="['Home' => route('home'), 'Quizzes' => route('website.quizzes')]" />
+    <x-website::breadcrumbs :trail="['Home' => locale_route('home'), 'Quizzes' => locale_route('website.quizzes')]" />
 @endsection
 
 @section('content')
@@ -17,7 +17,7 @@
         <div class="row g-4 align-items-start">
             {{-- Filters --}}
             <div class="col-lg-3">
-                <form class="wFilterForm w-card" id="wQuizFilters" action="{{ route('website.quizzes') }}" method="GET">
+                <form class="wFilterForm w-card" id="wQuizFilters" action="{{ locale_route('website.quizzes') }}" method="GET">
                     <div class="w-card-body">
                         <h2 class="w-card-title" style="font-size: var(--w-fs-base);">
                             <i class="bi bi-funnel" aria-hidden="true"></i> Filters
@@ -34,7 +34,7 @@
                             <select id="fCategory" name="category" class="form-select form-select-sm">
                                 <option value="">All categories</option>
                                 @foreach ($categories as $cat)
-                                    <option value="{{ $cat->slug }}" @selected(request('category') === $cat->slug)>{{ $cat->name }}</option>
+                                    <option value="{{ $cat->slug }}" @selected(request('category') === $cat->slug)>{{ $cat->tr('name') }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -70,7 +70,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn w-btn-primary btn-sm">Apply filters</button>
-                            <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline btn-sm">Reset</a>
+                            <a href="{{ locale_route('website.quizzes') }}" class="btn w-btn-outline btn-sm">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -90,7 +90,7 @@
                         <x-website::empty-state icon="bi-search"
                             title="No quizzes match those filters"
                             message="Try removing a filter or searching for a different topic."
-                            :actionUrl="route('website.quizzes')" actionLabel="Clear filters" />
+                            :actionUrl="locale_route('website.quizzes')" actionLabel="Clear filters" />
                     </div>
                 @endif
             </div>

@@ -27,7 +27,7 @@
                 <i class="bi bi-list fs-4"></i>
             </button>
 
-            <a href="{{ route('home') }}" class="w-logo notranslate d-flex align-items-center gap-2 flex-shrink-0">
+            <a href="{{ locale_route('home') }}" class="w-logo notranslate d-flex align-items-center gap-2 flex-shrink-0">
                 <img src="{{ getImage(getFilePath('logoIcon') . '/logo.png') }}"
                      alt="{{ gs('site_name') }} logo" width="180" height="55"
                      loading="eager" fetchpriority="high" decoding="async"
@@ -39,37 +39,43 @@
             <nav class="w-desktop-nav d-none d-lg-flex align-items-center gap-1 ms-2" aria-label="Main navigation">
                 @foreach ($navItems as $item)
                     @php
-                        $url = isset($item['param']) ? route($item['route'], $item['param']) : route($item['route']);
+                        $url = isset($item['param']) ? locale_route($item['route'], $item['param']) : locale_route($item['route']);
+                        $wPrefix = config('locale.prefix', 'hi');
                         $isActive = isset($item['param'])
-                            ? request()->is('category/' . $item['param'] . '*')
-                            : request()->routeIs($item['route']);
+                            ? (request()->is('category/' . $item['param'] . '*') || request()->is($wPrefix . '/category/' . $item['param'] . '*'))
+                            : (request()->routeIs($item['route']) || request()->routeIs($wPrefix . '.' . $item['route']));
                     @endphp
                     <a href="{{ $url }}" class="w-nav-link {{ $isActive ? 'active' : '' }}"
                        @if($isActive) aria-current="page" @endif>{{ $item['label'] }}</a>
                 @endforeach
             </nav>
 
-            {{-- Language switcher: posts to the existing SiteController@changeLanguage --}}
-            @php $wLangs = \App\Models\Language::orderBy('name')->get(); @endphp
-            @if ($wLangs->count() > 1)
+            {{-- Language switcher: URL-based (English root <-> /hi). Each option
+                 links to the SAME page in the other language, so the URL always
+                 identifies the language (no session-only switching). --}}
+            @php
+                $wLocaleNames = ['en' => 'English', 'hi' => 'हिंदी'];
+                $wLocales = array_values(array_intersect(array_keys($wLocaleNames), (array) config('locale.supported', ['en'])));
+                $wCurrentLocale = app()->getLocale();
+            @endphp
+            @if (count($wLocales) > 1)
                 <div class="dropdown w-lang-switch ms-auto ms-lg-0">
                     <button class="btn w-btn-outline btn-sm dropdown-toggle" type="button"
                             data-bs-toggle="dropdown" aria-expanded="false"
                             aria-label="@lang('Change language')">
                         <i class="bi bi-translate" aria-hidden="true"></i>
                         <span class="d-none d-sm-inline ms-1">
-                            {{ strtoupper(session('lang', 'en')) }}
+                            {{ strtoupper($wCurrentLocale) }}
                         </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        @foreach ($wLangs as $lang)
+                        @foreach ($wLocales as $wCode)
                             <li>
-                                <a class="dropdown-item wLangOption d-flex align-items-center gap-2 {{ session('lang', 'en') === $lang->code ? 'active' : '' }}"
-                                   data-lang="{{ $lang->code }}"
-                                   href="{{ route('lang', $lang->code) }}">
-                                    <span class="w-lang-code notranslate">{{ strtoupper($lang->code) }}</span>
-                                    <span>{{ __($lang->name) }}</span>
-                                    @if (session('lang', 'en') === $lang->code)
+                                <a class="dropdown-item d-flex align-items-center gap-2 {{ $wCurrentLocale === $wCode ? 'active' : '' }}"
+                                   href="{{ locale_switch_url($wCode) }}" hreflang="{{ $wCode }}" rel="alternate">
+                                    <span class="w-lang-code notranslate">{{ strtoupper($wCode) }}</span>
+                                    <span>{{ $wLocaleNames[$wCode] }}</span>
+                                    @if ($wCurrentLocale === $wCode)
                                         <i class="bi bi-check2 ms-auto" aria-hidden="true"></i>
                                     @endif
                                 </a>
@@ -136,7 +142,7 @@
     <div class="offcanvas-body">
 
         <div class="p-3 border-bottom">
-            <form action="{{ route('website.search') }}" method="GET" role="search">
+            <form action="{{ locale_route('website.search') }}" method="GET" role="search">
                 <div class="position-relative">
                     <i class="bi bi-search w-search-icon" aria-hidden="true"></i>
                     <input type="search" name="q" class="form-control w-search-input"
@@ -147,8 +153,8 @@
         </div>
 
         @foreach ($navItems as $item)
-            @php $url = isset($item['param']) ? route($item['route'], $item['param']) : route($item['route']); @endphp
-            <a href="{{ $url }}" class="w-mobile-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+            @php $url = isset($item['param']) ? locale_route($item['route'], $item['param']) : locale_route($item['route']); @endphp
+            <a href="{{ $url }}" class="w-mobile-link {{ request()->routeIs($item['route']) || request()->routeIs(config('locale.prefix', 'hi') . '.' . $item['route']) ? 'active' : '' }}">
                 <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i> {{ $item['label'] }}
             </a>
         @endforeach

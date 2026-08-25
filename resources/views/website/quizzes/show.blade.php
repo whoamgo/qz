@@ -2,12 +2,12 @@
 
 @section('breadcrumb')
     @php
-        $trail = ['Home' => route('home'), 'Quizzes' => route('website.quizzes')];
-        if ($quiz->category) { $trail[$quiz->category->name] = route('website.category.show', $quiz->category->slug); }
+        $trail = ['Home' => locale_route('home'), 'Quizzes' => locale_route('website.quizzes')];
+        if ($quiz->category) { $trail[$quiz->category->tr('name')] = locale_route('website.category.show', $quiz->category->slug); }
         if ($quiz->subCategory && $quiz->category) {
-            $trail[$quiz->subCategory->name] = route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]);
+            $trail[$quiz->subCategory->tr('name')] = locale_route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]);
         }
-        $trail[$quiz->title] = route('website.quiz.show', $quiz->slug);
+        $trail[$quiz->tr('title')] = locale_route('website.quiz.show', $quiz->slug);
     @endphp
     <x-website::breadcrumbs :trail="$trail" />
 @endsection
@@ -23,13 +23,13 @@
                             <span class="w-badge w-badge-{{ $quiz->difficulty }}">{{ ucfirst($quiz->difficulty) }}</span>
                             <span class="w-badge w-badge-{{ $quiz->quiz_type }}">{{ ucfirst($quiz->quiz_type) }}</span>
                             @if ($quiz->category)
-                                <a href="{{ route('website.category.show', $quiz->category->slug) }}" class="w-badge">
-                                    <i class="bi bi-folder2"></i> {{ $quiz->category->name }}
+                                <a href="{{ locale_route('website.category.show', $quiz->category->slug) }}" class="w-badge">
+                                    <i class="bi bi-folder2"></i> {{ $quiz->category->tr('name') }}
                                 </a>
                             @endif
                             @if ($quiz->subCategory && $quiz->category)
-                                <a href="{{ route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]) }}" class="w-badge">
-                                    {{ $quiz->subCategory->name }}
+                                <a href="{{ locale_route('website.subcategory.show', [$quiz->category->slug, $quiz->subCategory->slug]) }}" class="w-badge">
+                                    {{ $quiz->subCategory->tr('name') }}
                                 </a>
                             @endif
                         </div>
@@ -38,8 +38,8 @@
 
                         @if (!empty($seoContent['intro']))
                             <p class="w-muted">{{ $seoContent['intro'] }}</p>
-                        @elseif ($quiz->description)
-                            <p class="w-muted">{{ $quiz->description }}</p>
+                        @elseif ($quiz->tr('description'))
+                            <p class="w-muted">{{ $quiz->tr('description') }}</p>
                         @endif
 
                         <div class="row g-3 mt-3">

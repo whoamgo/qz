@@ -23,7 +23,7 @@
                 {{ $attempt->passed ? 'Congratulations, you passed!' : 'Not quite there yet' }}
             </h1>
             <p class="mb-0 text-white-50">
-                {{ $quiz->title }} &middot; needed {{ $quiz->pass_percentage }}% to pass
+                {{ $quiz->tr('title') }} &middot; needed {{ $quiz->pass_percentage }}% to pass
             </p>
         </div>
 
@@ -51,11 +51,11 @@
                     <div class="w-card-body">
                         <h2 class="w-card-title"><i class="bi bi-share-fill"></i> Share your score</h2>
                         <p class="w-text-sm w-muted mb-3">
-                            Let others know how you did on {{ $quiz->title }}.
+                            Let others know how you did on {{ $quiz->tr('title') }}.
                         </p>
                         <div class="d-flex flex-wrap gap-2" id="wScoreShare"
-                             data-share-text="I scored {{ round($attempt->percentage) }}% ({{ $attempt->correct_count }}/{{ $attempt->total_questions }}) on the {{ $quiz->title }} quiz{{ $attempt->passed ? ' and passed' : '' }}! Can you beat me?"
-                             data-share-url="{{ route('website.quiz.show', $quiz->slug) }}">
+                             data-share-text="I scored {{ round($attempt->percentage) }}% ({{ $attempt->correct_count }}/{{ $attempt->total_questions }}) on the {{ $quiz->tr('title') }} quiz{{ $attempt->passed ? ' and passed' : '' }}! Can you beat me?"
+                             data-share-url="{{ locale_route('website.quiz.show', $quiz->slug) }}">
                             <button type="button" class="btn w-btn-outline btn-sm wScoreShareBtn" data-network="whatsapp">
                                 <i class="bi bi-whatsapp"></i> WhatsApp
                             </button>
@@ -92,13 +92,13 @@
                             <i class="bi bi-list-check"></i> Review Answers
                         </a>
                     @endif
-                    <a href="{{ route('website.quizzes') }}" class="btn w-btn-outline">Try Another Quiz</a>
+                    <a href="{{ locale_route('website.quizzes') }}" class="btn w-btn-outline">Try Another Quiz</a>
                     <a href="{{ route('website.profile.index') }}" class="btn w-btn-outline">Back to Dashboard</a>
                 </div>
 
                 {{-- Related --}}
                 @if ($related->count())
-                    <h2 class="h5 mb-3">More from {{ $quiz->category?->name ?? 'this category' }}</h2>
+                    <h2 class="h5 mb-3">More from {{ $quiz->category?->tr('name') ?? 'this category' }}</h2>
                     <div class="row g-3">
                         @foreach ($related as $r)
                             <div class="col-sm-6"><x-website::quiz-card :quiz="$r" /></div>

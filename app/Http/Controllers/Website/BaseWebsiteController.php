@@ -61,7 +61,7 @@ abstract class BaseWebsiteController extends Controller {
             'title'       => $title,
             'description' => $description,
             'keywords'    => $data['keywords'] ?? null,
-            'canonical'   => $data['canonical'] ?? url()->current(),
+            'canonical'   => $this->canonicalFor($data['canonical'] ?? null),
             'image'       => $data['image'] ?? null,
             'robots'      => $data['robots'] ?? 'index, follow',
             'type'        => $data['type'] ?? 'website',
@@ -74,6 +74,20 @@ abstract class BaseWebsiteController extends Controller {
             'schema'      => $data['schema'] ?? [],
             'breadcrumbs' => $data['breadcrumbs'] ?? [],
         ];
+    }
+
+    /**
+     * Locale-aware canonical. On the English root a page keeps the explicit
+     * canonical it passed (an admin-set URL or its own route). On a translated
+     * locale (e.g. /hi) the page self-canonicalises to its OWN /hi URL, so each
+     * language version is independently indexable and the Hindi page never points
+     * search engines back at the English one. (hreflang pairing is a later step.)
+     */
+    protected function canonicalFor(?string $default): string {
+        if (app()->getLocale() !== config('locale.default', 'en')) {
+            return url()->current();
+        }
+        return $default ?? url()->current();
     }
 
     /** Parent categories with their active sub-categories, cached for an hour. */
@@ -96,9 +110,12 @@ abstract class BaseWebsiteController extends Controller {
      * actually have at least one question attached.
      */
     protected function publishedQuizzes() {
+        // name_hi is selected alongside name so tr('name') can resolve Hindi on
+        // /hi listings — a column-restricted eager load that omits it would make
+        // tr() silently fall back to English even when a translation exists.
         return Quiz::where('status', Quiz::STATUS_PUBLISHED)
             ->has('questions')
-            ->with(['category:id,name,slug', 'subCategory:id,name,slug']);
+            ->with(['category:id,name,name_hi,slug', 'subCategory:id,name,name_hi,slug']);
     }
 
     /** BreadcrumbList schema from a [label => url] trail. */

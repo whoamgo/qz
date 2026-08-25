@@ -32,13 +32,13 @@ class SeoService {
         $count  = (int) ($ctx['questionTotal'] ?? 0);
         $quizzes = (int) ($ctx['quizCount'] ?? 0);
 
-        $title = $category->meta_title ?: $this->fallbackTitle($category, $isSub, $parent);
-        $desc  = $category->meta_description ?: $this->fallbackDescription($category, $isSub, $parent, $count);
+        $title = $category->tr('meta_title') ?: $this->fallbackTitle($category, $isSub, $parent);
+        $desc  = $category->tr('meta_description') ?: $this->fallbackDescription($category, $isSub, $parent, $count);
 
         return [
             'title'               => $title,
             'description'         => $desc,
-            'keywords'            => $category->meta_keywords ?: null,
+            'keywords'            => $category->tr('meta_keywords') ?: null,
             'canonical'           => $category->canonical_url ?: ($ctx['canonical'] ?? null),
             'robots'              => $this->robots($category, $quizzes),
             'image'               => $category->og_image ?: ($ctx['image'] ?? null),
@@ -54,32 +54,39 @@ class SeoService {
     public function categoryContent(Category $category, array $ctx): array {
         $isSub  = (bool) ($ctx['isSub'] ?? false);
         return [
-            'h1'     => $category->seo_h1 ?: $this->fallbackH1($category, $isSub),
-            'intro'  => $category->seo_intro ?: null,   // view keeps its own auto-intro when null
-            'content' => $this->purify($category->seo_content),
-            'bottom'  => $this->purify($category->seo_bottom_content),
+            'h1'     => $category->tr('seo_h1') ?: $this->fallbackH1($category, $isSub),
+            'intro'  => $category->tr('seo_intro') ?: null,   // view keeps its own auto-intro when null
+            'content' => $this->purify($category->tr('seo_content')),
+            'bottom'  => $this->purify($category->tr('seo_bottom_content')),
         ];
     }
 
     /* ============================================================== fallbacks */
 
-    public function fallbackTitle(Category $category, bool $isSub, ?Category $parent): string {
+    // Fallbacks read the localised name via tr() so a /hi page uses the Hindi
+    // category name when the admin left the Hindi meta blank. Passing $locale='en'
+    // (the fill-missing writers below) forces the English name so the generated
+    // English SEO columns are never populated with Hindi.
+    public function fallbackTitle(Category $category, bool $isSub, ?Category $parent, ?string $locale = null): string {
+        $name = $category->tr('name', $locale);
         if ($isSub && $parent) {
-            return "{$category->name} Questions & Quiz – {$parent->name} Practice";
+            return "{$name} Questions & Quiz – {$parent->tr('name', $locale)} Practice";
         }
-        return "{$category->name} Quiz & Practice Questions";
+        return "{$name} Quiz & Practice Questions";
     }
 
-    public function fallbackDescription(Category $category, bool $isSub, ?Category $parent, int $questionTotal): string {
+    public function fallbackDescription(Category $category, bool $isSub, ?Category $parent, int $questionTotal, ?string $locale = null): string {
+        $name = $category->tr('name', $locale);
         $n = $questionTotal > 0 ? number_format($questionTotal) . ' ' : '';
         if ($isSub && $parent) {
-            return "Practice {$category->name} questions from {$parent->name} with {$n}free online quizzes, answers and explanations for SSC, Banking, Railway and other competitive exams.";
+            return "Practice {$name} questions from {$parent->tr('name', $locale)} with {$n}free online quizzes, answers and explanations for SSC, Banking, Railway and other competitive exams.";
         }
-        return "Practice {$category->name} quizzes with {$n}questions online — free practice with instant results, detailed explanations and XP rewards for competitive-exam preparation.";
+        return "Practice {$name} quizzes with {$n}questions online — free practice with instant results, detailed explanations and XP rewards for competitive-exam preparation.";
     }
 
-    public function fallbackH1(Category $category, bool $isSub): string {
-        return $isSub ? "{$category->name} Questions" : "{$category->name} Quizzes";
+    public function fallbackH1(Category $category, bool $isSub, ?string $locale = null): string {
+        $name = $category->tr('name', $locale);
+        return $isSub ? "{$name} Questions" : "{$name} Quizzes";
     }
 
     /* ============================================ bulk "fill missing" helpers */
@@ -90,15 +97,15 @@ class SeoService {
         $isSub = (bool) $c->parent_id;
         $dirty = false;
         if (blank($c->meta_title)) {
-            $c->meta_title = Str::limit($this->fallbackTitle($c, $isSub, $c->parent), 255, '');
+            $c->meta_title = Str::limit($this->fallbackTitle($c, $isSub, $c->parent, 'en'), 255, '');
             $dirty = true;
         }
         if (blank($c->meta_description)) {
-            $c->meta_description = Str::limit($this->fallbackDescription($c, $isSub, $c->parent, $questionTotal), 320, '');
+            $c->meta_description = Str::limit($this->fallbackDescription($c, $isSub, $c->parent, $questionTotal, 'en'), 320, '');
             $dirty = true;
         }
         if (blank($c->seo_h1)) {
-            $c->seo_h1 = $this->fallbackH1($c, $isSub);
+            $c->seo_h1 = $this->fallbackH1($c, $isSub, 'en');
             $dirty = true;
         }
         if ($dirty) {
@@ -113,11 +120,11 @@ class SeoService {
     public function fillQuizDefaults(Quiz $q, int $questionCount): bool {
         $dirty = false;
         if (blank($q->meta_title)) {
-            $q->meta_title = Str::limit($this->quizFallbackTitle($q), 255, '');
+            $q->meta_title = Str::limit($this->quizFallbackTitle($q, 'en'), 255, '');
             $dirty = true;
         }
         if (blank($q->meta_description)) {
-            $q->meta_description = Str::limit($this->quizFallbackDescription($q, $questionCount), 320, '');
+            $q->meta_description = Str::limit($this->quizFallbackDescription($q, $questionCount, 'en'), 320, '');
             $dirty = true;
         }
         if (blank($q->seo_h1)) {
@@ -154,15 +161,15 @@ class SeoService {
     /** Meta payload for a quiz page — admin overrides, else generated fallback. */
     public function quizMeta(Quiz $quiz, array $ctx): array {
         $count = (int) ($ctx['questionCount'] ?? 0);
-        $title = $quiz->meta_title ?: $this->quizFallbackTitle($quiz);
-        $desc  = $quiz->meta_description ?: $this->quizFallbackDescription($quiz, $count);
+        $title = $quiz->tr('meta_title') ?: $this->quizFallbackTitle($quiz);
+        $desc  = $quiz->tr('meta_description') ?: $this->quizFallbackDescription($quiz, $count);
         $index = ($quiz->robots_index ?? true);
         $follow = ($quiz->robots_follow ?? true);
 
         return [
             'title'               => $title,
             'description'         => $desc,
-            'keywords'            => $quiz->meta_keywords ?: null,
+            'keywords'            => $quiz->tr('meta_keywords') ?: null,
             'canonical'           => $quiz->canonical_url ?: ($ctx['canonical'] ?? null),
             'robots'              => ($index ? 'index' : 'noindex') . ', ' . ($follow ? 'follow' : 'nofollow'),
             'type'                => 'article',
@@ -178,23 +185,23 @@ class SeoService {
     /** On-page content (H1 / intro / main), purified, with fallbacks. */
     public function quizContent(Quiz $quiz): array {
         return [
-            'h1'      => $quiz->seo_h1 ?: $quiz->title,
-            'intro'   => $quiz->seo_intro ?: null,
-            'content' => $this->purify($quiz->seo_content),
+            'h1'      => $quiz->tr('seo_h1') ?: $quiz->tr('title'),
+            'intro'   => $quiz->tr('seo_intro') ?: null,
+            'content' => $this->purify($quiz->tr('seo_content')),
         ];
     }
 
-    public function quizFallbackTitle(Quiz $quiz): string {
-        return $quiz->title . ' — ' . ($quiz->category?->name ?? 'Quiz') . ' Practice Test';
+    public function quizFallbackTitle(Quiz $quiz, ?string $locale = null): string {
+        return $quiz->tr('title', $locale) . ' — ' . ($quiz->category?->tr('name', $locale) ?? 'Quiz') . ' Practice Test';
     }
 
-    public function quizFallbackDescription(Quiz $quiz, int $questionCount): string {
-        if (filled($quiz->description)) {
-            return strip_tags((string) $quiz->description);
+    public function quizFallbackDescription(Quiz $quiz, int $questionCount, ?string $locale = null): string {
+        if (filled($quiz->tr('description', $locale))) {
+            return strip_tags((string) $quiz->tr('description', $locale));
         }
         $n = $questionCount > 0 ? $questionCount . ' questions' : 'multiple questions';
         $time = $quiz->time_limit ? "in {$quiz->time_limit} minutes" : 'at your own pace';
-        return "Attempt the {$quiz->title} quiz with {$n} {$time}. Difficulty: " . ucfirst((string) $quiz->difficulty)
+        return "Attempt the {$quiz->tr('title', $locale)} quiz with {$n} {$time}. Difficulty: " . ucfirst((string) $quiz->difficulty)
             . '. Free online practice with instant results and explanations.';
     }
 

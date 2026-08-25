@@ -22,13 +22,13 @@
         </div>
 
         <h3 class="w-card-title">
-            <a href="{{ route('website.quiz.show', $quiz->slug) }}">{{ $quiz->title }}</a>
+            <a href="{{ locale_route('website.quiz.show', $quiz->slug) }}">{{ $quiz->tr('title') }}</a>
         </h3>
 
         @if ($quiz->category)
             <p class="w-text-sm w-muted mb-3">
                 <i class="bi bi-folder2" aria-hidden="true"></i>
-                {{ $quiz->category->name }}@if ($quiz->subCategory) <span class="w-muted">&rsaquo;</span> {{ $quiz->subCategory->name }}@endif
+                {{ $quiz->category->tr('name') }}@if ($quiz->subCategory) <span class="w-muted">&rsaquo;</span> {{ $quiz->subCategory->tr('name') }}@endif
             </p>
         @endif
 
@@ -42,7 +42,7 @@
         </div>
     </div>
     <div class="w-card-footer">
-        <a href="{{ route('website.quiz.show', $quiz->slug) }}" class="btn w-btn-primary btn-sm w-100">
+        <a href="{{ locale_route('website.quiz.show', $quiz->slug) }}" class="btn w-btn-primary btn-sm w-100">
             <i class="bi bi-play-fill" aria-hidden="true"></i> Start Quiz
         </a>
     </div>
