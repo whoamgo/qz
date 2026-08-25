@@ -38,6 +38,14 @@
                                         </td>
                                         <td>
                                             <span class="name">{{ __($category->name) }}</span>
+                                            <div class="mt-1">
+                                                <span class="badge badge--primary">EN ✓</span>
+                                                @if (filled($category->name_hi))
+                                                    <span class="badge badge--success" title="@lang('Hindi translation added')">हि ✓</span>
+                                                @else
+                                                    <span class="badge badge--warning" title="@lang('Hindi name missing')">हि ✗</span>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td>
                                             @if($category->parent_id)
@@ -124,8 +132,12 @@
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>@lang('Name')</label>
+                            <label>@lang('Name') <span class="text--info">(@lang('English'))</span></label>
                             <input class="form-control" name="name" type="text" value="{{ old('name') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Name — हिंदी') <span class="text--info">(@lang('optional'))</span></label>
+                            <input class="form-control" name="name_hi" type="text" value="{{ old('name_hi') }}" maxlength="40" placeholder="@lang('Hindi category name')">
                         </div>
                         <div class="form-group">
                             <label>@lang('Parent Category') <span class="text--info">(@lang('Leave empty for main category'))</span></label>
@@ -198,6 +210,7 @@
                 modal.find('.modal-title').text(`@lang('Add New Category')`);
                 modal.find('form').attr('action', `{{ route('admin.category.store', '') }}`);
                 modal.find('[name=name]').val('');
+                modal.find('[name=name_hi]').val('');
                 modal.find('[name=parent_id]').val('').trigger('change');
                 modal.find('[name=icon]').val('');
                 modal.modal('show');
@@ -208,6 +221,7 @@
                 modal.find('.modal-title').text(`@lang('Update Category')`);
                 modal.find('form').attr('action', `{{ route('admin.category.store', '') }}/${category.id}`);
                 modal.find('[name=name]').val(category.name);
+                modal.find('[name=name_hi]').val(category.name_hi || '');
                 modal.find('[name=parent_id]').val(category.parent_id || '').trigger('change');
                 modal.find('[name=icon]').val(category.icon || '');
                 modal.find('.image-upload-preview').attr('style', `background-image: url(${$(this).data('image')})`);

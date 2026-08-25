@@ -28,8 +28,14 @@ class QuestionBankController extends Controller {
             ->when(request('question_type'), function ($q) {
                 $q->where('question_type', request('question_type'));
             })
+            ->when(request('translation') === 'translated', function ($q) {
+                $q->whereNotNull('question_text_hi')->where('question_text_hi', '!=', '');
+            })
+            ->when(request('translation') === 'hindi_missing', function ($q) {
+                $q->where(fn($w) => $w->whereNull('question_text_hi')->orWhere('question_text_hi', ''));
+            })
             ->latest()
-            ->paginate(getPaginate());
+            ->paginate(getPaginate())->withQueryString();
 
         $categories = Category::onlyParent()->active()->orderBy('name')->get();
         return view('admin.question_bank.index', compact('pageTitle', 'questions', 'categories'));
@@ -45,6 +51,11 @@ class QuestionBankController extends Controller {
             'explanation'     => 'nullable|string',
             'hint'            => 'nullable|string|max:255',
             'default_marks'   => 'required|numeric|min:0',
+            // Hindi content (all optional — blank falls back to English at render).
+            'question_text_hi'    => 'nullable|string',
+            'explanation_hi'      => 'nullable|string',
+            'hint_hi'             => 'nullable|string|max:255',
+            'options.*.text_hi'   => 'nullable|string',
         ]);
 
         $resolvedId = $id ?: (int) $request->input('question_id', 0);
@@ -66,6 +77,10 @@ class QuestionBankController extends Controller {
             $question->question_text = $request->question_text;
             $question->explanation = $request->explanation;
             $question->hint = $request->hint;
+            // Hindi content (optional).
+            $question->question_text_hi = $request->question_text_hi ?: null;
+            $question->explanation_hi   = $request->explanation_hi ?: null;
+            $question->hint_hi          = $request->hint_hi ?: null;
             $question->default_marks = $request->default_marks;
             $question->save();
 
@@ -80,6 +95,7 @@ class QuestionBankController extends Controller {
                     $option = new BankOption();
                     $option->bank_question_id = $question->id;
                     $option->option_text = $optionData['text'];
+                    $option->option_text_hi = !empty($optionData['text_hi']) ? $optionData['text_hi'] : null;
                     $option->sort_order = $index;
                     $option->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == 1;
                     $option->save();
@@ -243,9 +259,10 @@ class QuestionBankController extends Controller {
 
     public function storeOption(Request $request, $questionId, $optionId = 0) {
         $request->validate([
-            'option_text' => 'required|string',
-            'is_correct'  => 'nullable|boolean',
-            'sort_order'  => 'nullable|integer|min:0',
+            'option_text'    => 'required|string',
+            'option_text_hi' => 'nullable|string',
+            'is_correct'     => 'nullable|boolean',
+            'sort_order'     => 'nullable|integer|min:0',
         ]);
 
         $question = BankQuestion::findOrFail($questionId);
@@ -260,6 +277,7 @@ class QuestionBankController extends Controller {
         }
 
         $option->option_text = $request->option_text;
+        $option->option_text_hi = $request->option_text_hi ?: null;
         $option->is_correct = $request->boolean('is_correct');
         $option->sort_order = $request->sort_order ?? $question->options()->count();
         $option->save();

@@ -69,6 +69,16 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>@lang('Language')</label>
+                                    <select name="translation" class="form-control select2">
+                                        <option value="">@lang('All')</option>
+                                        <option value="translated" @selected(request('translation') == 'translated')>@lang('Hindi added')</option>
+                                        <option value="hindi_missing" @selected(request('translation') == 'hindi_missing')>@lang('Hindi missing')</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-3 d-flex align-items-end">
                                 <button type="submit" class="btn btn--primary w-100 h-45">
                                     <i class="las la-search"></i> @lang('Search')
@@ -115,6 +125,12 @@
                                                 <div>
                                                     <span class="fw-bold">{{ $quiz->title }}</span>
                                                     <small class="d-block text-muted">{{ $quiz->slug }}</small>
+                                                    <span class="badge badge--primary">EN ✓</span>
+                                                    @if (filled($quiz->title_hi))
+                                                        <span class="badge badge--success" title="@lang('Hindi title added')">हि ✓</span>
+                                                    @else
+                                                        <span class="badge badge--warning" title="@lang('Hindi title missing')">हि ✗</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </td>

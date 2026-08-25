@@ -45,6 +45,16 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>@lang('Language')</label>
+                                    <select name="translation" class="form-control select2">
+                                        <option value="">@lang('All')</option>
+                                        <option value="translated" @selected(request('translation') == 'translated')>@lang('Hindi added')</option>
+                                        <option value="hindi_missing" @selected(request('translation') == 'hindi_missing')>@lang('Hindi missing')</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-2 d-flex align-items-end gap-2">
                                 <button type="submit" class="btn btn--primary h-45 flex-grow-1">
                                     <i class="las la-search"></i>
@@ -82,6 +92,14 @@
                                             <div>
                                                 <span class="d-block">{{ strLimit($question->question_text, 80) }}</span>
                                                 <small class="text-muted">@lang('#ID:') {{ $question->id }}</small>
+                                                <div class="mt-1">
+                                                    <span class="badge badge--primary">EN ✓</span>
+                                                    @if (filled($question->question_text_hi))
+                                                        <span class="badge badge--success" title="@lang('Hindi translation added')">हि ✓</span>
+                                                    @else
+                                                        <span class="badge badge--warning" title="@lang('Hindi translation missing')">हि ✗</span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
@@ -219,12 +237,20 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>@lang('Question Text') <span class="text-danger">*</span></label>
+                            <label>@lang('Question Text') <span class="text-danger">*</span> <span class="text--info">(@lang('English'))</span></label>
                             <textarea name="question_text" id="bank_question_text" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Question Text — हिंदी') <span class="text--info">(@lang('optional'))</span></label>
+                            <textarea name="question_text_hi" id="bank_question_text_hi" class="form-control" rows="3" placeholder="@lang('Hindi question (blank falls back to English)')"></textarea>
                         </div>
                         <div class="form-group">
                             <label>@lang('Hint')</label>
                             <input type="text" name="hint" id="bank_hint" class="form-control" maxlength="255">
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Hint — हिंदी') <span class="text--info">(@lang('optional'))</span></label>
+                            <input type="text" name="hint_hi" id="bank_hint_hi" class="form-control" maxlength="255">
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -239,6 +265,10 @@
                         <div class="form-group">
                             <label>@lang('Explanation')</label>
                             <textarea name="explanation" id="bank_explanation" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Explanation — हिंदी') <span class="text--info">(@lang('optional'))</span></label>
+                            <textarea name="explanation_hi" id="bank_explanation_hi" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -299,7 +329,13 @@
 
             let bankOptionCounter = 0;
 
-            function addBankOptionRow(text = '', isCorrect = false) {
+            // Safely escape a value for an HTML attribute (content may contain
+            // quotes or markup like <h1>).
+            function bankEsc(s) {
+                return $('<div>').text(s == null ? '' : String(s)).html().replace(/"/g, '&quot;');
+            }
+
+            function addBankOptionRow(text = '', isCorrect = false, textHi = '') {
                 bankOptionCounter++;
                 let idx = bankOptionCounter;
                 let html = `
@@ -313,7 +349,8 @@
                             </div>
                             <div class="col">
                                 <input type="hidden" name="options[${idx}][is_correct]" value="${isCorrect ? 1 : 0}">
-                                <input type="text" class="form-control" name="options[${idx}][text]" value="${text}" placeholder="@lang('Option text')">
+                                <input type="text" class="form-control mb-1" name="options[${idx}][text]" value="${bankEsc(text)}" placeholder="@lang('Option text (English)')">
+                                <input type="text" class="form-control" name="options[${idx}][text_hi]" value="${bankEsc(textHi)}" placeholder="@lang('विकल्प (हिंदी) — optional')">
                             </div>
                             <div class="col-auto">
                                 <button type="button" class="btn btn--sm btn-outline--danger removeBankOptionRow">
@@ -353,8 +390,11 @@
                 $('#bank_category_id').val('').trigger('change');
                 $('#bank_sub_category_id').val('').trigger('change');
                 $('#bank_question_text').val('');
+                $('#bank_question_text_hi').val('');
                 $('#bank_hint').val('');
+                $('#bank_hint_hi').val('');
                 $('#bank_explanation').val('');
+                $('#bank_explanation_hi').val('');
                 $('#bankOptionsContainer').html('');
                 bankOptionCounter = 0;
                 addBankOptionRow('', false);
@@ -377,14 +417,17 @@
                 $('#bank_default_marks').val(q.default_marks);
                 $('#bank_category_id').val(q.category_id || '').trigger('change');
                 $('#bank_question_text').val(q.question_text);
+                $('#bank_question_text_hi').val(q.question_text_hi || '');
                 $('#bank_hint').val(q.hint || '');
+                $('#bank_hint_hi').val(q.hint_hi || '');
                 $('#bank_explanation').val(q.explanation || '');
+                $('#bank_explanation_hi').val(q.explanation_hi || '');
                 $('#bankOptionsContainer').html('');
                 bankOptionCounter = 0;
                 if (q.options && q.options.length) {
                     $.each(q.options, function(i, opt) {
                         let isCorrect = q.correct_option_id == opt.id;
-                        addBankOptionRow(opt.option_text, isCorrect);
+                        addBankOptionRow(opt.option_text, isCorrect, opt.option_text_hi || '');
                     });
                 }
 

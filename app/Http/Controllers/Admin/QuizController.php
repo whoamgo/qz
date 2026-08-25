@@ -34,8 +34,14 @@ class QuizController extends Controller {
             ->when(request('quiz_type'), function ($q) {
                 $q->where('quiz_type', request('quiz_type'));
             })
+            ->when(request('translation') === 'translated', function ($q) {
+                $q->whereNotNull('title_hi')->where('title_hi', '!=', '');
+            })
+            ->when(request('translation') === 'hindi_missing', function ($q) {
+                $q->where(fn($w) => $w->whereNull('title_hi')->orWhere('title_hi', ''));
+            })
             ->latest()
-            ->paginate(getPaginate());
+            ->paginate(getPaginate())->withQueryString();
 
         $categories = Category::onlyParent()->active()->orderBy('name')->get();
         $subCategories = Category::onlyChild()->active()->orderBy('name')->get();
@@ -101,8 +107,10 @@ class QuizController extends Controller {
 
         $request->validate([
             'title'               => 'required|string|max:255',
+            'title_hi'            => 'nullable|string|max:255',
             'slug'                => 'required|string|max:255|unique:quizzes,slug,' . $id,
             'description'         => 'nullable|string',
+            'description_hi'      => 'nullable|string',
             'category_id'         => 'required|integer|exists:categories,id',
             'sub_category_id'     => 'nullable|integer|exists:categories,id',
             // Conditionally required below: a category that HAS sub-categories
@@ -147,8 +155,12 @@ class QuizController extends Controller {
             }
 
             $quiz->title = $request->title;
+            // Hindi title/description (optional). Slug stays English-derived — shared
+            // across languages, so existing English quiz URLs never change.
+            $quiz->title_hi = $request->title_hi ?: null;
             $quiz->slug = slug($request->slug);
             $quiz->description = $request->description;
+            $quiz->description_hi = $request->description_hi ?: null;
             $quiz->category_id = $request->category_id;
             $quiz->sub_category_id = $request->sub_category_id;
             $quiz->quiz_type = $request->quiz_type;
@@ -308,6 +320,15 @@ class QuizController extends Controller {
             'secondary_keywords'  => 'nullable|string|max:2000',
             'search_intent'       => 'nullable|string|max:40',
             'seo_priority'        => 'nullable|in:P0,P1,P2,P3',
+            // Hindi SEO (all optional — blank falls back to English at render time).
+            'meta_title_hi'         => 'nullable|string|max:255',
+            'meta_description_hi'   => 'nullable|string|max:320',
+            'meta_keywords_hi'      => 'nullable|string|max:255',
+            'seo_h1_hi'             => 'nullable|string|max:255',
+            'seo_intro_hi'          => 'nullable|string|max:1000',
+            'seo_content_hi'        => 'nullable|string',
+            'primary_keyword_hi'    => 'nullable|string|max:191',
+            'secondary_keywords_hi' => 'nullable|string|max:2000',
         ]);
 
         $schemaWarning = null;
@@ -323,6 +344,9 @@ class QuizController extends Controller {
             'seo_content', 'canonical_url', 'og_title', 'og_description', 'og_image',
             'twitter_title', 'twitter_description', 'schema_json',
             'primary_keyword', 'secondary_keywords', 'search_intent', 'seo_priority',
+            // Hindi SEO fields
+            'meta_title_hi', 'meta_description_hi', 'meta_keywords_hi', 'seo_h1_hi',
+            'seo_intro_hi', 'seo_content_hi', 'primary_keyword_hi', 'secondary_keywords_hi',
         ]));
         $quiz->robots_index   = $request->boolean('robots_index');
         $quiz->robots_follow  = $request->boolean('robots_follow');

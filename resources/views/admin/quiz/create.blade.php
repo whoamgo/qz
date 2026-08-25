@@ -73,6 +73,18 @@
                                                       placeholder="@lang('Short summary shown on the quiz page')">{{ old('description', $quiz?->description) }}</textarea>
                                         </div>
 
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold" for="title_hi">@lang('Quiz Title — हिंदी') <span class="text-muted">(@lang('optional'))</span></label>
+                                            <input type="text" name="title_hi" id="title_hi" class="form-control" maxlength="255"
+                                                   value="{{ old('title_hi', $quiz?->title_hi) }}" placeholder="@lang('Hindi quiz title (shown on the /hi page)')">
+                                            <small class="text-muted">@lang('Blank falls back to English')</small>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold" for="description_hi">@lang('Description — हिंदी') <span class="text-muted">(@lang('optional'))</span></label>
+                                            <textarea name="description_hi" id="description_hi" class="form-control" rows="3"
+                                                      placeholder="@lang('Hindi summary')">{{ old('description_hi', $quiz?->description_hi) }}</textarea>
+                                        </div>
+
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold" for="category_id">
                                                 @lang('Category') <span class="text-danger">*</span>

@@ -71,6 +71,14 @@
                                         </td>
                                         <td>
                                             <span class="name fw-bold">{{ __($category->name) }}</span>
+                                            <div class="mt-1">
+                                                <span class="badge badge--primary">EN ✓</span>
+                                                @if (filled($category->name_hi))
+                                                    <span class="badge badge--success" title="@lang('Hindi translation added')">हि ✓</span>
+                                                @else
+                                                    <span class="badge badge--warning" title="@lang('Hindi name missing')">हि ✗</span>
+                                                @endif
+                                            </div>
                                             <br>
                                             <small class="text-muted">@lang('Slug:') {{ $category->slug }}</small>
                                         </td>
@@ -142,8 +150,12 @@
                             <small><i class="las la-sitemap"></i> @lang('Adding under Parent Category:') <b>{{ __($parent->name) }}</b> (@lang('ID:') {{ $parent->id }})</small>
                         </div>
                         <div class="form-group">
-                            <label>@lang('Name')</label>
+                            <label>@lang('Name') <span class="text--info">(@lang('English'))</span></label>
                             <input class="form-control" name="name" type="text" value="{{ old('name') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Name — हिंदी') <span class="text--info">(@lang('optional'))</span></label>
+                            <input class="form-control" name="name_hi" type="text" value="{{ old('name_hi') }}" maxlength="40" placeholder="@lang('Hindi sub-category name')">
                         </div>
                         <div class="form-group">
                             <label>@lang('Parent Category')</label>
@@ -223,6 +235,7 @@
                 modal.find('.modal-title').text(`@lang('Add New Sub-Category under') {{ addslashes(__($parent->name)) }}`);
                 modal.find('form').attr('action', `{{ route('admin.category.store', '') }}`);
                 modal.find('[name=name]').val('');
+                modal.find('[name=name_hi]').val('');
                 modal.find('[name=parent_id]').val(defaultParentId).trigger('change');
                 modal.find('[name=icon]').val('');
                 modal.find('[name=meta_title]').val('');
@@ -236,6 +249,7 @@
                 modal.find('.modal-title').text(`@lang('Update Sub-Category')`);
                 modal.find('form').attr('action', `{{ route('admin.category.store', '') }}/${category.id}`);
                 modal.find('[name=name]').val(category.name);
+                modal.find('[name=name_hi]').val(category.name_hi || '');
                 modal.find('[name=parent_id]').val(category.parent_id || defaultParentId).trigger('change');
                 modal.find('[name=icon]').val(category.icon || '');
                 modal.find('[name=meta_title]').val(category.meta_title || '');

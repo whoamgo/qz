@@ -1,5 +1,13 @@
 @extends('admin.layouts.app')
 @section('panel')
+    {{-- Translation-status filter (Hindi present / missing) --}}
+    @php $tr = request('translation'); @endphp
+    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+        <span class="text-muted">@lang('Language')</span>
+        <a href="{{ request()->fullUrlWithQuery(['translation' => null, 'page' => null]) }}" class="btn btn-sm {{ !$tr ? 'btn--primary' : 'btn-outline--primary' }}">@lang('All')</a>
+        <a href="{{ request()->fullUrlWithQuery(['translation' => 'translated', 'page' => null]) }}" class="btn btn-sm {{ $tr === 'translated' ? 'btn--primary' : 'btn-outline--primary' }}">@lang('Hindi added')</a>
+        <a href="{{ request()->fullUrlWithQuery(['translation' => 'hindi_missing', 'page' => null]) }}" class="btn btn-sm {{ $tr === 'hindi_missing' ? 'btn--primary' : 'btn-outline--primary' }}">@lang('Hindi missing')</a>
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -36,6 +44,14 @@
                                         </td>
                                         <td>
                                             <span class="name fw-bold">{{ __($category->name) }} ({{$category->id}})</span>
+                                            <div class="mt-1">
+                                                <span class="badge badge--primary" title="@lang('English')">EN ✓</span>
+                                                @if (filled($category->name_hi))
+                                                    <span class="badge badge--success" title="@lang('Hindi translation added')">हि ✓</span>
+                                                @else
+                                                    <span class="badge badge--warning" title="@lang('Hindi name missing')">हि ✗</span>
+                                                @endif
+                                            </div>
                                         </td>
                                         
                                         <td>
@@ -97,8 +113,12 @@
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>@lang('Name')</label>
+                            <label>@lang('Name') <span class="text--info">(@lang('English'))</span></label>
                             <input class="form-control" name="name" type="text" value="{{ old('name') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Name — हिंदी') <span class="text--info">(@lang('optional'))</span></label>
+                            <input class="form-control" name="name_hi" type="text" value="{{ old('name_hi') }}" maxlength="40" placeholder="@lang('Hindi category name')">
                         </div>
                         <div class="form-group">
                             <label>@lang('Parent Category') <span class="text--info">(@lang('Leave empty for main category'))</span></label>
@@ -347,6 +367,7 @@
                 modal.find('.modal-title').text(`@lang('Add New Category')`);
                 modal.find('form').attr('action', `{{ route('admin.category.store', '') }}`);
                 modal.find('[name=name]').val('');
+                modal.find('[name=name_hi]').val('');
                 modal.find('[name=parent_id]').val('').trigger('change');
                 modal.find('[name=icon]').val('');
                 modal.find('[name=meta_title]').val('');
@@ -360,6 +381,7 @@
                 modal.find('.modal-title').text(`@lang('Update Category')`);
                 modal.find('form').attr('action', `{{ route('admin.category.store', '') }}/${category.id}`);
                 modal.find('[name=name]').val(category.name);
+                modal.find('[name=name_hi]').val(category.name_hi || '');
                 modal.find('[name=parent_id]').val(category.parent_id || '').trigger('change');
                 modal.find('[name=icon]').val(category.icon || '');
                 modal.find('[name=meta_title]').val(category.meta_title || '');

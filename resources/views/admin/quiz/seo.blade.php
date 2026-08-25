@@ -96,6 +96,52 @@
                     </div>
                 </div>
 
+                {{-- Hindi SEO (हिंदी) — clearly separated; blank = English fallback --}}
+                <div class="card mb-3 border--primary">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="las la-language"></i> हिंदी SEO (Hindi)</h6>
+                        <span class="text-muted small">@lang('Optional — blank fields fall back to English')</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">SEO Title — हिंदी</label>
+                            <input type="text" name="meta_title_hi" class="form-control" maxlength="255" value="{{ old('meta_title_hi', $quiz->meta_title_hi) }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meta Description — हिंदी</label>
+                            <textarea name="meta_description_hi" class="form-control" rows="2" maxlength="320">{{ old('meta_description_hi', $quiz->meta_description_hi) }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">SEO H1 — हिंदी</label>
+                                <input type="text" name="seo_h1_hi" class="form-control" maxlength="255" value="{{ old('seo_h1_hi', $quiz->seo_h1_hi) }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">SEO Keywords — हिंदी</label>
+                                <input type="text" name="meta_keywords_hi" class="form-control" maxlength="255" value="{{ old('meta_keywords_hi', $quiz->meta_keywords_hi) }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">Primary Keyword — हिंदी</label>
+                                <input type="text" name="primary_keyword_hi" class="form-control" maxlength="191" value="{{ old('primary_keyword_hi', $quiz->primary_keyword_hi) }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">Secondary Keywords — हिंदी</label>
+                                <input type="text" name="secondary_keywords_hi" class="form-control" value="{{ old('secondary_keywords_hi', $quiz->secondary_keywords_hi) }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Short Introduction — हिंदी</label>
+                            <textarea name="seo_intro_hi" class="form-control" rows="2" maxlength="1000">{{ old('seo_intro_hi', $quiz->seo_intro_hi) }}</textarea>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label">Main SEO Content — हिंदी (HTML)</label>
+                            <textarea name="seo_content_hi" class="nicEdit form-control">{{ old('seo_content_hi', $quiz->seo_content_hi) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card mb-3">
                     <div class="card-header"><h6 class="mb-0">Social (Open Graph & Twitter)</h6></div>
                     <div class="card-body">
