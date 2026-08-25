@@ -57,19 +57,27 @@ class QuizImportController extends Controller {
              $catId, $subId, 'free', '0', 'medium', '15', '0', '60', '1', '0', 'draft',
              'Which Indian state has the longest coastline?', 'mcq_single',
              'Tamil Nadu', 'Gujarat', 'Andhra Pradesh', 'Kerala', 'B',
-             'Gujarat has the longest coastline of any Indian state, at roughly 1600 km.', 'medium'],
+             'Gujarat has the longest coastline of any Indian state, at roughly 1600 km.', 'medium',
+             // Optional Hindi columns (quiz_title_hi, quiz_description_hi, question_hi, option_a_hi..d_hi, explanation_hi):
+             'नमूना क्विज़ एक - इसे बदलें', 'क्विज़ पेज पर दिखने वाला संक्षिप्त विवरण।',
+             'किस भारतीय राज्य की तटरेखा सबसे लंबी है?',
+             'तमिलनाडु', 'गुजरात', 'आंध्र प्रदेश', 'केरल',
+             'भारत में गुजरात की तटरेखा सबसे लंबी है, लगभग 1600 किमी।'],
 
             ['SAMPLE Quiz One - replace this', 'sample-quiz-one', 'Short description shown on the quiz page.',
              $catId, $subId, 'free', '0', 'medium', '15', '0', '60', '1', '0', 'draft',
              'The Tropic of Cancer passes through India.', 'true_false',
              'True', 'False', '', '', 'A',
-             'Leave options C and D empty for true_false rows.', 'easy'],
+             'Leave options C and D empty for true_false rows.', 'easy',
+             // Hindi columns are optional per row — left empty here.
+             '', '', '', '', '', '', '', ''],
 
             ['SAMPLE Quiz Two - replace this', 'sample-quiz-two', 'A second quiz in the same file.',
              $catId, $subId, 'free', '0', 'hard', '20', '10', '50', '2', '0.5', 'draft',
              'Which two of these are Himalayan rivers?', 'mcq_multi',
              'Ganga', 'Godavari', 'Yamuna', 'Krishna', 'A,C',
-             'question_limit 10 means each attempt serves 10 random questions from this quiz.', 'hard'],
+             'question_limit 10 means each attempt serves 10 random questions from this quiz.', 'hard',
+             '', '', '', '', '', '', '', ''],
         ];
 
         return response()->streamDownload(function () use ($sample) {
@@ -470,6 +478,12 @@ FIELD RULES
 - question_limit        How many questions each attempt serves, chosen at random.
                         0 means serve all of them.
 - pass_percentage       A number from 0 to 100.
+- *_hi columns          OPTIONAL Hindi content: quiz_title_hi, quiz_description_hi,
+                        question_hi, option_a_hi..option_d_hi, explanation_hi.
+                        Leave blank to skip Hindi for a row (the site then shows the
+                        English text). When filled, keep the Hindi meaning identical
+                        to the English cell in the same row. correct_answer stays the
+                        same A/B/C/D letters — do NOT translate it.
 
 QUALITY REQUIREMENTS
 - Questions must be factually accurate. If you are not confident a fact is
@@ -500,13 +514,21 @@ PROMPT;
                 ->orderBy('row_number')
                 ->chunk(500, function ($rows) use ($out) {
                     foreach ($rows as $r) {
+                        // Column order matches ['row_number'] + HEADERS + ['status','errors']
+                        // exactly, so the exported CSV can be corrected and re-uploaded
+                        // without shifting columns.
                         QuizImportService::writeCsvLine($out, [
-                            $r->row_number, $r->quiz_title, $r->quiz_slug, $r->quiz_description,
-                            $r->category_raw, $r->quiz_type, $r->price, $r->quiz_difficulty,
-                            $r->time_limit, $r->pass_percentage, $r->marks_per_correct,
-                            $r->negative_marking, $r->quiz_status, $r->question, $r->question_type,
+                            $r->row_number,
+                            $r->quiz_title, $r->quiz_slug, $r->quiz_description,
+                            $r->category_raw, $r->sub_category_raw, $r->quiz_type,
+                            $r->price, $r->quiz_difficulty, $r->time_limit, $r->question_limit,
+                            $r->pass_percentage, $r->marks_per_correct, $r->negative_marking, $r->quiz_status,
+                            $r->question, $r->question_type,
                             $r->option_a, $r->option_b, $r->option_c, $r->option_d,
                             $r->correct_answer, $r->explanation, $r->question_difficulty,
+                            // Hindi columns (same order as HEADERS tail).
+                            $r->quiz_title_hi, $r->quiz_description_hi, $r->question_hi,
+                            $r->option_a_hi, $r->option_b_hi, $r->option_c_hi, $r->option_d_hi, $r->explanation_hi,
                             $r->validation_status,
                             $r->validation_status === QuizImportRow::STATUS_DUPLICATE
                                 ? $r->duplicate_reason

@@ -48,6 +48,10 @@ class QuestionImportController extends Controller {
                 'B',
                 'Gujarat has the longest coastline of any Indian state, at roughly 1600 km.',
                 'medium',
+                // Optional Hindi columns (question_hi, option_a_hi..d_hi, explanation_hi):
+                'नमूना - इस पंक्ति को बदलें। किस भारतीय राज्य की तटरेखा सबसे लंबी है?',
+                'तमिलनाडु', 'गुजरात', 'आंध्र प्रदेश', 'केरल',
+                'भारत में गुजरात की तटरेखा सबसे लंबी है, लगभग 1600 किमी।',
             ],
             [
                 'General Knowledge', 'Indian Geography',
@@ -57,6 +61,8 @@ class QuestionImportController extends Controller {
                 'A,C',
                 'The Ganga and Yamuna both rise in the Himalayas; the Godavari and Krishna are peninsular rivers.',
                 'hard',
+                // Hindi columns left empty — they are optional per row.
+                '', '', '', '', '', '',
             ],
             [
                 'General Knowledge', 'Indian Geography',
@@ -66,6 +72,7 @@ class QuestionImportController extends Controller {
                 'A',
                 'The Tropic of Cancer crosses eight Indian states. Leave options C and D empty for true_false rows.',
                 'easy',
+                '', '', '', '', '', '',
             ],
         ];
 
@@ -365,6 +372,12 @@ class QuestionImportController extends Controller {
                             $row->correct_answer,
                             $row->explanation,
                             $row->difficulty,
+                            $row->question_hi,
+                            $row->option_a_hi,
+                            $row->option_b_hi,
+                            $row->option_c_hi,
+                            $row->option_d_hi,
+                            $row->explanation_hi,
                             $row->validation_status,
                             $reason,
                         ]);

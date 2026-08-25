@@ -20,6 +20,8 @@ class QuestionImportRow extends Model {
         'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer',
         'explanation', 'difficulty', 'validation_status', 'validation_errors',
         'duplicate_flag', 'duplicate_question_id', 'bank_question_id', 'processed_at',
+        // Optional Hindi content staged for import (Step 9).
+        'question_hi', 'option_a_hi', 'option_b_hi', 'option_c_hi', 'option_d_hi', 'explanation_hi',
     ];
 
     protected $casts = [
@@ -79,6 +81,16 @@ class QuestionImportRow extends Model {
             'B' => $this->option_b,
             'C' => $this->option_c,
             'D' => $this->option_d,
+        ];
+    }
+
+    /** Hindi options in A-D order (optional; nulls when not provided in the import). */
+    public function optionMapHi(): array {
+        return [
+            'A' => $this->option_a_hi,
+            'B' => $this->option_b_hi,
+            'C' => $this->option_c_hi,
+            'D' => $this->option_d_hi,
         ];
     }
 

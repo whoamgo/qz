@@ -28,6 +28,9 @@ class QuestionImportService {
         'category', 'sub_category', 'question', 'question_type',
         'option_a', 'option_b', 'option_c', 'option_d',
         'correct_answer', 'explanation', 'difficulty',
+        // Optional Hindi columns — omit them entirely for English-only imports.
+        // When present, they populate the *_hi content fields.
+        'question_hi', 'option_a_hi', 'option_b_hi', 'option_c_hi', 'option_d_hi', 'explanation_hi',
     ];
 
     const REQUIRED_HEADERS = [
@@ -243,6 +246,13 @@ class QuestionImportService {
                 'correct_answer'        => $row['correct_answer'],
                 'explanation'           => $row['explanation'],
                 'difficulty'            => $row['difficulty'],
+                // Optional Hindi content carried through staging.
+                'question_hi'           => $row['question_hi'] ?? null,
+                'option_a_hi'           => $row['option_a_hi'] ?? null,
+                'option_b_hi'           => $row['option_b_hi'] ?? null,
+                'option_c_hi'           => $row['option_c_hi'] ?? null,
+                'option_d_hi'           => $row['option_d_hi'] ?? null,
+                'explanation_hi'        => $row['explanation_hi'] ?? null,
                 'validation_status'     => $status,
                 'validation_errors'     => $errors ? json_encode($errors) : null,
                 'duplicate_flag'        => $isDuplicate,
@@ -291,6 +301,13 @@ class QuestionImportService {
             'correct_answer'    => strtoupper(str_replace(' ', '', $get('correct_answer'))) ?: null,
             'explanation'       => $get('explanation') ?: null,
             'difficulty'        => strtolower($get('difficulty')) ?: null,
+            // Optional Hindi content (nullable; never affects validation/duplicates).
+            'question_hi'       => $get('question_hi') ?: null,
+            'option_a_hi'       => $get('option_a_hi') ?: null,
+            'option_b_hi'       => $get('option_b_hi') ?: null,
+            'option_c_hi'       => $get('option_c_hi') ?: null,
+            'option_d_hi'       => $get('option_d_hi') ?: null,
+            'explanation_hi'    => $get('explanation_hi') ?: null,
         ];
     }
 
@@ -502,6 +519,9 @@ class QuestionImportService {
                 'difficulty'      => $row->difficulty,
                 'question_text'   => $row->question,
                 'explanation'     => $row->explanation,
+                // Optional Hindi content (null when the import had no Hindi columns).
+                'question_text_hi' => $row->question_hi,
+                'explanation_hi'   => $row->explanation_hi,
                 'default_marks'   => 1,
                 'status'          => 1,
             ]);
@@ -510,6 +530,7 @@ class QuestionImportService {
             $rowIdToQuestion[$row->id]  = $question->id;
 
             $correctLetters = array_filter(explode(',', (string) $row->correct_answer));
+            $hiMap          = $row->optionMapHi();
             $sortOrder      = 0;
 
             foreach ($row->optionMap() as $letter => $text) {
@@ -520,6 +541,7 @@ class QuestionImportService {
                 $optionPayload[] = [
                     'bank_question_id' => $question->id,
                     'option_text'      => $text,
+                    'option_text_hi'   => ($hiMap[$letter] ?? null) ?: null,
                     'is_correct'       => in_array($letter, $correctLetters, true),
                     'sort_order'       => $sortOrder++,
                     'created_at'       => $now,

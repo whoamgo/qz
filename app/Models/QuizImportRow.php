@@ -34,6 +34,9 @@ class QuizImportRow extends Model {
         'validation_errors', 'duplicate_flag', 'duplicate_reason',
         'duplicate_quiz_id', 'duplicate_question_id', 'quiz_id',
         'bank_question_id', 'processed_at',
+        // Optional Hindi content staged for import (Step 9b).
+        'quiz_title_hi', 'quiz_description_hi', 'question_hi',
+        'option_a_hi', 'option_b_hi', 'option_c_hi', 'option_d_hi', 'explanation_hi',
     ];
 
     protected $casts = [
@@ -49,6 +52,11 @@ class QuizImportRow extends Model {
 
     public function optionMap(): array {
         return ['A' => $this->option_a, 'B' => $this->option_b, 'C' => $this->option_c, 'D' => $this->option_d];
+    }
+
+    /** Hindi options in A-D order (optional; nulls when not provided in the import). */
+    public function optionMapHi(): array {
+        return ['A' => $this->option_a_hi, 'B' => $this->option_b_hi, 'C' => $this->option_c_hi, 'D' => $this->option_d_hi];
     }
 
     public function errorList(): string {
