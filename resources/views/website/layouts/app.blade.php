@@ -55,6 +55,12 @@
     <meta name="robots" content="{{ $seo['robots'] ?? 'index, follow' }}">
     <link rel="canonical" href="{{ $canonical }}">
 
+    {{-- hreflang: pair the English and Hindi versions of this page (empty on
+         single-language pages such as the quiz-play flow, auth and admin). --}}
+    @foreach (hreflang_alternates() as $hl => $hlHref)
+        <link rel="alternate" hreflang="{{ $hl }}" href="{{ $hlHref }}">
+    @endforeach
+
     <meta property="og:site_name" content="{{ $siteName }}">
     <meta property="og:type" content="{{ $seo['type'] ?? 'website' }}">
     <meta property="og:title" content="{{ $seo['og_title'] ?? $metaTitle }}">
