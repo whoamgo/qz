@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 /**
  * Extends the existing category SEO fields (meta_title/meta_description/
  * meta_keywords already exist) into a full, admin-managed SEO content set used

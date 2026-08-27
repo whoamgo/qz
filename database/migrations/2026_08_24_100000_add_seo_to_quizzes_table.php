@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 /**
  * Adds an admin-managed SEO field set to quizzes, mirroring the category SEO
  * columns. Every field is nullable/defaulted and empty by default, so quiz

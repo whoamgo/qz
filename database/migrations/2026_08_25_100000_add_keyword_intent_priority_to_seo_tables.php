@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 /**
  * Phase 2 P0 — adds keyword / search-intent / priority fields to the SEO
  * entities that Phase 1 already extended (categories + quizzes). These drive

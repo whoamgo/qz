@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+
 /*
 | Daily Spin: 1 question -> 10 questions per spin, answered together and submitted
 | once. Stores the served question set + the submitted answers + the score. The
