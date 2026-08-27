@@ -22,3 +22,6 @@ config/google-service-account.json
 assets/admin/push_config.json
 assets/admin/push_config.json
 assets/admin/push_config.json
+
+# local DB dumps / rollback backups (not for the repo)
+database/hindi_sql/_rollback_backup_*.sql
