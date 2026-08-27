@@ -64,18 +64,25 @@ class DailySpinController extends BaseWebsiteController
         return response()->json(['success' => true] + $result);
     }
 
-    /** Auth: validate the submitted answer server-side and award XP if correct. */
+    /** Auth: grade the whole 10-question set server-side and award +5 per correct. */
     public function answer(Request $request): JsonResponse
     {
         $data = $request->validate([
             'spin_id'   => ['required', 'integer'],
-            'option_id' => ['required', 'integer'],
+            'answers'   => ['required', 'array', 'min:1'],
+            'answers.*' => ['required', 'integer'],
         ]);
 
-        $result = $this->service->answer(
+        // Keys are question ids; cast to int => int.
+        $answers = [];
+        foreach ($data['answers'] as $qid => $optId) {
+            $answers[(int) $qid] = (int) $optId;
+        }
+
+        $result = $this->service->submit(
             auth()->user(),
             (int) $data['spin_id'],
-            (int) $data['option_id']
+            $answers
         );
 
         if (isset($result['error'])) {

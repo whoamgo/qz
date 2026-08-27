@@ -9,28 +9,33 @@ use App\Models\Level;
 use App\Models\User;
 use App\Models\UserXp;
 use App\Models\XpRule;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Backend brain for "Daily Spin & Win".
  *
- * Every trust-sensitive decision lives here and is validated against the
- * authenticated user and the server date — the frontend only animates:
+ * One spin per user per day. A spin serves a SET of questions from the landed
+ * category; the user answers them all and submits once. Every trust-sensitive
+ * decision is made here against the authenticated user + server date:
  *   - eligibility / one-spin-per-day  (DB unique + row status)
- *   - which segment & question are served (never leaks the correct answer)
- *   - whether an answer is correct
- *   - the +5 XP reward (through the existing XpService, idempotent)
+ *   - which segment & questions are served (answers never leak on spin)
+ *   - grading each answer
+ *   - the +5-per-correct XP reward (through XpService, idempotent per question)
  */
 class DailySpinService
 {
-    /** XP rule key seeded by the migration; reward/on-off managed in XP Rules admin. */
+    /** XP rule key seeded by migration; reward/on-off managed in XP Rules admin. */
     const XP_RULE_KEY = 'daily_spin';
 
+    /** Questions served per spin. */
+    const QUESTIONS_PER_SPIN = 10;
+
     /**
-     * Wheel segments. Purely visual on the client; the backend decides which one
-     * the user "lands" on. Each maps to a real top-level category by slug so the
-     * question shown matches the segment label. `slug === null` = Bonus (any topic).
+     * Wheel segments. Purely visual on the client; the backend decides the landed
+     * one. Each maps to a real top-level category by slug so the questions match
+     * the label. `slug === null` = Bonus (any topic).
      */
     const SEGMENTS = [
         ['key' => 'gk',            'label' => 'General Knowledge', 'emoji' => '🎯', 'slug' => 'general-knowledge'],
@@ -43,7 +48,7 @@ class DailySpinService
         ['key' => 'bonus',         'label' => 'Bonus',             'emoji' => '🎁', 'slug' => null],
     ];
 
-    /** Segment metadata for the view (index + label + emoji), no DB coupling. */
+    /** Segment metadata for the view (index + label + emoji). */
     public static function segments(): array
     {
         $out = [];
@@ -53,44 +58,39 @@ class DailySpinService
         return $out;
     }
 
-    /** Is the whole feature switched on? Reuses the existing XP rule's active flag. */
+    /** Feature on/off — reuses the existing XP rule's active flag. */
     public function isEnabled(): bool
     {
         return XpRule::where('key', self::XP_RULE_KEY)->where('is_active', true)->exists();
     }
 
-    /** Reward amount, read from the existing XP rule (admin-editable). */
+    /** Per-correct reward, from the existing (admin-editable) XP rule. */
     public function rewardXp(): int
     {
         return (int) (XpRule::where('key', self::XP_RULE_KEY)->value('xp_value') ?? 5);
     }
 
-    /**
-     * State for the homepage on load. Never creates a row.
-     * Returns one of: available | completed  (guests are handled in the controller).
-     */
+    /** Homepage state on load; never creates a row. */
     public function getStatus(User $user): array
     {
         $attempt = $this->todaysAttempt($user);
 
         if ($attempt && $attempt->isAnswered()) {
             return [
-                'state'        => 'completed',
-                'is_correct'   => (bool) $attempt->is_correct,
-                'xp_awarded'   => (int) $attempt->xp_awarded,
-                'next_spin_at' => now()->addDay()->startOfDay()->toIso8601String(),
+                'state'         => 'completed',
+                'correct_count' => (int) $attempt->correct_count,
+                'total'         => (int) ($attempt->total_questions ?: self::QUESTIONS_PER_SPIN),
+                'xp_awarded'    => (int) $attempt->xp_awarded,
+                'next_spin_at'  => now()->addDay()->startOfDay()->toIso8601String(),
             ] + $this->levelBlock($user);
         }
 
-        // No attempt yet, or spun-but-not-answered (which spin() will resume).
         return ['state' => 'available'] + $this->levelBlock($user);
     }
 
     /**
-     * Resolve today's spin. Creates the row on first spin of the day; a repeat call
-     * the same day resumes the SAME question (a refresh never burns a new question,
-     * and an already-answered day is reported as completed). Race-safe via a locked
-     * transaction on top of the UNIQUE(user_id, spin_date) guarantee.
+     * Resolve today's spin: create it (with its 10 questions) on the first spin of
+     * the day; a repeat the same day resumes the SAME set. Race-safe.
      */
     public function spin(User $user): array
     {
@@ -108,56 +108,61 @@ class DailySpinService
 
             if ($attempt && $attempt->isAnswered()) {
                 return [
-                    'state'        => 'already_completed',
-                    'is_correct'   => (bool) $attempt->is_correct,
-                    'xp_awarded'   => (int) $attempt->xp_awarded,
-                    'next_spin_at' => now()->addDay()->startOfDay()->toIso8601String(),
+                    'state'         => 'already_completed',
+                    'correct_count' => (int) $attempt->correct_count,
+                    'total'         => (int) ($attempt->total_questions ?: self::QUESTIONS_PER_SPIN),
+                    'xp_awarded'    => (int) $attempt->xp_awarded,
+                    'next_spin_at'  => now()->addDay()->startOfDay()->toIso8601String(),
                 ] + $this->levelBlock($user);
             }
 
-            // Resume an in-progress spin with its original question.
+            // Resume an in-progress spin with its original question set.
             if ($attempt) {
-                $question = BankQuestion::with(['options' => fn($q) => $q->orderBy('sort_order')])
-                    ->find($attempt->question_id);
+                $questions = $this->loadQuestions($attempt->question_ids ?? []);
 
-                if (!$question) {
-                    // Question vanished (rare) — repick so the user isn't stuck.
-                    [$segIndex, $seg, $question] = $this->pickSegmentAndQuestion($user);
+                // Repick if the stored set is missing/short or holds unanswerable
+                // (orphaned) questions — never strand the user on an empty set.
+                if ($questions->count() < self::QUESTIONS_PER_SPIN) {
+                    [$segIndex, $seg, $questions] = $this->pickSegmentAndQuestions($user);
                     $attempt->update([
                         'segment_key'   => $seg['key'],
                         'segment_index' => $segIndex,
-                        'category_id'   => $question->category_id,
-                        'question_id'   => $question->id,
+                        'category_id'   => $questions->first()->category_id ?? null,
+                        'question_ids'  => $questions->pluck('id')->all(),
                     ]);
                 }
 
-                return $this->spinPayload($attempt->segment_index ?? 0, self::SEGMENTS[$attempt->segment_index ?? 0], $question, $attempt);
+                $idx = $attempt->segment_index ?? 0;
+                return $this->spinPayload($idx, self::SEGMENTS[$idx], $questions, $attempt);
             }
 
-            // First spin today: pick and persist.
-            [$segIndex, $seg, $question] = $this->pickSegmentAndQuestion($user);
+            // First spin today.
+            [$segIndex, $seg, $questions] = $this->pickSegmentAndQuestions($user);
 
             $attempt = DailySpinAttempt::create([
-                'user_id'       => $user->id,
-                'spin_date'     => $today,
-                'segment_key'   => $seg['key'],
-                'segment_index' => $segIndex,
-                'category_id'   => $question->category_id,
-                'question_id'   => $question->id,
-                'status'        => DailySpinAttempt::STATUS_SPUN,
+                'user_id'         => $user->id,
+                'spin_date'       => $today,
+                'segment_key'     => $seg['key'],
+                'segment_index'   => $segIndex,
+                'category_id'     => $questions->first()->category_id ?? null,
+                'question_ids'    => $questions->pluck('id')->all(),
+                'total_questions' => $questions->count(),
+                'status'          => DailySpinAttempt::STATUS_SPUN,
             ]);
 
-            return $this->spinPayload($segIndex, $seg, $question, $attempt);
+            return $this->spinPayload($segIndex, $seg, $questions, $attempt);
         });
     }
 
     /**
-     * Validate and grade an answer. Idempotent: a second submission returns the
-     * first result and never re-awards XP. Correctness and reward are decided here.
+     * Grade the whole set and award +5 per correct. Idempotent: a second submit
+     * replays the stored result and never re-awards.
+     *
+     * @param array $answers  map of [question_id => option_id]
      */
-    public function answer(User $user, int $spinId, int $optionId): array
+    public function submit(User $user, int $spinId, array $answers): array
     {
-        return DB::transaction(function () use ($user, $spinId, $optionId) {
+        return DB::transaction(function () use ($user, $spinId, $answers) {
             $attempt = DailySpinAttempt::where('id', $spinId)
                 ->where('user_id', $user->id)
                 ->where('spin_date', today()->toDateString())
@@ -168,50 +173,57 @@ class DailySpinService
                 return ['error' => 'invalid_spin', 'message' => 'This spin is no longer valid. Please spin again.'];
             }
 
-            $question = BankQuestion::with(['options' => fn($q) => $q->orderBy('sort_order')])
-                ->find($attempt->question_id);
-
-            if (!$question) {
-                return ['error' => 'invalid_question', 'message' => 'Question unavailable. Please try again tomorrow.'];
+            $ids       = $attempt->question_ids ?? [];
+            $questions = $this->loadQuestions($ids);
+            if ($questions->count() === 0) {
+                return ['error' => 'invalid_question', 'message' => 'Questions unavailable. Please try again tomorrow.'];
             }
 
-            // Already answered → replay stored outcome (no second XP award).
+            // Already submitted -> replay the stored outcome (no second award).
             if ($attempt->isAnswered()) {
-                return $this->answerResult($user, $attempt, $question, (int) $attempt->xp_awarded, /*replay*/ true);
+                return $this->submitResult($user, $attempt, $questions, $attempt->answers ?? [], (int) $attempt->xp_awarded, true);
             }
 
-            // The chosen option must belong to THIS question (blocks tampered ids).
-            $chosen = $question->options->firstWhere('id', $optionId);
-            if (!$chosen) {
-                return ['error' => 'invalid_option', 'message' => 'That answer option was not recognised.'];
+            // Normalise + validate every answer against THIS spin's questions.
+            $clean = [];
+            foreach ($ids as $qid) {
+                $q = $questions->get($qid);
+                if (!$q) {
+                    return ['error' => 'invalid_question', 'message' => 'A question in this set is unavailable.'];
+                }
+                if (!array_key_exists($qid, $answers) && !array_key_exists((string) $qid, $answers)) {
+                    return ['error' => 'incomplete', 'message' => 'Please answer all questions before submitting.'];
+                }
+                $optId = (int) ($answers[$qid] ?? $answers[(string) $qid]);
+                if (!$q->options->firstWhere('id', $optId)) {
+                    return ['error' => 'invalid_option', 'message' => 'An answer option was not recognised.'];
+                }
+                $clean[$qid] = $optId;
             }
 
-            $isCorrect = (int) $optionId === (int) $question->correct_option_id;
-
-            $attempt->selected_option_id = $optionId;
-            $attempt->is_correct         = $isCorrect;
-            $attempt->status             = DailySpinAttempt::STATUS_ANSWERED;
-            $attempt->answered_at        = now();
-
+            // Grade + award +5 per correct through the existing engine (idempotent
+            // per question/day via the service's date-scoped unique_identifier).
+            $xpService = new XpService();
+            $correct = 0;
             $xpEarned = 0;
-            if ($isCorrect) {
-                // Award through the existing engine. reference (daily_spin, attempt id)
-                // + the service's date-scoped unique_identifier make it idempotent, so
-                // even a duplicate request cannot grant the +5 twice.
-                $xpService   = new XpService();
-                $transaction = $xpService->awardXp(
-                    $user,
-                    self::XP_RULE_KEY,           // event/rule key
-                    'daily_spin',                // reference_type
-                    $attempt->id                 // reference_id
-                );
-                $xpEarned = $transaction ? (int) $transaction->xp_amount : 0;
+            foreach ($ids as $qid) {
+                $q = $questions->get($qid);
+                if ($clean[$qid] === (int) $q->correct_option_id) {
+                    $correct++;
+                    $tx = $xpService->awardXp($user, self::XP_RULE_KEY, 'daily_spin', $q->id);
+                    $xpEarned += $tx ? (int) $tx->xp_amount : 0;
+                }
             }
 
-            $attempt->xp_awarded = $xpEarned;
+            $attempt->answers         = $clean;
+            $attempt->correct_count   = $correct;
+            $attempt->total_questions = count($ids);
+            $attempt->xp_awarded      = $xpEarned;
+            $attempt->status          = DailySpinAttempt::STATUS_ANSWERED;
+            $attempt->answered_at     = now();
             $attempt->save();
 
-            return $this->answerResult($user, $attempt, $question, $xpEarned, /*replay*/ false);
+            return $this->submitResult($user->fresh(), $attempt, $questions, $clean, $xpEarned, false);
         });
     }
 
@@ -226,70 +238,103 @@ class DailySpinService
             ->first();
     }
 
-    /**
-     * Choose a wheel segment (in random order) and a fresh question from its
-     * category, preferring questions this user has not been served before. Always
-     * returns a valid question with a correct option and at least two options.
-     *
-     * @return array{0:int,1:array,2:BankQuestion}
-     */
-    private function pickSegmentAndQuestion(User $user): array
+    /** Load questions (with ordered options) keyed by id, in the given order. */
+    private function loadQuestions(array $ids): Collection
     {
+        if (empty($ids)) {
+            return collect();
+        }
+        $byId = BankQuestion::whereIn('id', $ids)
+            ->with(['options' => fn($q) => $q->orderBy('sort_order')])
+            ->get()
+            ->keyBy('id');
+
+        // Preserve served order, keep only answerable ones.
+        return collect($ids)
+            ->map(fn($id) => $byId->get($id))
+            ->filter(fn($q) => $q && $q->options->count() >= 2)
+            ->keyBy('id');
+    }
+
+    /**
+     * Choose a wheel segment and QUESTIONS_PER_SPIN answerable questions from it,
+     * preferring questions this user hasn't been served before.
+     *
+     * @return array{0:int,1:array,2:Collection}
+     */
+    private function pickSegmentAndQuestions(User $user): array
+    {
+        $need      = self::QUESTIONS_PER_SPIN;
         $servedIds = DailySpinAttempt::where('user_id', $user->id)
-            ->pluck('question_id')->all();
+            ->pluck('question_ids')
+            ->flatMap(fn($v) => is_array($v) ? $v : [])
+            ->unique()->values()->all();
 
         $order = array_keys(self::SEGMENTS);
         shuffle($order);
 
-        // Pass 1: honour the "not recently shown" preference.
+        // Pass 1: a full fresh set from a single segment.
         foreach ($order as $i) {
-            $q = $this->questionForSegment(self::SEGMENTS[$i], $servedIds);
-            if ($q) {
-                return [$i, self::SEGMENTS[$i], $q];
+            $qs = $this->questionsForSegment(self::SEGMENTS[$i], $servedIds, $need);
+            if ($qs->count() >= $need) {
+                return [$i, self::SEGMENTS[$i], $qs->take($need)->keyBy('id')];
             }
         }
 
-        // Pass 2: relax the exclusion (user has seen everything in those pools).
+        // Pass 2: relax the "not recently shown" preference.
         foreach ($order as $i) {
-            $q = $this->questionForSegment(self::SEGMENTS[$i], []);
-            if ($q) {
-                return [$i, self::SEGMENTS[$i], $q];
+            $qs = $this->questionsForSegment(self::SEGMENTS[$i], [], $need);
+            if ($qs->count() >= $need) {
+                return [$i, self::SEGMENTS[$i], $qs->take($need)->keyBy('id')];
             }
         }
 
-        // Final fallback: any active single-answer question, mapped to Bonus.
-        $bonusIndex = $this->segmentIndexByKey('bonus');
-        $q = $this->baseQuestionQuery()->inRandomOrder()->first();
+        // Pass 3: best segment we can, topped up from the global pool.
+        $i   = $order[0];
+        $seg = self::SEGMENTS[$i];
+        $qs  = $this->questionsForSegment($seg, [], $need);
+        if ($qs->count() < $need) {
+            $have = $qs->pluck('id')->all();
+            $fill = $this->baseQuestionQuery()
+                ->whereNotIn('id', $have)
+                ->inRandomOrder()
+                ->limit($need - $qs->count())
+                ->get();
+            $qs = $qs->concat($fill);
+        }
 
-        return [$bonusIndex, self::SEGMENTS[$bonusIndex], $q];
+        return [$i, $seg, $qs->take($need)->keyBy('id')];
     }
 
-    private function questionForSegment(array $segment, array $excludeIds): ?BankQuestion
+    private function questionsForSegment(array $segment, array $excludeIds, int $limit): Collection
     {
         $query = $this->baseQuestionQuery();
 
         if (!empty($segment['slug'])) {
             $categoryId = $this->categoryIdBySlug($segment['slug']);
             if (!$categoryId) {
-                return null;
+                return collect();
             }
             $query->where('category_id', $categoryId);
         }
-
         if (!empty($excludeIds)) {
             $query->whereNotIn('id', $excludeIds);
         }
 
-        return $query->inRandomOrder()->first();
+        return $query->inRandomOrder()->limit($limit)->get();
     }
 
-    /** Active, single-answer questions that have a defined correct option. */
+    /** Active, single-answer questions that actually have >=2 options. */
     private function baseQuestionQuery()
     {
         return BankQuestion::query()
             ->where('status', 1)
             ->where('question_type', BankQuestion::TYPE_MCQ_SINGLE)
             ->whereNotNull('correct_option_id')
+            // ~43% of the bank has a correct_option_id but NO option rows (orphaned);
+            // require a real, answerable set. For questions with >=2 options the
+            // correct_option_id is always among them, so this alone is sufficient.
+            ->has('options', '>=', 2)
             ->with(['options' => fn($q) => $q->orderBy('sort_order')]);
     }
 
@@ -300,18 +345,8 @@ class DailySpinService
         });
     }
 
-    private function segmentIndexByKey(string $key): int
-    {
-        foreach (self::SEGMENTS as $i => $s) {
-            if ($s['key'] === $key) {
-                return $i;
-            }
-        }
-        return count(self::SEGMENTS) - 1;
-    }
-
-    /** Spin JSON — the correct answer is deliberately NOT included. */
-    private function spinPayload(int $segIndex, array $seg, BankQuestion $question, DailySpinAttempt $attempt): array
+    /** Spin JSON — the correct answers are deliberately NOT included. */
+    private function spinPayload(int $segIndex, array $seg, Collection $questions, DailySpinAttempt $attempt): array
     {
         return [
             'state'          => 'question',
@@ -319,44 +354,52 @@ class DailySpinService
             'target_segment' => $segIndex,
             'segment'        => ['key' => $seg['key'], 'label' => $seg['label'], 'emoji' => $seg['emoji']],
             'category'       => $seg['label'],
-            'question'       => [
-                'id'      => $question->id,
-                'text'    => $question->question_text,
-                'options' => $question->options->map(fn($o) => [
-                    'id'   => $o->id,
-                    'text' => $o->option_text,
-                ])->values(),
-            ],
+            'total'          => $questions->count(),
+            'questions'      => $questions->values()->map(fn($q) => [
+                'id'      => $q->id,
+                'text'    => $q->question_text,
+                'options' => $q->options->map(fn($o) => ['id' => $o->id, 'text' => $o->option_text])->values(),
+            ])->all(),
         ];
     }
 
-    /** Answer JSON — includes the correct option + explanation for learning. */
-    private function answerResult(User $user, DailySpinAttempt $attempt, BankQuestion $question, int $xpEarned, bool $replay): array
+    /** Submit JSON — score + full per-question review (correct answer + explanation). */
+    private function submitResult(User $user, DailySpinAttempt $attempt, Collection $questions, array $answers, int $xpEarned, bool $replay): array
     {
-        $correct = $question->options->firstWhere('id', $question->correct_option_id);
+        $review = $questions->values()->map(function ($q) use ($answers) {
+            $your    = $answers[$q->id] ?? ($answers[(string) $q->id] ?? null);
+            $correct = $q->options->firstWhere('id', $q->correct_option_id);
+            return [
+                'question_id'         => $q->id,
+                'question_text'       => $q->question_text,
+                'your_option_id'      => $your !== null ? (int) $your : null,
+                'correct_option_id'   => (int) $q->correct_option_id,
+                'correct_option_text' => $correct ? $correct->option_text : null,
+                'is_correct'          => $your !== null && (int) $your === (int) $q->correct_option_id,
+                'explanation'         => $q->explanation,
+            ];
+        })->all();
 
         return [
-            'state'                => 'answered',
-            'replay'               => $replay,
-            'correct'              => (bool) $attempt->is_correct,
-            'selected_option_id'   => (int) $attempt->selected_option_id,
-            'correct_option_id'    => (int) $question->correct_option_id,
-            'correct_option_text'  => $correct ? $correct->option_text : null,
-            'explanation'          => $question->explanation,
-            'xp_earned'            => $xpEarned,
-            'next_spin_at'         => now()->addDay()->startOfDay()->toIso8601String(),
-        ] + $this->levelBlock($user->fresh());
+            'state'         => 'submitted',
+            'replay'        => $replay,
+            'correct_count' => (int) $attempt->correct_count,
+            'total'         => (int) ($attempt->total_questions ?: $questions->count()),
+            'xp_earned'     => $xpEarned,
+            'review'        => $review,
+            'next_spin_at'  => now()->addDay()->startOfDay()->toIso8601String(),
+        ] + $this->levelBlock($user);
     }
 
     /** Current XP + level snapshot for the UI (read fresh). */
     private function levelBlock(User $user): array
     {
-        $userXp   = $user->xpProfile ?? UserXp::firstOrCreate(
+        $userXp = $user->xpProfile ?? UserXp::firstOrCreate(
             ['user_id' => $user->id],
             ['total_xp' => 0, 'current_level' => 1]
         );
-        $total    = (int) $userXp->total_xp;
-        $level    = Level::getLevelByXp($total);
+        $total = (int) $userXp->total_xp;
+        $level = Level::getLevelByXp($total);
 
         return [
             'total_xp'   => $total,

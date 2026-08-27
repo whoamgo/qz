@@ -21,13 +21,19 @@ class DailySpinAttempt extends Model
         'user_id', 'spin_date', 'segment_key', 'segment_index', 'category_id',
         'question_id', 'selected_option_id', 'is_correct', 'xp_awarded',
         'status', 'answered_at',
+        // Multi-question spin (10 per spin, submitted together).
+        'question_ids', 'answers', 'total_questions', 'correct_count',
     ];
 
     protected $casts = [
-        'spin_date'   => 'date',
-        'is_correct'  => 'boolean',
-        'xp_awarded'  => 'integer',
-        'answered_at' => 'datetime',
+        'spin_date'       => 'date',
+        'is_correct'      => 'boolean',
+        'xp_awarded'      => 'integer',
+        'answered_at'     => 'datetime',
+        'question_ids'    => 'array',
+        'answers'         => 'array',
+        'total_questions' => 'integer',
+        'correct_count'   => 'integer',
     ];
 
     public function user(): BelongsTo

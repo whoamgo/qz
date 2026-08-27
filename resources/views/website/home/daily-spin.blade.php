@@ -45,7 +45,7 @@
                 {{-- Left: copy + controls --}}
                 <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start">
                     <span class="ds-kicker">🎡 <span>Daily Spin &amp; Win</span></span>
-                    <h2 id="dsHeading" class="ds-title">Spin the wheel, answer today's question, earn&nbsp;<span class="ds-xp-badge">+5 XP</span></h2>
+                    <h2 id="dsHeading" class="ds-title">Spin the wheel, answer 10 questions, earn up to&nbsp;<span class="ds-xp-badge">+50 XP</span></h2>
 
                     @guest
                         <p class="ds-lead">🎁 Your daily reward is waiting! Log in to spin today's wheel and earn XP.</p>
@@ -54,7 +54,7 @@
                             <a href="{{ route('user.register') }}" class="btn ds-btn-ghost btn-lg">Create Free Account</a>
                         </div>
                     @else
-                        <p class="ds-lead">Spin once every day and answer today's question to earn XP. One spin per day.</p>
+                        <p class="ds-lead">Spin once a day and answer 10 questions — earn +5 XP for every correct answer (up to +50). One spin per day.</p>
 
                         {{-- Live status pill (filled by JS: available / completed) --}}
                         <div id="dsStatus" class="ds-statuspill ds-statuspill--loading" role="status" aria-live="polite">
@@ -120,40 +120,47 @@
 {{-- Question / result modal --}}
 @auth
 <div class="modal fade" id="dsModal" tabindex="-1" aria-labelledby="dsModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content ds-modal">
             <div class="modal-header border-0">
                 <h5 class="modal-title" id="dsModalTitle">🎉 You landed on <span id="dsLanded">—</span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{-- Question step --}}
+                {{-- Question step: the full set --}}
                 <div id="dsQuestionStep">
-                    <p class="ds-qlabel">Today's Question</p>
-                    <p id="dsQuestionText" class="ds-question"></p>
-                    <div id="dsOptions" class="ds-options"></div>
+                    <div class="ds-qhead">
+                        <p class="ds-qlabel mb-0">Answer all <span class="ds-total">10</span> questions, then submit</p>
+                        <span class="ds-progress"><span id="dsAnswered">0</span>/<span class="ds-total">10</span> answered</span>
+                    </div>
+                    <div id="dsQuestions" class="ds-qlist"></div>
                     <div id="dsAnswerError" class="ds-inline-error d-none" role="alert"></div>
-                    <button type="button" id="dsSubmit" class="btn ds-btn-primary w-100 mt-3" disabled>
-                        <span class="ds-submit-label">Submit Answer</span>
-                    </button>
                 </div>
 
-                {{-- Result step --}}
-                <div id="dsResultStep" class="d-none text-center">
-                    <div id="dsResultIcon" class="ds-result-icon"></div>
-                    <h4 id="dsResultTitle" class="mb-1"></h4>
-                    <div id="dsXpGain" class="ds-xp-gain d-none">+<span id="dsXpAmount">0</span> XP</div>
-                    <div id="dsResultCorrect" class="ds-correct-line d-none"></div>
-                    <div id="dsResultExplain" class="ds-explain d-none"></div>
-                    <div class="ds-stats d-none" id="dsStatsRow">
-                        <div class="ds-stat"><span class="ds-stat-num" id="dsTotalXp">0</span><span class="ds-stat-cap">Total XP</span></div>
-                        <div class="ds-stat"><span class="ds-stat-num" id="dsLevel">1</span><span class="ds-stat-cap">Level</span></div>
+                {{-- Result step: score + review --}}
+                <div id="dsResultStep" class="d-none">
+                    <div class="text-center">
+                        <div id="dsResultIcon" class="ds-result-icon"></div>
+                        <h4 id="dsResultTitle" class="mb-1"></h4>
+                        <div id="dsScoreLine" class="ds-score-line"></div>
+                        <div id="dsXpGain" class="ds-xp-gain d-none">+<span id="dsXpAmount">0</span> XP</div>
+                        <div class="ds-stats" id="dsStatsRow">
+                            <div class="ds-stat"><span class="ds-stat-num" id="dsTotalXp">0</span><span class="ds-stat-cap">Total XP</span></div>
+                            <div class="ds-stat"><span class="ds-stat-num" id="dsLevel">1</span><span class="ds-stat-cap">Level</span></div>
+                        </div>
                     </div>
+                    <p class="ds-qlabel mt-4 mb-2">Review</p>
+                    <div id="dsReview" class="ds-review"></div>
                     <div class="d-flex gap-2 justify-content-center flex-wrap mt-3">
                         <a href="{{ route('website.quizzes') }}" class="btn ds-btn-primary">Explore More Quizzes</a>
                         <button type="button" class="btn ds-btn-ghost" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
+            </div>
+            <div class="modal-footer border-0" id="dsFooter">
+                <button type="button" id="dsSubmit" class="btn ds-btn-primary w-100" disabled>
+                    <span class="ds-submit-label">Answer all 10 to submit</span>
+                </button>
             </div>
         </div>
     </div>
@@ -234,6 +241,29 @@
     .ds-opt-text{word-break:break-word}
     .ds-inline-error{margin-top:.75rem;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.5rem .75rem;font-size:.9rem}
 
+    /* 10-question set */
+    .ds-qhead{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.9rem}
+    .ds-progress{font-size:.82rem;font-weight:700;color:#5b21b6;background:#f5f3ff;border:1px solid #ede9fe;border-radius:999px;padding:.25rem .7rem;white-space:nowrap}
+    .ds-qlist{display:flex;flex-direction:column;gap:14px}
+    .ds-qcard{border:1px solid #eceaf6;border-radius:14px;padding:14px 16px;background:#fff}
+    .ds-qcard.is-answered{border-color:#c4b5fd;background:#faf9ff}
+    .ds-qtop{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.7rem}
+    .ds-qnum{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:#7C3AED;color:#fff;font-weight:800;
+        display:grid;place-items:center;font-size:.82rem;margin-top:1px}
+    .ds-qtext{font-weight:700;color:#1e293b;line-height:1.4}
+    .ds-review{display:flex;flex-direction:column;gap:10px}
+    .ds-review-item{border:1px solid #eef2f7;border-radius:12px;padding:12px 14px;background:#fafbfc}
+    .ds-review-item.is-correct{border-color:#a7f3d0;background:#f0fdf7}
+    .ds-review-item.is-wrong{border-color:#fecaca;background:#fef5f5}
+    .ds-review-q{font-weight:700;color:#1e293b;display:flex;gap:.5rem;line-height:1.4}
+    .ds-review-mark{flex:0 0 auto}
+    .ds-review-ans{font-size:.9rem;margin-top:.35rem}
+    .ds-review-ans .ok{color:#047857;font-weight:600}
+    .ds-review-ans .no{color:#b91c1c;font-weight:600}
+    .ds-review-exp{font-size:.86rem;color:#64748b;margin-top:.3rem}
+    .ds-score-line{font-size:1.05rem;font-weight:700;color:#334155;margin:.15rem 0 .35rem}
+    #dsFooter{position:sticky;bottom:0}
+
     .ds-result-icon{font-size:3rem;line-height:1}
     .ds-xp-gain{font-size:1.5rem;font-weight:900;color:#059669;margin:.25rem 0}
     .ds-correct-line{font-weight:700;color:#334155;margin-top:.35rem}
@@ -292,7 +322,14 @@
     var $rot      = $('.ds-wheel-rot');
     var $done     = $('#dsDonePanel');
     var modalEl   = document.getElementById('dsModal');
-    var modal     = modalEl ? new bootstrap.Modal(modalEl) : null;
+    var modal     = null;
+    // Bootstrap's bundle is loaded with `defer`, so `bootstrap` is not defined
+    // while this end-of-body script runs. Create the modal lazily (first use is
+    // after a spin, by which point the deferred bundle has executed).
+    function getModal() {
+        if (!modal && modalEl && window.bootstrap) { modal = new bootstrap.Modal(modalEl); }
+        return modal;
+    }
 
     var rotation  = 0;         // accumulated wheel rotation (deg)
     var busy      = false;     // guards double spins / double submits
@@ -306,6 +343,17 @@
     }
     function enableSpin(on) {
         $triggers.prop('disabled', !on);
+    }
+
+    // Closing the modal before answering shouldn't strand the user with a disabled
+    // wheel — re-enable SPIN so they can resume today's (same) question. If the
+    // result is already showing, the day is done, so leave the completed state.
+    if (modalEl) {
+        $(modalEl).on('hidden.bs.modal', function () {
+            if (!$('#dsResultStep').hasClass('d-none')) return;
+            setStatusPill('avail', '🔥 <span>Daily spin available</span>');
+            enableSpin(true);
+        });
     }
 
     /* ---------------- initial state ---------------- */
@@ -325,7 +373,8 @@
         enableSpin(false);
     }
     function renderCompleted(res) {
-        setStatusPill('done', '✓ <span>You already played today</span>');
+        var score = (res && res.correct_count != null && res.total) ? (' — ' + res.correct_count + '/' + res.total + ' correct') : '';
+        setStatusPill('done', '✓ <span>You already played today' + score + '</span>');
         enableSpin(false);
         $triggers.filter('button').find('.ds-spin-label').text('Come back tomorrow');
         $done.removeClass('d-none');
@@ -356,7 +405,7 @@
             if (res.state === 'already_completed') { $hub.removeClass('is-spinning'); busy = false; renderCompleted(res); return; }
             if (res.state !== 'question') { onSpinFail(res); return; }
 
-            current = { spin_id: res.spin_id, options: res.question.options };
+            current = { spin_id: res.spin_id, total: res.total };
             var deg = targetRotationFor(res.target_segment);
             $rot.css('transform', 'rotate(' + deg + 'deg)');
 
@@ -364,7 +413,7 @@
             setTimeout(function () {
                 $hub.removeClass('is-spinning');
                 busy = false;
-                openQuestion(res);
+                openQuestions(res);
             }, wait);
         }).fail(function () { onSpinFail(null); });
     });
@@ -376,103 +425,142 @@
         setStatusPill('avail', '⚠️ <span>' + ((res && res.message) || 'Spin failed. Please try again.') + '</span>');
     }
 
-    /* ---------------- question ---------------- */
-    function openQuestion(res) {
-        $('#dsLanded').text('“' + res.category + '”');
-        $('#dsModalTitle').html('🎉 You landed on “' + $('<i>').text(res.category).html() + '”');
-        $('#dsQuestionText').text(res.question.text);
-        $('#dsAnswerError').addClass('d-none').text('');
+    /* ---------------- questions (the full set) ---------------- */
+    var $qlist  = $('#dsQuestions');
+    var $submit = $('#dsSubmit');
+    var $footer = $('#dsFooter');
+    var totalQ  = 0;
 
-        var $wrap = $('#dsOptions').empty();
+    function openQuestions(res) {
+        $('#dsModalTitle').html('🎉 You landed on “' + $('<i>').text(res.category).html() + '”');
+        $('.ds-total').text(res.total);
+        $('#dsAnswerError').addClass('d-none').text('');
+        totalQ = res.questions.length;
+
         var keys = ['A', 'B', 'C', 'D', 'E', 'F'];
-        res.question.options.forEach(function (opt, idx) {
-            var id = 'dsOpt' + opt.id;
-            var $label = $('<label class="ds-opt"></label>').attr('for', id);
-            $('<input type="radio" name="dsAnswer">').attr({ id: id, value: opt.id }).appendTo($label);
-            $('<span class="ds-opt-key"></span>').text(keys[idx] || (idx + 1)).appendTo($label);
-            $('<span class="ds-opt-text"></span>').text(opt.text).appendTo($label);
-            $wrap.append($label);
+        $qlist.empty();
+        res.questions.forEach(function (q, qi) {
+            var $card = $('<div class="ds-qcard"></div>').attr('data-qid', q.id);
+            var $top  = $('<div class="ds-qtop"></div>');
+            $('<span class="ds-qnum"></span>').text(qi + 1).appendTo($top);
+            $('<span class="ds-qtext"></span>').text(q.text).appendTo($top);
+            $card.append($top);
+            var $opts = $('<div class="ds-options"></div>');
+            q.options.forEach(function (opt, oi) {
+                var id = 'dsq' + q.id + 'o' + opt.id;
+                var $label = $('<label class="ds-opt"></label>').attr('for', id);
+                $('<input type="radio">').attr({ id: id, name: 'dsq_' + q.id, value: opt.id }).appendTo($label);
+                $('<span class="ds-opt-key"></span>').text(keys[oi] || (oi + 1)).appendTo($label);
+                $('<span class="ds-opt-text"></span>').text(opt.text).appendTo($label);
+                $opts.append($label);
+            });
+            $card.append($opts);
+            $qlist.append($card);
         });
 
+        $('#dsAnswered').text('0');
+        $submit.prop('disabled', true).find('.ds-submit-label').text('Answer all ' + totalQ + ' to submit');
         $('#dsQuestionStep').removeClass('d-none');
         $('#dsResultStep').addClass('d-none');
-        $('#dsSubmit').prop('disabled', true).find('.ds-submit-label').text('Submit Answer');
-        modal && modal.show();
+        $footer.removeClass('d-none');
+        var body = document.querySelector('#dsModal .modal-body'); if (body) body.scrollTop = 0;
+
+        var m = getModal(); if (m) m.show();
     }
 
-    $(document).on('change', 'input[name="dsAnswer"]', function () {
-        $('.ds-opt').removeClass('is-selected');
+    // Track selections; highlight the choice, update progress, gate submit.
+    $(document).on('change', '#dsQuestions input[type="radio"]', function () {
+        var $card = $(this).closest('.ds-qcard');
+        $card.find('.ds-opt').removeClass('is-selected');
         $(this).closest('.ds-opt').addClass('is-selected');
-        $('#dsSubmit').prop('disabled', false);
+        $card.addClass('is-answered');
+
+        var done = $('#dsQuestions .ds-qcard.is-answered').length;
+        $('#dsAnswered').text(done);
+        if (done >= totalQ) {
+            $submit.prop('disabled', false).find('.ds-submit-label').text('Submit Answers');
+        }
     });
 
-    /* ---------------- submit answer ---------------- */
-    $('#dsSubmit').on('click', function () {
+    /* ---------------- submit the whole set ---------------- */
+    $submit.on('click', function () {
         if (busy) return;
-        var optionId = $('input[name="dsAnswer"]:checked').val();
-        if (!optionId) { $('#dsAnswerError').removeClass('d-none').text('Please choose an answer first.'); return; }
+        var answers = {};
+        $('#dsQuestions .ds-qcard').each(function () {
+            var qid = $(this).attr('data-qid');
+            var val = $(this).find('input[type="radio"]:checked').val();
+            if (val) answers[qid] = val;
+        });
+        if (Object.keys(answers).length < totalQ) {
+            $('#dsAnswerError').removeClass('d-none').text('Please answer all ' + totalQ + ' questions first.');
+            return;
+        }
         busy = true;
         var $btn = $(this).prop('disabled', true);
-        $btn.find('.ds-submit-label').text('Checking…');
+        $btn.find('.ds-submit-label').text('Submitting…');
         $('#dsAnswerError').addClass('d-none');
 
-        post(URLS.answer, { spin_id: current.spin_id, option_id: optionId }).done(function (res) {
+        post(URLS.answer, { spin_id: current.spin_id, answers: answers }).done(function (res) {
             busy = false;
             if (!res || !res.success) {
-                $btn.prop('disabled', false).find('.ds-submit-label').text('Submit Answer');
+                $btn.prop('disabled', false).find('.ds-submit-label').text('Submit Answers');
                 $('#dsAnswerError').removeClass('d-none').text((res && res.message) || 'Could not submit. Try again.');
                 return;
             }
-            showResult(res, optionId);
+            showResult(res);
         }).fail(function (xhr) {
             busy = false;
-            $btn.prop('disabled', false).find('.ds-submit-label').text('Submit Answer');
+            $btn.prop('disabled', false).find('.ds-submit-label').text('Submit Answers');
             var msg = 'Network error. Please try again.';
             if (xhr && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
             $('#dsAnswerError').removeClass('d-none').text(msg);
         });
     });
 
-    function showResult(res, chosenId) {
-        // Mark options on the (still-mounted) question list before swapping steps.
-        $('.ds-opt').removeClass('is-selected');
-        $('#dsOpt' + res.correct_option_id).closest('.ds-opt').addClass('is-correct');
-        if (!res.correct) $('#dsOpt' + chosenId).closest('.ds-opt').addClass('is-wrong');
+    function showResult(res) {
+        var perfect = res.correct_count === res.total;
+        var pass    = res.correct_count >= Math.ceil(res.total / 2);
+        $('#dsResultIcon').text(perfect ? '🏆' : (pass ? '🎉' : '💪'));
+        $('#dsResultTitle').text(perfect ? 'Perfect Score!' : (pass ? 'Well Played!' : 'Keep Practising!'));
+        $('#dsScoreLine').text('You got ' + res.correct_count + ' of ' + res.total + ' correct');
 
-        $('#dsResultIcon').text(res.correct ? '🎉' : '❌');
-        $('#dsResultTitle').text(res.correct ? 'Correct Answer!' : 'Not Quite!');
-
-        if (res.correct && res.xp_earned > 0) {
+        if (res.xp_earned > 0) {
             $('#dsXpAmount').text(res.xp_earned);
             $('#dsXpGain').removeClass('d-none');
         } else {
             $('#dsXpGain').addClass('d-none');
         }
 
-        if (!res.correct && res.correct_option_text) {
-            $('#dsResultCorrect').removeClass('d-none').text('Correct answer: ' + res.correct_option_text);
-        } else {
-            $('#dsResultCorrect').addClass('d-none');
-        }
+        // Per-question review.
+        var $rev = $('#dsReview').empty();
+        (res.review || []).forEach(function (r, i) {
+            var $item = $('<div class="ds-review-item"></div>').addClass(r.is_correct ? 'is-correct' : 'is-wrong');
+            var $q = $('<div class="ds-review-q"></div>');
+            $('<span class="ds-review-mark"></span>').text((r.is_correct ? '✓' : '✗') + ' ' + (i + 1) + '.').appendTo($q);
+            $('<span></span>').text(r.question_text).appendTo($q);
+            $item.append($q);
+            if (!r.is_correct && r.correct_option_text) {
+                $('<div class="ds-review-ans">Correct answer: <span class="ok"></span></div>')
+                    .find('.ok').text(r.correct_option_text).end().appendTo($item);
+            }
+            if (r.explanation) {
+                $('<div class="ds-review-exp"></div>').text(r.explanation).appendTo($item);
+            }
+            $rev.append($item);
+        });
 
-        if (res.explanation) {
-            $('#dsResultExplain').removeClass('d-none').text(res.explanation);
-        } else {
-            $('#dsResultExplain').addClass('d-none');
-        }
-
-        // Live XP / level, with a small count-up on the total.
-        $('#dsStatsRow').removeClass('d-none');
+        // Live XP / level, count-up on total.
         $('#dsLevel').text(res.level != null ? res.level : '—');
         countUp($('#dsTotalXp'), res.total_xp || 0);
 
         $('#dsQuestionStep').addClass('d-none');
         $('#dsResultStep').removeClass('d-none');
-        if (!res.correct) $('#dsResultStep').addClass('ds-shake').one('animationend', function () { $(this).removeClass('ds-shake'); });
+        $footer.addClass('d-none');
+        var body = document.querySelector('#dsModal .modal-body'); if (body) body.scrollTop = 0;
 
-        if (res.correct && !reduce) confetti();
+        if (res.correct_count > 0 && !reduce) confetti();
 
-        // The day is now consumed — reflect it on the page behind the modal.
+        // Day consumed — reflect behind the modal.
         renderCompleted(res);
     }
 
