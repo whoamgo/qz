@@ -10,7 +10,7 @@
     if ($appHost = parse_url(config('app.url'), PHP_URL_HOST)) {
         $canonical = preg_replace('#^https?://[^/]+#', $appScheme . '://' . $appHost, $canonical, 1);
     }
-    $ogImage   = $seo['image'] ?? getImage(getFilePath('logoIcon') . '/logo.png');
+    $ogImage   = $seo['image'] ?? route('og.home');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

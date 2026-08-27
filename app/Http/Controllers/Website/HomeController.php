@@ -113,6 +113,7 @@ class HomeController extends BaseWebsiteController {
             'title'       => 'Free Quizzes for GK, Current Affairs & Exams',
             'description' => 'Practice free quizzes on General Knowledge, Current Affairs and competitive exams like SSC, Railway, Banking, UPSC and Defence. Earn XP, unlock badges and climb the leaderboard.',
             'canonical'   => route('home'),
+            'image'       => route('og.home'),
             'schema'      => [$this->websiteSchema(), $this->organizationSchema(), $this->faqSchema($faqs)],
         ]);
 
@@ -258,27 +259,4 @@ class HomeController extends BaseWebsiteController {
         ];
     }
 
-    private function websiteSchema(): array {
-        return [
-            '@context'        => 'https://schema.org',
-            '@type'           => 'WebSite',
-            'name'            => gs('site_name') ?: config('app.name'),
-            'url'             => url('/'),
-            'potentialAction' => [
-                '@type'       => 'SearchAction',
-                'target'      => ['@type' => 'EntryPoint', 'urlTemplate' => route('website.search') . '?q={search_term_string}'],
-                'query-input' => 'required name=search_term_string',
-            ],
-        ];
-    }
-
-    private function organizationSchema(): array {
-        return [
-            '@context' => 'https://schema.org',
-            '@type'    => 'Organization',
-            'name'     => gs('site_name') ?: config('app.name'),
-            'url'      => url('/'),
-            'logo'     => getImage(getFilePath('logoIcon') . '/logo.png'),
-        ];
-    }
 }

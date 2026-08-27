@@ -28,8 +28,11 @@ Route::namespace('Website')->group(function () {
     Route::get('sitemap.xml', 'SitemapController@index')->name('sitemap');
     Route::get('robots.txt', 'SitemapController@robots')->name('robots');
     Route::get('llms.txt', 'SitemapController@llms')->name('llms');
-    // Dynamic Open Graph card per quiz (for social share previews).
+    // Dynamic Open Graph cards (for social share previews).
     Route::get('og/quiz/{slug}', 'OgImageController@quiz')->name('og.quiz');
+    Route::get('og/home', 'OgImageController@home')->name('og.home');
+    Route::get('og/category/{slug}', 'OgImageController@category')->name('og.category');
+    Route::get('og/exam/{slug}', 'OgImageController@exam')->name('og.exam');
 });
 
 /*
@@ -100,6 +103,14 @@ Route::namespace('Website')->name('website.')->group(function () {
         Route::get('exams/{slug}', 'show')->name('exam.show');
         Route::get('mock-tests', 'mockTests')->name('mock.tests');
         Route::get('pyq', 'pyq')->name('pyq');
+    });
+
+    // ------------------------------------------------------ exam-prep hubs
+    // SEO landing hubs (SSC/UPSC/Banking/Railway/Defence) that CURATE real,
+    // existing quizzes by subject — no thin/duplicate category pages.
+    Route::controller('ExamHubController')->prefix('exam-prep')->name('exam.hub.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('{exam}', 'show')->name('show');
     });
 
     // -------------------------------------------------------- current affairs

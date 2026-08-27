@@ -89,13 +89,21 @@ class CategoryController extends BaseWebsiteController {
             'questionTotal' => $questionTotal,
             'parent'        => null,
             'isSub'         => false,
-            'image'         => $category->image ? getImage(getFilePath('category') . '/' . $category->image, getFileSize('category')) : null,
+            // Branded 1200×630 share card when the admin hasn't set a category og_image.
+            'image'         => route('og.category', $category->slug),
         ]);
         $seoContent = $this->seoService->categoryContent($category, ['isSub' => false]);
+
+        // ItemList of the real quizzes shown on this page — a listing signal + rich-result
+        // eligibility. Uses the already-loaded popular/latest quizzes (no extra query cost).
+        $listItems = $popularQuizzes->concat($latestQuizzes->getCollection())
+            ->unique('id')->take(20)
+            ->map(fn($q) => ['name' => $q->title, 'url' => route('website.quiz.show', $q->slug)]);
 
         $seo = $this->seo(array_merge($meta, [
             'schema' => array_merge($meta['schema'], [
                 $this->faqSchema($faqs),
+                $this->itemListSchema($category->name . ' Quizzes', $listItems),
                 $this->breadcrumbSchema([
                     'Home'          => route('home'),
                     'Categories'    => route('website.categories'),

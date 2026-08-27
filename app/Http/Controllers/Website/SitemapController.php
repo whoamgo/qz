@@ -63,12 +63,20 @@ class SitemapController extends BaseWebsiteController {
     /** GET /robots.txt — crawl rules plus a pointer to the sitemap. */
     public function robots()
     {
+        // ONE consolidated `User-agent: *` group. AI search & answer engines
+        // (GPTBot, ClaudeBot, Google-Extended, PerplexityBot, OAI-SearchBot, …)
+        // match `*` and are deliberately ALLOWED so QuizMitra stays eligible for
+        // Google AI Overviews and AI-answer citations. The Content-Signal line
+        // opts in to search indexing and AI retrieval/answers.
         $lines = [
+            '# QuizMitra — all crawlers welcome, including AI search & answer engines.',
+            '',
             'User-agent: *',
+            'Content-Signal: search=yes, ai-input=yes',
             'Allow: /',
 
             '',
-            '# Private and non-indexable areas',
+            '# Private and non-indexable app areas',
             'Disallow: /admin',
             'Disallow: /user/login',
             'Disallow: /user/register',
@@ -76,7 +84,7 @@ class SitemapController extends BaseWebsiteController {
             'Disallow: /profile',
 
             '',
-            '# User-specific quiz pages',
+            '# Per-user quiz + room pages (no SEO value)',
             'Disallow: /quiz/attempt/',
             'Disallow: /quiz/result/',
             'Disallow: /quiz/review/',
@@ -84,11 +92,10 @@ class SitemapController extends BaseWebsiteController {
             'Disallow: /ticket',
 
             '',
-            '# Internal search pages',
+            '# Internal search result pages',
             'Disallow: /search',
 
             '',
-            '# Sitemap',
             'Sitemap: ' . url('sitemap.xml'),
         ];
 
@@ -130,6 +137,22 @@ class SitemapController extends BaseWebsiteController {
         $add(route('website.terms'), 'yearly', '0.2');
         $add(route('website.disclaimer'), 'yearly', '0.2');
         $add(route('contact'), 'yearly', '0.3');
+
+        // ---- Exam-prep hubs ---------------------------------------------
+        // The directory is always listed; individual hubs only when they clear
+        // the same thin-page threshold ExamHubController uses to index them, so
+        // the sitemap never advertises a noindexed hub.
+        $add(route('website.exam.hub.index'), 'weekly', '0.7');
+        $hubMin = (int) config('exam_hubs.min_quizzes', 6);
+        foreach ((array) config('exam_hubs.hubs', []) as $hslug => $hcfg) {
+            $hubCatIds = Category::whereNull('parent_id')->where('status', 1)
+                ->whereIn('slug', $hcfg['categories'] ?? [])->pluck('id');
+            $hubCount = Quiz::where('status', Quiz::STATUS_PUBLISHED)->has('questions')
+                ->whereIn('category_id', $hubCatIds)->count();
+            if ($hubCount >= $hubMin) {
+                $add(route('website.exam.hub.show', $hslug), 'weekly', '0.8');
+            }
+        }
 
         // ---- Categories & sub-categories --------------------------------
         // Only taxonomy pages that actually hold published quizzes are listed;

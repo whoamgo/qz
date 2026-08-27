@@ -134,4 +134,77 @@ abstract class BaseWebsiteController extends Controller {
 
         return ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $items];
     }
+
+    /**
+     * Organization entity — used on the homepage for brand/knowledge signals.
+     * sameAs is pulled from the admin-managed social links (Frontend Manager),
+     * so it stays in sync without a hard-coded list.
+     */
+    protected function organizationSchema(): array {
+        $name = gs('site_name') ?: config('app.name');
+
+        $sameAs = Cache::remember('website.org.sameas', 3600, function () {
+            return \App\Models\Frontend::where('data_keys', 'social_icon.element')
+                ->get()
+                ->map(fn($r) => $r->data_values->url ?? ($r->data_values->social_url ?? null))
+                ->filter()
+                ->values()
+                ->all();
+        });
+
+        return array_filter([
+            '@context'     => 'https://schema.org',
+            '@type'        => 'Organization',
+            'name'         => $name,
+            'url'          => url('/'),
+            'logo'         => getImage(getFilePath('logoIcon') . '/logo.png'),
+            'description'  => 'Free India-focused quiz platform for GK, Current Affairs and competitive-exam preparation.',
+            'sameAs'       => $sameAs ?: null,
+        ], fn($v) => $v !== null && $v !== []);
+    }
+
+    /** WebSite entity with a sitelinks SearchAction pointing at the site search. */
+    protected function websiteSchema(): array {
+        $name = gs('site_name') ?: config('app.name');
+
+        return [
+            '@context'        => 'https://schema.org',
+            '@type'           => 'WebSite',
+            'name'            => $name,
+            'url'             => url('/'),
+            'potentialAction' => [
+                '@type'       => 'SearchAction',
+                'target'      => ['@type' => 'EntryPoint', 'urlTemplate' => route('website.search') . '?q={search_term_string}'],
+                'query-input' => 'required name=search_term_string',
+            ],
+        ];
+    }
+
+    /**
+     * ItemList schema for listing pages (categories, exam hubs). $items is an
+     * iterable of ['name' => , 'url' => ] in display order.
+     */
+    protected function itemListSchema(string $name, iterable $items): array {
+        $elements = [];
+        $position = 1;
+        foreach ($items as $it) {
+            if (empty($it['url']) || empty($it['name'])) {
+                continue;
+            }
+            $elements[] = [
+                '@type'    => 'ListItem',
+                'position' => $position++,
+                'name'     => $it['name'],
+                'url'      => $it['url'],
+            ];
+        }
+
+        return [
+            '@context'        => 'https://schema.org',
+            '@type'           => 'ItemList',
+            'name'            => $name,
+            'numberOfItems'   => count($elements),
+            'itemListElement' => $elements,
+        ];
+    }
 }
