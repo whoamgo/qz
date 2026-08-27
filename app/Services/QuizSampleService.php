@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BankQuestion;
 use App\Models\Quiz;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -31,11 +32,28 @@ class QuizSampleService {
         $limit = max(1, $limit ?? (int) config('seo.sample_questions', 12));
         $stamp = optional($quiz->updated_at)->timestamp ?? 0;
 
-        return Cache::remember(
-            "website.quiz.sample.{$quiz->id}.{$limit}.{$stamp}",
+        // Cache only the SELECTION (the chosen question ids), never the hydrated
+        // models. Question/option CONTENT — including the Hindi `_hi` columns and
+        // admin edits — is applied to bank_questions/bank_options without changing
+        // the quiz's updated_at, so caching model snapshots keyed on that stamp
+        // would serve stale text (e.g. showing English on /hi after a translation).
+        // Loading ~12 questions by id fresh each request is cheap and always current.
+        $ids = Cache::remember(
+            "website.quiz.sample_ids.{$quiz->id}.{$limit}.{$stamp}",
             (int) config('seo.sample_cache_ttl', 21600),
-            fn() => $this->select($quiz, $limit)
+            fn() => $this->select($quiz, $limit)->pluck('id')->all()
         );
+
+        if (empty($ids)) {
+            return new Collection();
+        }
+
+        $position = array_flip($ids); // preserve the deterministic sample order
+        return BankQuestion::whereIn('id', $ids)
+            ->with(['options' => fn($q) => $q->orderBy('sort_order')])
+            ->get()
+            ->sortBy(fn($q) => $position[$q->id] ?? PHP_INT_MAX)
+            ->values();
     }
 
     /**

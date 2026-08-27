@@ -379,15 +379,15 @@ class QuizController extends BaseWebsiteController {
 
         $wrong = $options
             ->reject(fn($o) => $o->id === $correct->id)
-            ->map(fn($o) => ['@type' => 'Answer', 'text' => (string) $o->tr('option_text')])
+            ->map(fn($o) => ['@type' => 'Answer', 'text' => (string) $o->option_text])
             ->values()
             ->all();
 
         return array_filter([
             '@type'           => 'Question',
             'eduQuestionType' => 'Multiple choice',
-            'text'            => (string) $question->tr('question_text'),
-            'acceptedAnswer'  => ['@type' => 'Answer', 'text' => (string) $correct->tr('option_text')],
+            'text'            => (string) $question->question_text,
+            'acceptedAnswer'  => ['@type' => 'Answer', 'text' => (string) $correct->option_text],
             'suggestedAnswer' => $wrong ?: null,
         ]);
     }

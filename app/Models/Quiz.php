@@ -3,19 +3,12 @@
 namespace App\Models;
 
 use App\Traits\GlobalStatus;
-use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Quiz extends Model {
-    use GlobalStatus, SoftDeletes, HasTranslations;
-
-    /** Fields with per-locale translation columns (e.g. title → title_hi). */
-    protected array $translatable = [
-        'title', 'description', 'meta_title', 'meta_description', 'meta_keywords',
-        'primary_keyword', 'secondary_keywords', 'seo_h1', 'seo_intro', 'seo_content',
-    ];
+    use GlobalStatus, SoftDeletes;
 
     const DIFFICULTY_EASY = 'easy';
     const DIFFICULTY_MEDIUM = 'medium';
@@ -44,10 +37,6 @@ class Quiz extends Model {
         'schema_json', 'seo_score', 'seo_updated_at',
         // Phase 2 — keyword / intent / priority
         'primary_keyword', 'secondary_keywords', 'search_intent', 'seo_priority',
-        // Hindi content translations (Step 4 columns; edited via admin — Step 7)
-        'title_hi', 'description_hi', 'meta_title_hi', 'meta_description_hi',
-        'meta_keywords_hi', 'primary_keyword_hi', 'secondary_keywords_hi',
-        'seo_h1_hi', 'seo_intro_hi', 'seo_content_hi',
     ];
 
     protected $casts = [

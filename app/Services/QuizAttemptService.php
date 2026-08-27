@@ -247,7 +247,7 @@ class QuizAttemptService {
 
             $options = $question->options->map(fn($o) => [
                 'id'   => $o->id,
-                'text' => $o->tr('option_text'),
+                'text' => $o->option_text,
             ])->values()->all();
 
             if ($quiz->randomize_options) {
@@ -257,8 +257,8 @@ class QuizAttemptService {
             $payload[] = [
                 'id'                => $question->id,
                 'order'             => $answer->question_order,
-                'text'              => $question->tr('question_text'),
-                'hint'              => $question->tr('hint'),
+                'text'              => $question->question_text,
+                'hint'              => $question->hint,
                 'type'              => $question->question_type,
                 'options'           => $options,
                 'selected_option_id' => $answer->selected_option_id,

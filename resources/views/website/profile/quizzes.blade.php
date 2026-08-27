@@ -16,8 +16,8 @@
                     <tbody>
                         @foreach ($attempts as $a)
                             <tr>
-                                <td>{{ $a->quiz?->tr('title') ?? '—' }}</td>
-                                <td class="w-text-sm w-muted">{{ $a->quiz->category?->tr('name') ?? '—' }}</td>
+                                <td>{{ $a->quiz->title ?? '—' }}</td>
+                                <td class="w-text-sm w-muted">{{ $a->quiz->category->name ?? '—' }}</td>
                                 <td>{{ $a->status === 'completed' ? $a->percentage . '%' : '—' }}</td>
                                 <td>
                                     @if ($a->status === 'completed')

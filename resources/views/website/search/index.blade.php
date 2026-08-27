@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <form action="{{ locale_route('website.search') }}" method="GET" role="search" class="position-relative mb-5" style="max-width: 560px;">
+        <form action="{{ route('website.search') }}" method="GET" role="search" class="position-relative mb-5" style="max-width: 560px;">
             <i class="bi bi-search w-search-icon" aria-hidden="true"></i>
             <input type="search" name="q" class="form-control form-control-lg w-search-input"
                    value="{{ $term }}" placeholder="Search quizzes, topics, exams..." aria-label="Search">
@@ -23,8 +23,8 @@
                 @foreach ($categories as $cat)
                     {{-- Sub-categories resolve to their parent: the public IA is
                          Category -> Quiz, with no sub-category level. --}}
-                    <a class="w-badge" href="{{ locale_route('website.category.show', $cat->parent_id && $cat->parent ? $cat->parent->slug : $cat->slug) }}">
-                        {{ $cat->parent_id && $cat->parent ? $cat->parent->tr('name') : $cat->tr('name') }}
+                    <a class="w-badge" href="{{ route('website.category.show', $cat->parent_id && $cat->parent ? $cat->parent->slug : $cat->slug) }}">
+                        {{ $cat->parent_id && $cat->parent ? $cat->parent->name : $cat->name }}
                     </a>
                 @endforeach
             </div>

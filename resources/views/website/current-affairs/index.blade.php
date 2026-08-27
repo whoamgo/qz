@@ -1,6 +1,6 @@
 @extends('website.layouts.app')
 @section('breadcrumb')
-    <x-website::breadcrumbs :trail="['Home' => locale_route('home'), 'Current Affairs' => locale_route('website.current.affairs.index')]" />
+    <x-website::breadcrumbs :trail="['Home' => route('home'), 'Current Affairs' => route('website.current.affairs.index')]" />
 @endsection
 @section('content')
 <section class="w-section">
@@ -19,7 +19,7 @@
                 ['monthly', 'This Month', 'bi-calendar-month', 'Full-month revision for exam preparation.'],
             ] as [$key, $title, $icon, $desc])
                 <div class="col-md-4">
-                    <a href="{{ locale_route('website.current.affairs.' . $key) }}" class="w-card text-decoration-none">
+                    <a href="{{ route('website.current.affairs.' . $key) }}" class="w-card text-decoration-none">
                         <div class="w-card-body">
                             <span class="w-cat-icon m-0 mb-3" style="width:48px;height:48px;font-size:1.25rem;">
                                 <i class="bi {{ $icon }}"></i>

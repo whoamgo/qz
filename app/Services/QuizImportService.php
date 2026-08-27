@@ -34,10 +34,6 @@ class QuizImportService {
         'marks_per_correct', 'negative_marking', 'quiz_status',
         'question', 'question_type', 'option_a', 'option_b', 'option_c',
         'option_d', 'correct_answer', 'explanation', 'question_difficulty',
-        // Optional Hindi content (Step 9b). Appended at the END so existing
-        // English-only files and the fixed-column error export stay aligned.
-        'quiz_title_hi', 'quiz_description_hi', 'question_hi',
-        'option_a_hi', 'option_b_hi', 'option_c_hi', 'option_d_hi', 'explanation_hi',
     ];
 
     const REQUIRED_HEADERS = [
@@ -239,15 +235,6 @@ class QuizImportService {
             'correct_answer'      => strtoupper(str_replace(' ', '', $get('correct_answer'))) ?: null,
             'explanation'         => $get('explanation') ?: null,
             'question_difficulty' => strtolower($get('question_difficulty')) ?: null,
-            // Optional Hindi content (null when the column/cell is empty).
-            'quiz_title_hi'       => $get('quiz_title_hi') ?: null,
-            'quiz_description_hi' => $get('quiz_description_hi') ?: null,
-            'question_hi'         => $get('question_hi') ?: null,
-            'option_a_hi'         => $get('option_a_hi') ?: null,
-            'option_b_hi'         => $get('option_b_hi') ?: null,
-            'option_c_hi'         => $get('option_c_hi') ?: null,
-            'option_d_hi'         => $get('option_d_hi') ?: null,
-            'explanation_hi'      => $get('explanation_hi') ?: null,
         ];
     }
 
@@ -617,10 +604,8 @@ class QuizImportService {
 
         $quiz = Quiz::create([
             'title'                => $row->quiz_title,
-            'title_hi'             => $row->quiz_title_hi,
             'slug'                 => $slug,
             'description'          => $row->quiz_description,
-            'description_hi'       => $row->quiz_description_hi,
             'category_id'          => $row->category_id,
             'sub_category_id'      => $row->sub_category_id,
             'quiz_type'            => $row->quiz_type ?: 'free',
@@ -651,20 +636,17 @@ class QuizImportService {
 
     private function createQuestion(QuizImportRow $row, Quiz $quiz): BankQuestion {
         $question = BankQuestion::create([
-            'category_id'      => $row->category_id,
-            'sub_category_id'  => $row->sub_category_id,
-            'question_type'    => $row->question_type,
-            'difficulty'       => $row->question_difficulty ?: ($row->quiz_difficulty ?: 'medium'),
-            'question_text'    => $row->question,
-            'question_text_hi' => $row->question_hi,
-            'explanation'      => $row->explanation,
-            'explanation_hi'   => $row->explanation_hi,
-            'default_marks'    => $row->marks_per_correct ?? 1,
-            'status'           => 1,
+            'category_id'     => $row->category_id,
+            'sub_category_id' => $row->sub_category_id,
+            'question_type'   => $row->question_type,
+            'difficulty'      => $row->question_difficulty ?: ($row->quiz_difficulty ?: 'medium'),
+            'question_text'   => $row->question,
+            'explanation'     => $row->explanation,
+            'default_marks'   => $row->marks_per_correct ?? 1,
+            'status'          => 1,
         ]);
 
         $correct = array_filter(explode(',', (string) $row->correct_answer));
-        $optionHi = $row->optionMapHi();
         $firstCorrectId = null;
         $sort = 0;
 
@@ -675,7 +657,6 @@ class QuizImportService {
             $option = BankOption::create([
                 'bank_question_id' => $question->id,
                 'option_text'      => $text,
-                'option_text_hi'   => $optionHi[$letter] ?? null,
                 'is_correct'       => $isCorrect,
                 'sort_order'       => $sort++,
             ]);

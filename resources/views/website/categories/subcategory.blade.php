@@ -1,9 +1,9 @@
 @extends('website.layouts.app')
 @section('breadcrumb')
     <x-website::breadcrumbs :trail="[
-        'Home' => locale_route('home'), 'Categories' => locale_route('website.categories'),
-        $category->tr('name') => locale_route('website.category.show', $category->slug),
-        $sub->tr('name') => locale_route('website.subcategory.show', [$category->slug, $sub->slug])]" />
+        'Home' => route('home'), 'Categories' => route('website.categories'),
+        $category->name => route('website.category.show', $category->slug),
+        $sub->name => route('website.subcategory.show', [$category->slug, $sub->slug])]" />
 @endsection
 @section('content')
 <section class="w-section">
@@ -12,19 +12,19 @@
             <div class="w-card-body">
                 <h1 class="mb-2">{{ $seoContent['h1'] }}</h1>
                 <p class="w-muted mb-2">
-                    Part of <a href="{{ locale_route('website.category.show', $category->slug) }}">{{ $category->tr('name') }}</a>
+                    Part of <a href="{{ route('website.category.show', $category->slug) }}">{{ $category->name }}</a>
                     &middot; {{ number_format($questionTotal) }} practice questions
                 </p>
                 <div class="w-article-body w-muted">
                     @if (!empty($seoContent['intro']))
                         <p class="mb-0">{{ $seoContent['intro'] }}</p>
-                    @elseif (!empty($sub->tr('meta_description')))
-                        <p class="mb-0">{{ $sub->tr('meta_description') }}</p>
+                    @elseif (!empty($sub->meta_description))
+                        <p class="mb-0">{{ $sub->meta_description }}</p>
                     @else
                         <p class="mb-0">
-                            Sharpen your <strong>{{ $sub->tr('name') }}</strong> knowledge with focused practice from the {{ $category->tr('name') }} section.
+                            Sharpen your <strong>{{ $sub->name }}</strong> knowledge with focused practice from the {{ $category->name }} section.
                             Each quiz is scored instantly and every question includes a written explanation, so you can spot weak areas and fix them fast.
-                            Attempt the quizzes below to earn XP, track your accuracy and prepare confidently for {{ $sub->tr('name') }} questions in your exam.
+                            Attempt the quizzes below to earn XP, track your accuracy and prepare confidently for {{ $sub->name }} questions in your exam.
                         </p>
                     @endif
                 </div>

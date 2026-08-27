@@ -10,18 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class CategoryController extends Controller {
-    public function index(Request $request) {
+    public function index() {
         $pageTitle  = 'Categories';
-        $query = Category::searchable(['name'])->onlyParent();
-
-        // Optional translation-status filter (Hindi present / missing).
-        if ($request->translation === 'hindi_missing') {
-            $query->where(fn($q) => $q->whereNull('name_hi')->orWhere('name_hi', ''));
-        } elseif ($request->translation === 'translated') {
-            $query->whereNotNull('name_hi')->where('name_hi', '!=', '');
-        }
-
-        $categories = $query->orderBy('id', 'desc')->paginate(getPaginate())->withQueryString();
+        $categories = Category::searchable(['name'])->onlyParent()->orderBy('id', 'desc')->paginate(getPaginate());
         $parentCategories = Category::onlyParent()->orderBy('name')->get();
         $subCategoryCounts = Category::selectRaw('parent_id, COUNT(*) as cnt')
             ->whereNotNull('parent_id')
@@ -49,7 +40,6 @@ class CategoryController extends Controller {
     public function store(Request $request, $id = 0) {
         $request->validate([
             'name'      => "required|max:40|unique:categories,name," . $id,
-            'name_hi'   => "nullable|string|max:40",
             'parent_id' => "nullable|exists:categories,id",
             'image'     => ['nullable', new FileTypeValidate(['jpg', 'jpeg','avif','webp', 'png'])],
             'icon'      => "nullable|string|max:100",
@@ -76,9 +66,6 @@ class CategoryController extends Controller {
         }
 
         $category->name             = $request->name;
-        // Hindi name (optional). Slug stays derived from English only — shared
-        // across both languages, so existing English URLs never change.
-        $category->name_hi          = $request->name_hi ?: null;
         $category->slug             = slug($request->name);
         $category->parent_id        = $request->parent_id;
         $category->icon             = $request->icon;
@@ -136,16 +123,6 @@ class CategoryController extends Controller {
             'secondary_keywords'  => 'nullable|string|max:2000',
             'search_intent'       => 'nullable|string|max:40',
             'seo_priority'        => 'nullable|in:P0,P1,P2,P3',
-            // Hindi SEO (all optional — blank falls back to English at render time).
-            'meta_title_hi'         => 'nullable|string|max:255',
-            'meta_description_hi'   => 'nullable|string|max:320',
-            'meta_keywords_hi'      => 'nullable|string|max:255',
-            'seo_h1_hi'             => 'nullable|string|max:255',
-            'seo_intro_hi'          => 'nullable|string|max:1000',
-            'seo_content_hi'        => 'nullable|string',
-            'seo_bottom_content_hi' => 'nullable|string',
-            'primary_keyword_hi'    => 'nullable|string|max:191',
-            'secondary_keywords_hi' => 'nullable|string|max:2000',
         ]);
 
         // Advisory only: invalid JSON is saved but flagged; the frontend simply
@@ -163,10 +140,6 @@ class CategoryController extends Controller {
             'seo_content', 'seo_bottom_content', 'canonical_url', 'og_title', 'og_description',
             'og_image', 'twitter_title', 'twitter_description', 'schema_json',
             'primary_keyword', 'secondary_keywords', 'search_intent', 'seo_priority',
-            // Hindi SEO fields
-            'meta_title_hi', 'meta_description_hi', 'meta_keywords_hi', 'seo_h1_hi',
-            'seo_intro_hi', 'seo_content_hi', 'seo_bottom_content_hi',
-            'primary_keyword_hi', 'secondary_keywords_hi',
         ]));
         $category->robots_index   = $request->boolean('robots_index');
         $category->robots_follow  = $request->boolean('robots_follow');

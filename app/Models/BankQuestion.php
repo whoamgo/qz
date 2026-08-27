@@ -3,15 +3,11 @@
 namespace App\Models;
 
 use App\Traits\GlobalStatus;
-use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BankQuestion extends Model {
-    use GlobalStatus, SoftDeletes, HasTranslations;
-
-    /** Fields with per-locale translation columns (e.g. question_text → question_text_hi). */
-    protected array $translatable = ['question_text', 'explanation', 'hint'];
+    use GlobalStatus, SoftDeletes;
 
     const TYPE_MCQ_SINGLE = 'mcq_single';
     const TYPE_MCQ_MULTI = 'mcq_multi';
@@ -24,9 +20,7 @@ class BankQuestion extends Model {
     protected $fillable = [
         'category_id', 'sub_category_id', 'question_type', 'difficulty',
         'question_text', 'explanation', 'hint', 'default_marks',
-        'correct_option_id', 'status',
-        // Hindi content translations (Step 4 columns; edited via admin — Step 8)
-        'question_text_hi', 'explanation_hi', 'hint_hi',
+        'correct_option_id', 'status'
     ];
 
     protected $casts = [

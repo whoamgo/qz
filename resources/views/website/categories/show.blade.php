@@ -1,8 +1,8 @@
 @extends('website.layouts.app')
 @section('breadcrumb')
     <x-website::breadcrumbs :trail="[
-        'Home' => locale_route('home'), 'Categories' => locale_route('website.categories'),
-        $category->tr('name') => locale_route('website.category.show', $category->slug)]" />
+        'Home' => route('home'), 'Categories' => route('website.categories'),
+        $category->name => route('website.category.show', $category->slug)]" />
 @endsection
 @section('content')
 <section class="w-section">
@@ -27,17 +27,17 @@
                 <div class="w-article-body w-muted">
                     @if (!empty($seoContent['intro']))
                         <p class="mb-0">{{ $seoContent['intro'] }}</p>
-                    @elseif (!empty($category->tr('meta_description')))
-                        <p class="mb-0">{{ $category->tr('meta_description') }}</p>
+                    @elseif (!empty($category->meta_description))
+                        <p class="mb-0">{{ $category->meta_description }}</p>
                     @else
                         <p class="mb-0">
-                            Practise <strong>{{ $category->tr('name') }}</strong> with free online quizzes and mock tests on Quiz Mitra.
+                            Practise <strong>{{ $category->name }}</strong> with free online quizzes and mock tests on Quiz Mitra.
                             @if ($subCategories->count())
                                 This section is organised into {{ $subCategories->count() }} topics, so you can focus on exactly what you need to revise.
                             @endif
                             Every question comes with a written explanation, so you learn the reasoning rather than memorising an answer key.
                             Attempt any quiz to get an instant score, review your mistakes, earn XP and climb the leaderboard — a simple, free way to
-                            prepare for {{ $category->tr('name') }} sections in competitive exams and general-knowledge tests.
+                            prepare for {{ $category->name }} sections in competitive exams and general-knowledge tests.
                         </p>
                     @endif
                 </div>
@@ -53,14 +53,14 @@
                     <div class="col-6 col-md-4 col-lg-3">
                         <x-website::category-card :category="$sub"
                             :quizCount="$subQuizCounts[$sub->id] ?? 0"
-                            :url="locale_route('website.subcategory.show', [$category->slug, $sub->slug])" />
+                            :url="route('website.subcategory.show', [$category->slug, $sub->slug])" />
                     </div>
                 @endforeach
             </div>
         @endif
 
         @if ($popularQuizzes->count())
-            <div class="w-section-head"><div><h2>Popular in {{ $category->tr('name') }}</h2></div></div>
+            <div class="w-section-head"><div><h2>Popular in {{ $category->name }}</h2></div></div>
             <div class="row g-3 mb-5">
                 @foreach ($popularQuizzes as $quiz)
                     <div class="col-sm-6 col-lg-4"><x-website::quiz-card :quiz="$quiz" /></div>
@@ -68,7 +68,7 @@
             </div>
         @endif
 
-        <div class="w-section-head"><div><h2>All {{ $category->tr('name') }} Quizzes</h2></div></div>
+        <div class="w-section-head"><div><h2>All {{ $category->name }} Quizzes</h2></div></div>
         @include('website.partials.quiz-grid', ['quizzes' => $latestQuizzes])
 
         {{-- Main admin SEO content (already sanitised server-side). --}}

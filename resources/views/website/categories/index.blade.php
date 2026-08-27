@@ -1,6 +1,6 @@
 @extends('website.layouts.app')
 @section('breadcrumb')
-    <x-website::breadcrumbs :trail="['Home' => locale_route('home'), 'Categories' => locale_route('website.categories')]" />
+    <x-website::breadcrumbs :trail="['Home' => route('home'), 'Categories' => route('website.categories')]" />
 @endsection
 @section('content')
 <section class="w-section">
