@@ -44,6 +44,27 @@ return [
             'throw' => false,
         ],
 
+        /*
+        | Social Media Center library.
+        |
+        | This install serves the project root as the web root, so there is no
+        | public/ directory and no storage:link. Media lives under assets/social
+        | where it is directly reachable - which is a hard requirement, since
+        | Instagram and Threads fetch media from a public HTTPS URL rather than
+        | accepting an upload.
+        |
+        | SocialMediaService writes a .htaccess into that directory that disables
+        | PHP execution and forces downloads, so a file that slips past
+        | validation still cannot be executed.
+        */
+        'social' => [
+            'driver'     => 'local',
+            'root'       => base_path('assets/social'),
+            'url'        => rtrim(env('APP_URL'), '/') . '/assets/social',
+            'visibility' => 'public',
+            'throw'      => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

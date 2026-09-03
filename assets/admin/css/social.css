@@ -1,0 +1,537 @@
+/*
+ * Social Media Center
+ *
+ * Layered on top of the admin theme rather than replacing it: colours, radii
+ * and spacing follow the existing panel so the section does not read as a
+ * bolted-on product. Everything is scoped under .social-* to avoid collisions.
+ */
+
+:root {
+    --social-radius: 10px;
+    --social-border: #e6e9f0;
+    --social-muted: #7c8db5;
+    --social-surface: #ffffff;
+    --social-surface-alt: #f6f8fc;
+}
+
+/* ------------------------------------------------------------- KPI cards */
+
+.social-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.social-kpi {
+    background: var(--social-surface);
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 100%;
+    transition: box-shadow .18s ease, transform .18s ease;
+}
+
+.social-kpi:hover {
+    box-shadow: 0 6px 20px rgba(24, 39, 75, .08);
+    transform: translateY(-1px);
+}
+
+.social-kpi__icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    color: #fff;
+}
+
+.social-kpi__value {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.1;
+    color: #2b2f3a;
+}
+
+.social-kpi__label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--social-muted);
+    margin-top: 2px;
+}
+
+.social-kpi__hint {
+    font-size: 12px;
+    color: var(--social-muted);
+}
+
+/* -------------------------------------------------------- Platform cards */
+
+.social-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.social-platform {
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    background: var(--social-surface);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.social-platform__head {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--social-border);
+}
+
+.social-platform__icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 20px;
+}
+
+.social-platform__name {
+    font-weight: 600;
+    color: #2b2f3a;
+    line-height: 1.2;
+}
+
+.social-platform__meta {
+    font-size: 12px;
+    color: var(--social-muted);
+}
+
+.social-platform__body {
+    padding: 14px 16px;
+    flex: 1;
+}
+
+.social-platform__foot {
+    padding: 12px 16px;
+    background: var(--social-surface-alt);
+    border-top: 1px solid var(--social-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.social-platform__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+}
+
+.social-platform__stat b {
+    display: block;
+    font-size: 16px;
+    color: #2b2f3a;
+}
+
+.social-platform__stat span {
+    font-size: 11px;
+    color: var(--social-muted);
+    text-transform: uppercase;
+}
+
+.social-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--social-border);
+}
+
+/* ------------------------------------------------------------ Chips/badges */
+
+.social-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--social-surface-alt);
+    border: 1px solid var(--social-border);
+    color: #45506b;
+    line-height: 1.6;
+}
+
+.social-chip i {
+    font-size: 13px;
+}
+
+.social-chip--ok     { border-color: #b7e4c7; background: #eaf7ef; color: #1b7f45; }
+.social-chip--warn   { border-color: #ffe0a3; background: #fff6e5; color: #9a6700; }
+.social-chip--danger { border-color: #f5c2c7; background: #fdeced; color: #b02a37; }
+.social-chip--muted  { color: var(--social-muted); }
+
+.social-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ------------------------------------------------------------ The wizard */
+
+.social-steps {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.social-step {
+    flex: 1 1 150px;
+    padding: 12px 14px;
+    border-radius: var(--social-radius);
+    border: 1px solid var(--social-border);
+    background: var(--social-surface);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.social-step__num {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--social-surface-alt);
+    color: var(--social-muted);
+}
+
+.social-step__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #45506b;
+}
+
+.social-step.is-active {
+    border-color: #5b6ef5;
+    box-shadow: 0 0 0 2px rgba(91, 110, 245, .12);
+}
+
+.social-step.is-active .social-step__num {
+    background: #5b6ef5;
+    color: #fff;
+}
+
+.social-step.is-done .social-step__num {
+    background: #28a745;
+    color: #fff;
+}
+
+.social-pane { display: none; }
+.social-pane.is-active { display: block; }
+
+/* --------------------------------------------------- Platform select tiles */
+
+.social-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+}
+
+.social-select {
+    position: relative;
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    padding: 14px;
+    cursor: pointer;
+    background: var(--social-surface);
+    transition: all .15s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.social-select:hover { border-color: #b9c2e0; }
+
+.social-select input { position: absolute; opacity: 0; pointer-events: none; }
+
+.social-select.is-checked {
+    border-color: #5b6ef5;
+    background: #f5f6ff;
+    box-shadow: 0 0 0 2px rgba(91, 110, 245, .1);
+}
+
+.social-select.is-disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    background: var(--social-surface-alt);
+}
+
+.social-select__reason {
+    font-size: 11px;
+    color: #b02a37;
+    margin-top: 3px;
+    display: block;
+}
+
+/* ------------------------------------------------------------- Media grid */
+
+.social-media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.social-media-item {
+    position: relative;
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    overflow: hidden;
+    background: var(--social-surface-alt);
+    cursor: pointer;
+    aspect-ratio: 1;
+}
+
+.social-media-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.social-media-item.is-selected {
+    border-color: #5b6ef5;
+    box-shadow: 0 0 0 3px rgba(91, 110, 245, .25);
+}
+
+.social-media-item__meta {
+    position: absolute;
+    inset: auto 0 0 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .75));
+    color: #fff;
+    font-size: 11px;
+    padding: 16px 8px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.social-media-item__type {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, .6);
+    color: #fff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.social-media-placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    color: var(--social-muted);
+    font-size: 28px;
+}
+
+/* ---------------------------------------------------------------- Preview */
+
+.social-preview {
+    max-width: 480px;
+    margin: 0 auto;
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    background: var(--social-surface);
+    overflow: hidden;
+}
+
+.social-preview__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+}
+
+.social-preview__body {
+    padding: 0 14px 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #2b2f3a;
+}
+
+.social-preview__media {
+    background: #000;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.social-preview__media img { width: 100%; height: 100%; object-fit: contain; }
+
+.social-preview__actions {
+    display: flex;
+    gap: 18px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--social-border);
+    color: var(--social-muted);
+    font-size: 16px;
+}
+
+.social-preview__note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--social-muted);
+    margin-top: 10px;
+}
+
+/* --------------------------------------------------------------- Calendar */
+
+.social-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    overflow: hidden;
+    background: var(--social-border);
+    gap: 1px;
+}
+
+.social-calendar__dow {
+    background: var(--social-surface-alt);
+    padding: 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--social-muted);
+    text-transform: uppercase;
+}
+
+.social-calendar__cell {
+    background: var(--social-surface);
+    min-height: 118px;
+    padding: 6px;
+    position: relative;
+}
+
+.social-calendar__cell.is-other-month { background: var(--social-surface-alt); }
+.social-calendar__cell.is-today       { box-shadow: inset 0 0 0 2px #5b6ef5; }
+.social-calendar__cell.is-drop-target { background: #eef1ff; }
+
+.social-calendar__date {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--social-muted);
+    margin-bottom: 4px;
+}
+
+.social-event {
+    display: block;
+    border-left: 3px solid var(--social-muted);
+    background: var(--social-surface-alt);
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #2b2f3a;
+    cursor: grab;
+    text-decoration: none;
+}
+
+.social-event:hover { background: #eef1ff; color: #2b2f3a; }
+.social-event.is-dragging { opacity: .4; }
+
+.social-event__time { font-weight: 600; }
+.social-event__platforms { display: flex; gap: 3px; margin-top: 2px; font-size: 11px; }
+
+/* ----------------------------------------------------------- Result screen */
+
+.social-result {
+    border: 1px solid var(--social-border);
+    border-radius: var(--social-radius);
+    overflow: hidden;
+}
+
+.social-result__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--social-border);
+}
+
+.social-result__row:last-child { border-bottom: 0; }
+
+.social-result__status { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* ------------------------------------------------------------ Empty states */
+
+.social-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--social-muted);
+}
+
+.social-empty i { font-size: 42px; opacity: .35; display: block; margin-bottom: 12px; }
+.social-empty h6 { color: #45506b; margin-bottom: 6px; }
+
+/* ------------------------------------------------------------- Skeletons */
+
+.social-skeleton {
+    background: linear-gradient(90deg, #eef1f6 25%, #f7f9fc 50%, #eef1f6 75%);
+    background-size: 200% 100%;
+    animation: socialShimmer 1.2s infinite;
+    border-radius: 6px;
+    height: 14px;
+}
+
+@keyframes socialShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ------------------------------------------------------------ Small print */
+
+.social-note {
+    background: var(--social-surface-alt);
+    border: 1px dashed var(--social-border);
+    border-radius: var(--social-radius);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #45506b;
+}
+
+.social-counter { font-size: 11px; color: var(--social-muted); }
+.social-counter.is-over { color: #b02a37; font-weight: 600; }
+
+.social-scroll-x { overflow-x: auto; }
+
+@media (max-width: 767px) {
+    .social-calendar__cell { min-height: 84px; }
+    .social-steps { flex-direction: column; }
+    .social-kpi { padding: 14px; }
+}

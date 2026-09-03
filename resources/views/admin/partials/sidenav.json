@@ -28,8 +28,16 @@
     },
     "analytics": {
         "keyword": [
-            "Analytics", "Traffic", "Page Views", "Clicks", "Visitors",
-            "Statistics", "Geography", "Countries", "Insights", "Reports"
+            "Analytics",
+            "Traffic",
+            "Page Views",
+            "Clicks",
+            "Visitors",
+            "Statistics",
+            "Geography",
+            "Countries",
+            "Insights",
+            "Reports"
         ],
         "title": "Analytics",
         "icon": "las la-chart-line",
@@ -62,10 +70,146 @@
             }
         ]
     },
+    "social_media": {
+        "keyword": [
+            "Social",
+            "Social Media",
+            "Instagram",
+            "Facebook",
+            "YouTube",
+            "Twitter",
+            "X",
+            "LinkedIn",
+            "Telegram",
+            "WhatsApp",
+            "Threads",
+            "Publish",
+            "Schedule",
+            "Campaign",
+            "Hashtags",
+            "Reels",
+            "Shorts",
+            "Content Calendar",
+            "Post"
+        ],
+        "title": "Social Media",
+        "icon": "las la-share-alt",
+        "menu_active": "admin.social.*",
+        "submenu": [
+            {
+                "title": "Dashboard",
+                "route_name": "admin.social.dashboard",
+                "menu_active": "admin.social.dashboard"
+            },
+            {
+                "title": "Create Post",
+                "route_name": "admin.social.posts.create",
+                "menu_active": "admin.social.posts.create"
+            },
+            {
+                "title": "Video Publisher",
+                "route_name": "admin.social.video.index",
+                "menu_active": "admin.social.video.*"
+            },
+            {
+                "title": "Posts",
+                "route_name": "admin.social.posts.index",
+                "menu_active": "admin.social.posts.index"
+            },
+            {
+                "title": "Calendar",
+                "route_name": "admin.social.calendar.index",
+                "menu_active": "admin.social.calendar.*"
+            },
+            {
+                "title": "Publishing Queue",
+                "route_name": "admin.social.queue.index",
+                "menu_active": "admin.social.queue.*"
+            },
+            {
+                "title": "Bulk Scheduler",
+                "route_name": "admin.social.bulk.index",
+                "menu_active": "admin.social.bulk.*"
+            },
+            {
+                "title": "Campaigns",
+                "route_name": "admin.social.campaigns.index",
+                "menu_active": "admin.social.campaigns.*"
+            },
+            {
+                "title": "Media Library",
+                "route_name": "admin.social.media.index",
+                "menu_active": "admin.social.media.*"
+            },
+            {
+                "title": "Templates",
+                "route_name": "admin.social.templates.index",
+                "menu_active": "admin.social.templates.*"
+            },
+            {
+                "title": "Hashtags",
+                "route_name": "admin.social.hashtags.index",
+                "menu_active": "admin.social.hashtags.*"
+            },
+            {
+                "title": "Inbox",
+                "route_name": "admin.social.inbox.index",
+                "menu_active": "admin.social.inbox.*",
+                "counter": "socialUnreadCount"
+            },
+            {
+                "title": "Analytics",
+                "route_name": "admin.social.analytics.index",
+                "menu_active": "admin.social.analytics.index"
+            },
+            {
+                "title": "Top Content",
+                "route_name": "admin.social.analytics.top",
+                "menu_active": "admin.social.analytics.top"
+            },
+            {
+                "title": "Failed Posts",
+                "route_name": "admin.social.failed.index",
+                "menu_active": "admin.social.failed.*",
+                "counter": "socialFailedCount"
+            },
+            {
+                "title": "Accounts",
+                "route_name": "admin.social.accounts.index",
+                "menu_active": "admin.social.accounts.*"
+            },
+            {
+                "title": "Automations",
+                "route_name": "admin.social.automations.index",
+                "menu_active": "admin.social.automations.*"
+            },
+            {
+                "title": "Activity Logs",
+                "route_name": "admin.social.logs.index",
+                "menu_active": "admin.social.logs.*"
+            },
+            {
+                "title": "Settings",
+                "route_name": "admin.social.settings.index",
+                "menu_active": "admin.social.settings.*"
+            }
+        ],
+        "counters": [
+            "socialFailedCount",
+            "socialPendingApprovalCount"
+        ]
+    },
     "seo_manager": {
         "keyword": [
-            "SEO", "SEO Manager", "Meta", "Search Engine", "SEO Health",
-            "Bulk SEO", "SEO Score", "Duplicate Titles", "Meta Description"
+            "SEO",
+            "SEO Manager",
+            "Meta",
+            "Search Engine",
+            "SEO Health",
+            "Bulk SEO",
+            "SEO Score",
+            "Duplicate Titles",
+            "Meta Description"
         ],
         "title": "SEO Manager",
         "icon": "las la-search-plus",
@@ -171,7 +315,10 @@
             },
             {
                 "keyword": [
-                    "Daily Current Affairs", "Quick Publish", "Daily Quiz", "Today Current Affairs"
+                    "Daily Current Affairs",
+                    "Quick Publish",
+                    "Daily Quiz",
+                    "Today Current Affairs"
                 ],
                 "title": "Daily Current Affairs",
                 "route_name": "admin.quiz.daily",

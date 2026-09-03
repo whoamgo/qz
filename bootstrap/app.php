@@ -88,6 +88,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'kyc' => KycMiddleware::class,
             'registration.complete' => RegistrationStep::class,
             'maintenance' => MaintenanceMode::class,
+
+            // Social Media Center: module switch + minimum view access.
+            'social' => \App\Http\Middleware\SocialCenter::class,
         ]);
 
         $middleware->validateCsrfTokens(

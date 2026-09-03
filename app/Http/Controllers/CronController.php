@@ -74,4 +74,29 @@ class CronController extends Controller {
         }
     }
 
+    /**
+     * Social Media Center: drains the publishing queue and fires due automations.
+     *
+     * This is what makes "close the browser and the post still goes out" true on
+     * a host with nothing but a plain cron entry. The time budget keeps the run
+     * inside PHP's execution limit; anything left over is picked up next time.
+     */
+    public function socialPublish() {
+        $runner = app(\App\Services\Social\SocialQueueRunner::class);
+        $runner->run(maxSeconds: 45, maxJobs: 20);
+
+        app(\App\Services\Social\SocialAutomationRunner::class)->runDue();
+    }
+
+    /**
+     * Social Media Center: refreshes metrics, the inbox and expiring tokens.
+     * Separate from publishing because it is hourly work, not per-minute work,
+     * and it must never delay a scheduled post.
+     */
+    public function socialSync() {
+        app(\App\Services\Social\SocialQueueRunner::class)->refreshExpiringTokens(180);
+        app(\App\Services\Social\SocialAnalyticsService::class)->syncAll();
+        app(\App\Services\Social\SocialInboxService::class)->syncAll();
+    }
+
 }

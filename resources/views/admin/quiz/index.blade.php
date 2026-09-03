@@ -174,6 +174,13 @@
                                                     <a class="dropdown-item" href="{{ route('admin.quiz.seo', $quiz->id) }}">
                                                         <i class="la la-search"></i> @lang('SEO')
                                                     </a>
+                                                    {{-- Loads this quiz into the social publishing wizard with
+                                                         the title, link, hashtags and CTA already filled in. --}}
+                                                    @if(App\Services\Social\SocialPermission::allows(App\Services\Social\SocialPermission::CREATE))
+                                                        <a class="dropdown-item" href="{{ route('admin.social.share', ['quiz', $quiz->id]) }}">
+                                                            <i class="la la-share-alt"></i> @lang('Share to Social Media')
+                                                        </a>
+                                                    @endif
                                                     @if($quiz->status == \App\Models\Quiz::STATUS_PUBLISHED)
                                                         <button class="dropdown-item confirmationBtn" data-action="{{ route('admin.quiz.status', $quiz->id) }}" data-question="@lang('Are you sure to unpublish this quiz?')">
                                                             <i class="la la-eye-slash"></i> @lang('Unpublish')

@@ -536,4 +536,190 @@ Route::middleware('admin')->group(function () {
             Route::post('update', 'update')->name('update');
         });
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Social Media Center
+    |--------------------------------------------------------------------------
+    |
+    | The `social` middleware checks the module switch and view access; each
+    | controller action then authorises its own ability, so a route being
+    | reachable never implies the action is permitted.
+    |
+    | Throttles are on the endpoints where a repeated request costs something
+    | real: publishing (platform quota and duplicate risk), account connection
+    | (OAuth attempts) and uploads.
+    */
+    Route::namespace('Social')->middleware('social')->prefix('social')->name('social.')->group(function () {
+
+        Route::get('/', 'DashboardController@index')->name('dashboard');
+        Route::get('dashboard/queue-status', 'DashboardController@queueStatus')->name('dashboard.queue.status');
+        Route::post('dashboard/process-queue', 'DashboardController@processQueue')
+            ->middleware('throttle:10,1')->name('dashboard.process.queue');
+
+        // ------------------------------------------------------------- Posts
+        Route::controller('PostController')->prefix('posts')->name('posts.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('store', 'store')->middleware('throttle:60,1')->name('store');
+            Route::get('{post}', 'show')->whereNumber('post')->name('show');
+            Route::get('{post}/edit', 'edit')->whereNumber('post')->name('edit');
+            Route::post('{post}/update', 'update')->whereNumber('post')->name('update');
+            Route::post('{post}/duplicate', 'duplicate')->whereNumber('post')->name('duplicate');
+            Route::post('{post}/delete', 'destroy')->whereNumber('post')->name('delete');
+
+            // Publishing actions are the ones a double click can hurt.
+            Route::post('{post}/publish', 'publish')->whereNumber('post')
+                ->middleware('throttle:20,1')->name('publish');
+            Route::post('{post}/schedule', 'schedule')->whereNumber('post')
+                ->middleware('throttle:30,1')->name('schedule');
+            Route::post('{post}/cancel', 'cancel')->whereNumber('post')->name('cancel');
+            Route::post('{post}/reschedule', 'reschedule')->whereNumber('post')->name('reschedule');
+
+            Route::post('{post}/submit-approval', 'submitApproval')->whereNumber('post')->name('submit.approval');
+            Route::post('{post}/approve', 'approve')->whereNumber('post')->name('approve');
+            Route::post('{post}/reject', 'reject')->whereNumber('post')->name('reject');
+
+            Route::post('target/{target}/retry', 'retryTarget')->whereNumber('target')
+                ->middleware('throttle:30,1')->name('target.retry');
+            Route::get('target/{target}/attempts', 'attempts')->whereNumber('target')->name('target.attempts');
+
+            Route::post('preview', 'preview')->name('preview');
+            Route::post('validate-media', 'validateMedia')->name('validate.media');
+        });
+
+        // --------------------------------------------------- Video publisher
+        Route::controller('VideoPublisherController')->prefix('video')->name('video.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('check', 'check')->name('check');
+        });
+
+        // ---------------------------------------------------------- Calendar
+        Route::controller('CalendarController')->prefix('calendar')->name('calendar.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('events', 'events')->name('events');
+            Route::post('move', 'move')->name('move');
+        });
+
+        // --------------------------------------------------- Publishing queue
+        Route::controller('QueueController')->prefix('queue')->name('queue.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('run', 'run')->middleware('throttle:10,1')->name('run');
+            Route::post('{job}/cancel', 'cancel')->whereNumber('job')->name('cancel');
+            Route::post('{job}/retry', 'retry')->whereNumber('job')->name('retry');
+            Route::post('release-stuck', 'releaseStuck')->name('release.stuck');
+        });
+
+        // ------------------------------------------------------ Failed posts
+        Route::controller('FailedPostController')->prefix('failed')->name('failed.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('retry-all', 'retryAll')->middleware('throttle:5,1')->name('retry.all');
+        });
+
+        // ----------------------------------------------------- Bulk scheduler
+        Route::controller('BulkSchedulerController')->prefix('bulk')->name('bulk.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('upload', 'upload')->middleware('throttle:10,1')->name('upload');
+            Route::get('{import}/preview', 'preview')->whereNumber('import')->name('preview');
+            Route::post('{import}/confirm', 'confirm')->whereNumber('import')->name('confirm');
+            Route::post('{import}/delete', 'destroy')->whereNumber('import')->name('delete');
+            Route::get('template.csv', 'template')->name('template');
+        });
+
+        // --------------------------------------------------------- Campaigns
+        Route::controller('CampaignController')->prefix('campaigns')->name('campaigns.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('store', 'store')->name('store');
+            Route::post('{campaign}/update', 'update')->whereNumber('campaign')->name('update');
+            Route::post('{campaign}/delete', 'destroy')->whereNumber('campaign')->name('delete');
+            Route::get('{campaign}', 'show')->whereNumber('campaign')->name('show');
+        });
+
+        // ----------------------------------------------------- Media library
+        Route::controller('MediaController')->prefix('media')->name('media.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('upload', 'upload')->middleware('throttle:60,1')->name('upload');
+            Route::post('{media}/update', 'update')->whereNumber('media')->name('update');
+            Route::post('{media}/delete', 'destroy')->whereNumber('media')->name('delete');
+            Route::get('browse', 'browse')->name('browse');
+        });
+
+        // --------------------------------------------------------- Templates
+        Route::controller('TemplateController')->prefix('templates')->name('templates.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('store', 'store')->name('store');
+            Route::post('{template}/update', 'update')->whereNumber('template')->name('update');
+            Route::post('{template}/delete', 'destroy')->whereNumber('template')->name('delete');
+            Route::post('{template}/preview', 'preview')->whereNumber('template')->name('preview');
+        });
+
+        // ---------------------------------------------------------- Hashtags
+        Route::controller('HashtagController')->prefix('hashtags')->name('hashtags.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('store', 'store')->name('store');
+            Route::post('{group}/update', 'update')->whereNumber('group')->name('update');
+            Route::post('{group}/delete', 'destroy')->whereNumber('group')->name('delete');
+        });
+
+        // ------------------------------------------------------------- Inbox
+        Route::controller('InboxController')->prefix('inbox')->name('inbox.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('sync', 'sync')->middleware('throttle:10,1')->name('sync');
+            Route::post('{comment}/read', 'markRead')->whereNumber('comment')->name('read');
+            Route::post('read-all', 'markAllRead')->name('read.all');
+        });
+
+        // --------------------------------------------------------- Analytics
+        Route::controller('AnalyticsController')->prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('top-content', 'topContent')->name('top');
+            Route::post('sync', 'sync')->middleware('throttle:10,1')->name('sync');
+        });
+
+        // ---------------------------------------------------------- Accounts
+        Route::controller('AccountController')->prefix('accounts')->name('accounts.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('connect/{platform}', 'connect')->middleware('throttle:20,1')->name('connect');
+            Route::get('callback/{platform}', 'callback')->name('callback');
+            Route::post('choose/{platform}', 'choose')->name('choose');
+            Route::post('token/{platform}', 'connectWithToken')->middleware('throttle:20,1')->name('token');
+            Route::post('{account}/test', 'test')->whereNumber('account')->middleware('throttle:30,1')->name('test');
+            Route::post('{account}/sync', 'sync')->whereNumber('account')->middleware('throttle:30,1')->name('sync');
+            Route::post('{account}/disconnect', 'disconnect')->whereNumber('account')->name('disconnect');
+            Route::post('{account}/default', 'makeDefault')->whereNumber('account')->name('default');
+            Route::post('{account}/delete', 'destroy')->whereNumber('account')->name('delete');
+        });
+
+        // ------------------------------------------------------- Automations
+        Route::controller('AutomationController')->prefix('automations')->name('automations.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('store', 'store')->name('store');
+            Route::post('{automation}/update', 'update')->whereNumber('automation')->name('update');
+            Route::post('{automation}/toggle', 'toggle')->whereNumber('automation')->name('toggle');
+            Route::post('{automation}/run', 'runNow')->whereNumber('automation')->middleware('throttle:10,1')->name('run');
+            Route::post('{automation}/delete', 'destroy')->whereNumber('automation')->name('delete');
+            Route::post('stop-all', 'stopAll')->name('stop.all');
+        });
+
+        // ----------------------------------------------------- Activity logs
+        Route::controller('ActivityLogController')->prefix('logs')->name('logs.')->group(function () {
+            Route::get('/', 'index')->name('index');
+        });
+
+        // ---------------------------------------------------------- Settings
+        Route::controller('SettingController')->prefix('settings')->name('settings.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('update', 'update')->name('update');
+            Route::get('roles', 'roles')->name('roles');
+            Route::post('roles/{admin}', 'updateRole')->whereNumber('admin')->name('roles.update');
+        });
+
+        // --------------------------------------------------- AI content assist
+        Route::controller('AiContentController')->prefix('ai')->name('ai.')->group(function () {
+            Route::post('generate', 'generate')->middleware('throttle:20,1')->name('generate');
+        });
+
+        // ---------------------------------- Share Quiz Mitra content directly
+        Route::get('share/{type}/{id}', 'ShareController@share')->whereNumber('id')->name('share');
+    });
 });
