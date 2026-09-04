@@ -580,7 +580,13 @@ function wAsset($path) {
     // Regenerate the .min files with: npm run minify
     if (!config('app.debug')) {
         $min = preg_replace('/\.(css|js)$/', '.min.$1', $path);
-        if ($min !== $path && is_file(base_path($min))) {
+        // Prefer the minified sibling ONLY when it exists AND is at least as new
+        // as the source. If the source was edited without re-minifying, the .min
+        // is stale — serving it breaks production while local (debug) still works
+        // off the readable source. Falling back to the source keeps prod correct
+        // until `npm run minify` runs.
+        if ($min !== $path && is_file(base_path($min))
+            && (!is_file(base_path($path)) || filemtime(base_path($min)) >= filemtime(base_path($path)))) {
             $path = $min;
         }
     }
