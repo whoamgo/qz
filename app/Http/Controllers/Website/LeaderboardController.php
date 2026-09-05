@@ -33,17 +33,37 @@ class LeaderboardController extends BaseWebsiteController {
 
         $categories = $this->navCategories();
 
+        $faqs = [
+            ['question' => 'How is the QuizMitra leaderboard ranked?',
+             'answer'   => 'By XP. The all-time board ranks players by their total XP, and you can also switch to the daily, weekly and monthly boards.'],
+            ['question' => 'How do I earn XP to climb the leaderboard?',
+             'answer'   => 'Complete quizzes and answer correctly. You earn bonus XP for passing, perfect scores, first attempts and keeping a daily streak.'],
+            ['question' => 'Is it free to appear on the leaderboard?',
+             'answer'   => 'Yes. Create a free account and every quiz you finish counts toward your rank — there is nothing to pay.'],
+            ['question' => 'Can I filter the leaderboard by exam or category?',
+             'answer'   => 'Yes. Use the category filter to see the top performers in a specific subject or exam instead of the overall board.'],
+            ['question' => 'How often does the leaderboard update?',
+             'answer'   => 'It reflects XP as you earn it, updating continuously with only brief caching, so a strong session can move your rank quickly.'],
+            ['question' => 'Do live quiz rooms and the Daily Spin count toward my rank?',
+             'answer'   => 'Yes — XP earned anywhere on QuizMitra, including live rooms and the Daily Spin, counts toward your leaderboard position.'],
+            ['question' => 'How can I climb the rankings faster?',
+             'answer'   => 'Play daily to protect your streak, aim for perfect scores, and try mock tests and current-affairs quizzes for extra XP.'],
+        ];
+
         $seo = $this->seo([
             'title'       => 'Leaderboard — Top Quiz Performers by XP',
             'description' => 'See the highest-scoring quiz takers by XP across daily, weekly, monthly and all-time boards, filtered by category or exam.',
             'canonical'   => route('website.leaderboard'),
-            'schema'      => [$this->breadcrumbSchema([
-                'Home'        => route('home'),
-                'Leaderboard' => route('website.leaderboard'),
-            ])],
+            'schema'      => [
+                $this->breadcrumbSchema([
+                    'Home'        => route('home'),
+                    'Leaderboard' => route('website.leaderboard'),
+                ]),
+                $this->faqSchema($faqs),
+            ],
         ]);
 
-        return view('website.leaderboard.index', compact('seo', 'leaders', 'period', 'category', 'categories', 'myRank', 'myRow'));
+        return view('website.leaderboard.index', compact('seo', 'leaders', 'period', 'category', 'categories', 'myRank', 'myRow', 'faqs'));
     }
 
     /**

@@ -171,4 +171,5 @@
     </div>
 </section>
 
+@include('website.partials.site-info-sections')
 @endsection

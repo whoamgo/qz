@@ -74,4 +74,13 @@
         @endif
     </div>
 </section>
+
+{{-- Leaderboard FAQs (also emitted as FAQPage schema in <head>). --}}
+<section class="w-section w-section-alt">
+    <div class="container">
+        <x-website::faq-accordion :faqs="$faqs" id="wLbFaq" title="Leaderboard FAQs" />
+    </div>
+</section>
+
+@include('website.partials.site-info-sections')
 @endsection
