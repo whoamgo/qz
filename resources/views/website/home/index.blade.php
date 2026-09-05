@@ -160,6 +160,171 @@
         </div>
     </section>
 
+    {{-- 1c. Prepare by Exam & Subject — explore grid (SEO deep internal linking) --}}
+    <section class="w-section">
+        <div class="container">
+            <div class="w-section-head text-center d-block">
+                <div>
+                    <h2>Prepare by Exam &amp; Subject</h2>
+                    <p>Jump straight to what you're preparing for — competitive exams, core subjects, practice modes and rewards.</p>
+                </div>
+            </div>
+
+            <div class="hx-grid4">
+                <div class="hx-col">
+                    <div class="hx-col-head">
+                        <span class="hx-icon"><i class="bi bi-mortarboard-fill" aria-hidden="true"></i></span>
+                        <h3>Competitive Exams</h3>
+                    </div>
+                    <ul class="hx-list">
+                        <li><a href="{{ route('exams') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> SSC — CGL, CHSL &amp; GD</a></li>
+                        <li><a href="{{ route('exams') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> UPSC Civil Services</a></li>
+                        <li><a href="{{ route('exams') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Banking — IBPS &amp; SBI</a></li>
+                        <li><a href="{{ route('exams') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Railway — RRB NTPC</a></li>
+                        <li><a href="{{ route('exams') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Defence — NDA &amp; CDS</a></li>
+                    </ul>
+                </div>
+
+                <div class="hx-col">
+                    <div class="hx-col-head">
+                        <span class="hx-icon"><i class="bi bi-journal-bookmark-fill" aria-hidden="true"></i></span>
+                        <h3>Core Subjects</h3>
+                    </div>
+                    <ul class="hx-list">
+                        <li><a href="{{ route('website.category.show', 'general-knowledge') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> General Knowledge</a></li>
+                        <li><a href="{{ route('website.current.affairs.index') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Current Affairs</a></li>
+                        <li><a href="{{ route('website.category.show', 'reasoning') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Reasoning &amp; Aptitude</a></li>
+                        <li><a href="{{ route('website.category.show', 'computer-technology') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Computer &amp; Technology</a></li>
+                        <li><a href="{{ route('website.category.show', 'world-quiz') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> World &amp; Geography</a></li>
+                    </ul>
+                </div>
+
+                <div class="hx-col">
+                    <div class="hx-col-head">
+                        <span class="hx-icon"><i class="bi bi-clipboard-check-fill" aria-hidden="true"></i></span>
+                        <h3>Practice Modes</h3>
+                    </div>
+                    <ul class="hx-list">
+                        <li><a href="{{ route('website.quizzes') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> All Quizzes</a></li>
+                        <li><a href="{{ route('website.mock.tests') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Mock Tests</a></li>
+                        <li><a href="{{ route('website.pyq') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Previous Year Questions</a></li>
+                        <li><a href="{{ route('website.current.affairs.today') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Today's Current Affairs</a></li>
+                        <li><a href="{{ route('website.play.live') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Play Live with Friends</a></li>
+                    </ul>
+                </div>
+
+                <div class="hx-col">
+                    <div class="hx-col-head">
+                        <span class="hx-icon"><i class="bi bi-trophy-fill" aria-hidden="true"></i></span>
+                        <h3>Earn &amp; Compete</h3>
+                    </div>
+                    <ul class="hx-list">
+                        <li><a href="#dailySpin"><i class="bi bi-arrow-right" aria-hidden="true"></i> Daily Spin &amp; Win</a></li>
+                        <li><a href="{{ route('website.leaderboard') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Leaderboard</a></li>
+                        <li><a href="{{ route('exams') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> All Exams</a></li>
+                        <li><a href="{{ route('website.categories') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Browse All Categories</a></li>
+                        <li><a href="{{ route('user.register') }}"><i class="bi bi-arrow-right" aria-hidden="true"></i> Create a Free Account</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- 1d. Everything you need — feature grid --}}
+    <section class="w-section w-section-alt">
+        <div class="container">
+            <div class="w-section-head text-center d-block">
+                <div>
+                    <h2>Everything You Need to Crack Your Exam</h2>
+                    <p>Free quizzes, real exam patterns and gamified practice — all in one place, on any device.</p>
+                </div>
+            </div>
+
+            <div class="hx-feat-grid">
+                <div class="hx-feat">
+                    <span class="hx-feat-icon"><i class="bi bi-patch-question-fill" aria-hidden="true"></i></span>
+                    <h3>10,000+ Practice Questions</h3>
+                    <p>Thousands of exam-style MCQs across GK, Current Affairs, Reasoning and more — each with a clear written explanation so you learn as you practise.</p>
+                    <a href="{{ route('website.quizzes') }}" class="hx-feat-link">Explore <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="hx-feat">
+                    <span class="hx-feat-icon"><i class="bi bi-calendar-check-fill" aria-hidden="true"></i></span>
+                    <h3>Daily Current Affairs</h3>
+                    <p>Fresh daily, weekly and monthly current-affairs quizzes that keep you exam-ready on national, international and economic news.</p>
+                    <a href="{{ route('website.current.affairs.index') }}" class="hx-feat-link">Explore <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="hx-feat">
+                    <span class="hx-feat-icon"><i class="bi bi-mortarboard-fill" aria-hidden="true"></i></span>
+                    <h3>Exam-Focused Prep</h3>
+                    <p>Curated quiz hubs for SSC, UPSC, Banking, Railway and Defence — practise exactly the subjects each exam actually tests.</p>
+                    <a href="{{ route('exams') }}" class="hx-feat-link">Explore <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="hx-feat">
+                    <span class="hx-feat-icon"><i class="bi bi-controller" aria-hidden="true"></i></span>
+                    <h3>Play Live with Friends</h3>
+                    <p>Create a room, share a code and race friends through the same quiz in real time — with a live leaderboard and instant results.</p>
+                    <a href="{{ route('website.play.live') }}" class="hx-feat-link">Explore <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="hx-feat">
+                    <span class="hx-feat-icon"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i></span>
+                    <h3>XP, Levels &amp; Badges</h3>
+                    <p>Earn XP for every quiz, level up, unlock badges and climb the leaderboard — a fun daily habit that keeps you consistent.</p>
+                    <a href="{{ route('website.leaderboard') }}" class="hx-feat-link">Explore <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="hx-feat">
+                    <span class="hx-feat-icon"><i class="bi bi-clipboard-check-fill" aria-hidden="true"></i></span>
+                    <h3>Free Mock Tests &amp; PYQs</h3>
+                    <p>Full-length timed mock tests and previous-year questions that simulate the real exam so there are no surprises on test day.</p>
+                    <a href="{{ route('website.mock.tests') }}" class="hx-feat-link">Explore <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @push('styles')
+    <style>
+        /* Home explore grid + feature grid (scoped, ships with the page) */
+        .hx-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--w-space-4)}
+        .hx-col{background:var(--w-bg);border:1px solid var(--w-border);border-radius:16px;padding:var(--w-space-5);
+            transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+        .hx-col:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(2,22,45,.08);border-color:#f6d3b3}
+        .hx-col-head{display:flex;align-items:center;gap:.6rem;padding-bottom:var(--w-space-3);
+            margin-bottom:var(--w-space-3);border-bottom:1px solid var(--w-border)}
+        .hx-col-head h3{font-size:var(--w-fs-lg);margin:0;color:var(--w-primary);font-weight:700}
+        .hx-icon{flex:0 0 auto;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+            background:#fff2e8;color:#02162d;font-size:1.15rem}
+        .hx-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.1rem}
+        .hx-list a{display:flex;align-items:center;gap:.5rem;padding:.42rem 0;color:var(--w-body);
+            font-size:var(--w-fs-sm);font-weight:500;text-decoration:none;transition:color .15s ease,padding .15s ease}
+        .hx-list a i{color:#02162d;font-size:.78rem;transition:transform .15s ease}
+        .hx-list a:hover{color:#02162d;padding-left:4px}
+        .hx-list a:hover i{transform:translateX(2px)}
+
+        .hx-feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--w-space-4)}
+        .hx-feat{background:var(--w-bg);border:1px solid var(--w-border);border-radius:16px;padding:var(--w-space-5);
+            display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
+        .hx-feat:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(2,22,45,.08)}
+        .hx-feat-icon{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+            background:var(--w-primary-light);color:var(--w-primary);font-size:1.25rem;margin-bottom:var(--w-space-3)}
+        .hx-feat h3{font-size:var(--w-fs-lg);color:var(--w-primary);font-weight:700;margin:0 0 .35rem}
+        .hx-feat p{color:var(--w-muted);font-size:var(--w-fs-sm);margin:0 0 var(--w-space-3);flex:1;line-height:1.6}
+        .hx-feat-link{color:#02162d;font-weight:600;font-size:var(--w-fs-sm);text-decoration:none;
+            display:inline-flex;align-items:center;gap:.35rem;margin-top:auto}
+        .hx-feat-link i{transition:transform .15s ease}
+        .hx-feat-link:hover{color:#c2410c}
+        .hx-feat-link:hover i{transform:translateX(3px)}
+
+        @media (max-width:991.98px){
+            .hx-grid4{grid-template-columns:repeat(2,1fr)}
+            .hx-feat-grid{grid-template-columns:repeat(2,1fr)}
+        }
+        @media (max-width:575.98px){
+            .hx-grid4{grid-template-columns:1fr}
+            .hx-feat-grid{grid-template-columns:1fr}
+        }
+    </style>
+    @endpush
+
     {{-- 2. Signed-in: continue learning + progress --}}
     @auth
         @if ($continueLearning->count() || $userStats)
@@ -451,6 +616,132 @@
         </div>
     </section>
 
+
+    {{-- 7c. How QuizMitra Works — 4-step onboarding (SEO how-it-works) --}}
+    <section class="w-section">
+        <div class="container">
+            <div class="w-section-head text-center d-block">
+                <div>
+                    <h2>How QuizMitra Works</h2>
+                    <p>From picking a quiz to climbing the leaderboard — start improving in four simple steps.</p>
+                </div>
+            </div>
+            <div class="hx-steps">
+                <div class="hx-step">
+                    <div class="hx-step-num">01</div>
+                    <span class="hx-step-icon"><i class="bi bi-collection-fill" aria-hidden="true"></i></span>
+                    <h3>Pick a Quiz</h3>
+                    <p>Choose from thousands of quizzes across GK, Current Affairs, Reasoning and every major exam.</p>
+                </div>
+                <div class="hx-step">
+                    <div class="hx-step-num">02</div>
+                    <span class="hx-step-icon"><i class="bi bi-pencil-square" aria-hidden="true"></i></span>
+                    <h3>Answer the Questions</h3>
+                    <p>Attempt clean, timed multiple-choice questions on any device — no clutter, no distractions.</p>
+                </div>
+                <div class="hx-step">
+                    <div class="hx-step-num">03</div>
+                    <span class="hx-step-icon"><i class="bi bi-clipboard2-data-fill" aria-hidden="true"></i></span>
+                    <h3>See Instant Results</h3>
+                    <p>Get your score instantly with the correct answer and a written explanation for every question.</p>
+                </div>
+                <div class="hx-step">
+                    <div class="hx-step-num">04</div>
+                    <span class="hx-step-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></span>
+                    <h3>Earn XP &amp; Improve</h3>
+                    <p>Collect XP, unlock badges, spot weak topics and climb the leaderboard as you improve.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- 7d. Who is QuizMitra for — audience use-cases (accent-bar cards) --}}
+    <section class="w-section w-section-alt">
+        <div class="container">
+            <div class="w-section-head text-center d-block">
+                <div>
+                    <h2>Who Is QuizMitra For?</h2>
+                    <p>Whatever you're preparing for, there's a focused set of quizzes waiting for you.</p>
+                </div>
+            </div>
+            <div class="hx-use-grid">
+                <a href="{{ route('exams') }}" class="hx-use-card">
+                    <span class="hx-use-icon"><i class="bi bi-mortarboard-fill" aria-hidden="true"></i></span>
+                    <span class="hx-use-body"><span class="hx-use-tag">SSC &amp; Railway Aspirants</span>
+                        <p>Targeted GK, reasoning and current-affairs practice for CGL, CHSL, NTPC and Group D.</p></span>
+                    <span class="hx-use-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+                <a href="{{ route('exams') }}" class="hx-use-card">
+                    <span class="hx-use-icon"><i class="bi bi-bank2" aria-hidden="true"></i></span>
+                    <span class="hx-use-body"><span class="hx-use-tag">Banking Aspirants</span>
+                        <p>Reasoning, aptitude, banking awareness and current affairs for IBPS &amp; SBI PO/Clerk.</p></span>
+                    <span class="hx-use-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+                <a href="{{ route('exams') }}" class="hx-use-card">
+                    <span class="hx-use-icon"><i class="bi bi-building-fill" aria-hidden="true"></i></span>
+                    <span class="hx-use-body"><span class="hx-use-tag">UPSC &amp; State PSC</span>
+                        <p>Broad General Studies and daily current-affairs practice for Prelims-style testing.</p></span>
+                    <span class="hx-use-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+                <a href="{{ route('exams') }}" class="hx-use-card">
+                    <span class="hx-use-icon"><i class="bi bi-shield-fill-check" aria-hidden="true"></i></span>
+                    <span class="hx-use-body"><span class="hx-use-tag">Defence Aspirants</span>
+                        <p>GK, current affairs and general science practice for NDA, CDS and AFCAT.</p></span>
+                    <span class="hx-use-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+                <a href="{{ route('website.categories') }}" class="hx-use-card">
+                    <span class="hx-use-icon"><i class="bi bi-backpack2-fill" aria-hidden="true"></i></span>
+                    <span class="hx-use-body"><span class="hx-use-tag">School &amp; College Students</span>
+                        <p>Build strong fundamentals in GK, science and more with fun, bite-sized quizzes.</p></span>
+                    <span class="hx-use-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+                <a href="{{ route('website.quizzes') }}" class="hx-use-card">
+                    <span class="hx-use-icon"><i class="bi bi-emoji-laughing-fill" aria-hidden="true"></i></span>
+                    <span class="hx-use-body"><span class="hx-use-tag">Quiz &amp; Trivia Lovers</span>
+                        <p>Sports, movies, entertainment and world trivia — learn something new every day.</p></span>
+                    <span class="hx-use-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    @push('styles')
+    <style>
+        /* Home: how-it-works steps + audience use-case cards (scoped) */
+        .hx-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--w-space-4)}
+        .hx-step{background:var(--w-bg);border:1.5px solid var(--w-border);border-radius:16px;
+            padding:var(--w-space-5);text-align:center;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+        .hx-step:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(2,22,45,.08);border-color:#f6d3b3}
+        .hx-step:first-child{border-color:#02162d}
+        .hx-step-num{font-size:2rem;font-weight:800;color:#e5e7eb;line-height:1}
+        .hx-step:first-child .hx-step-num{color:#02162d}
+        .hx-step-icon{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;margin:var(--w-space-3) auto;
+            background:#02162d;color:#02162d;font-size:1.5rem}
+        .hx-step:first-child .hx-step-icon{background:#02162d;color:#fff}
+        .hx-step h3{font-size:var(--w-fs-lg);color:var(--w-primary);font-weight:700;margin:0}
+        .hx-step h3::after{content:"";display:block;width:34px;height:3px;background:#02162d;border-radius:2px;margin:.55rem auto 0}
+        .hx-step p{color:var(--w-muted);font-size:var(--w-fs-sm);margin:.75rem 0 0;line-height:1.6}
+
+        .hx-use-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--w-space-4)}
+        .hx-use-card{display:flex;align-items:flex-start;gap:var(--w-space-4);background:var(--w-bg);
+            border:1px solid var(--w-border);border-left:4px solid #02162d; border-radius:14px;padding:var(--w-space-5);
+            text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+        .hx-use-card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(2,22,45,.08)}
+        .hx-use-icon{flex:0 0 auto;width:52px;height:52px;border-radius:13px;display:grid;place-items:center;
+            background:#02162d;color:#02162d;font-size:1.4rem}
+        .hx-use-body{flex:1;min-width:0}
+        .hx-use-tag{display:block;color:#02162d;font-weight:700;font-size:var(--w-fs-base);margin-bottom:.2rem}
+        .hx-use-body p{color:var(--w-muted);font-size:var(--w-fs-sm);margin:0;line-height:1.55}
+        .hx-use-arrow{flex:0 0 auto;align-self:center;width:38px;height:38px;border-radius:50%;
+            border:1px solid var(--w-border);display:grid;place-items:center;color:#02162d;
+            transition:background .15s ease,color .15s ease,transform .15s ease}
+        .hx-use-card:hover .hx-use-arrow{background:#02162d;color:#fff;transform:translateX(2px)}
+
+        @media (max-width:991.98px){ .hx-steps{grid-template-columns:repeat(2,1fr)} }
+        @media (max-width:767.98px){ .hx-use-grid{grid-template-columns:1fr} }
+        @media (max-width:575.98px){ .hx-steps{grid-template-columns:1fr} }
+    </style>
+    @endpush
 
     {{-- 8. Leaderboard --}}
     @if ($leaders->count())

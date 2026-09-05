@@ -88,6 +88,11 @@
                                 </div>
                             </div>
 
+                            {{-- Address section hidden at registration (optional; users can add
+                                 address/city/state/zip later from profile settings). These fields are
+                                 NOT required in UserController@userDataSubmit, so omitting them is safe.
+                                 To restore, simply un-comment this block. --}}
+                            {{--
                             <hr class="my-4">
                             <p class="w-text-sm w-muted mb-3">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
@@ -116,6 +121,7 @@
                                            value="{{ old('zip') }}" autocomplete="postal-code">
                                 </div>
                             </div>
+                            --}}
 
                             <button type="submit" class="btn w-btn-primary w-100 btn-lg mt-4" id="wUserDataSubmit">
                                 Finish setup <i class="bi bi-arrow-right" aria-hidden="true"></i>
