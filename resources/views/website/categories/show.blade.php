@@ -90,4 +90,9 @@
         @endif
     </div>
 </section>
+
+{{-- Shared info sections — shown on the General Knowledge category page. --}}
+@if (($category->slug ?? '') === 'general-knowledge')
+    @include('website.partials.site-info-sections')
+@endif
 @endsection
