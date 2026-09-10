@@ -1,0 +1,1105 @@
+Create a single CSV file containing high-quality multiple-choice questions for ALL sub-categories under the "Competitive Exams" category.
+
+IMPORTANT: Do NOT generate questions for only one sub-category.
+
+Generate questions for EVERY sub-category listed below and combine ALL questions into ONE single CSV output.
+
+CATEGORY
+
+Category Name: Competitive Exams
+
+Category ID: 34
+
+COMPETITIVE EXAMS SUB-CATEGORIES
+
+Generate questions for ALL 16 sub-categories:
+
+Sub-category ID: 35
+Sub-category Name: SSC
+Slug: ssc
+
+Sub-category ID: 36
+Sub-category Name: Banking
+Slug: banking
+
+Sub-category ID: 37
+Sub-category Name: Railway
+Slug: railway
+
+Sub-category ID: 38
+Sub-category Name: UPSC
+Slug: upsc
+
+Sub-category ID: 39
+Sub-category Name: Defence
+Slug: defence
+
+Sub-category ID: 40
+Sub-category Name: State PSC
+Slug: state-psc
+
+Sub-category ID: 41
+Sub-category Name: Teaching Exams
+Slug: teaching-exams
+
+Sub-category ID: 42
+Sub-category Name: Police Exams
+Slug: police-exams
+
+Sub-category ID: 43
+Sub-category Name: Insurance Exams
+Slug: insurance-exams
+
+Sub-category ID: 44
+Sub-category Name: Government Jobs
+Slug: government-jobs
+
+Sub-category ID: 45
+Sub-category Name: SSC CGL
+Slug: ssc-cgl
+
+Sub-category ID: 46
+Sub-category Name: SSC CHSL
+Slug: ssc-chsl
+
+Sub-category ID: 47
+Sub-category Name: SSC MTS
+Slug: ssc-mts
+
+Sub-category ID: 48
+Sub-category Name: IBPS
+Slug: ibps
+
+Sub-category ID: 49
+Sub-category Name: SBI
+Slug: sbi
+
+Sub-category ID: 50
+Sub-category Name: RRB
+Slug: rrb
+
+QUESTION DISTRIBUTION
+
+Generate BETWEEN 25 AND 30 questions for EACH sub-category.
+
+IMPORTANT:
+
+Minimum questions per sub-category = 25.
+
+Maximum questions per sub-category = 30.
+
+Never generate fewer than 25 questions for any sub-category.
+
+Never generate more than 30 questions for any sub-category.
+
+Every sub-category must contain questions.
+
+You may generate 25, 26, 27, 28, 29 or 30 questions for each sub-category.
+
+The number of questions does NOT have to be identical across all sub-categories.
+
+Every sub-category must independently satisfy the 25–30 question requirement.
+
+TOTAL QUESTION RANGE
+
+There are 16 sub-categories.
+
+Minimum total:
+16 × 25 = 400 questions.
+
+Maximum total:
+16 × 30 = 480 questions.
+
+Therefore, the final CSV must contain BETWEEN 400 AND 480 total questions.
+
+Do NOT generate fewer than 400 questions.
+
+Do NOT generate more than 480 questions.
+
+CATEGORY AND SUB-CATEGORY RULES
+
+Every row must have:
+
+category_id = 34
+
+The sub_category_id must exactly match the sub-category to which the question belongs.
+
+Use ONLY these mappings:
+
+35 = SSC
+36 = Banking
+37 = Railway
+38 = UPSC
+39 = Defence
+40 = State PSC
+41 = Teaching Exams
+42 = Police Exams
+43 = Insurance Exams
+44 = Government Jobs
+45 = SSC CGL
+46 = SSC CHSL
+47 = SSC MTS
+48 = IBPS
+49 = SBI
+50 = RRB
+
+IMPORTANT:
+
+Never use the wrong sub_category_id.
+
+Never mix questions between sub-categories.
+
+Every question must belong specifically to its assigned competitive-exam category.
+
+category_id must always be 34.
+
+SUB-CATEGORY CONTENT RULES
+
+Every question must be directly relevant to its assigned competitive-exam sub-category.
+
+Do NOT generate random questions that do not match the examination/category.
+
+SSC — ID 35
+
+Generate questions suitable for SSC examinations in general.
+
+Cover appropriate areas such as:
+
+General Awareness
+
+General Science
+
+Indian History
+
+Geography
+
+Indian Polity
+
+Economy
+
+Current Affairs
+
+English
+
+Quantitative Aptitude
+
+Reasoning
+
+Static GK
+
+Questions should match the general level of SSC examinations.
+
+BANKING — ID 36
+
+Generate questions suitable for banking competitive examinations.
+
+Cover:
+
+Banking Awareness
+
+Financial Awareness
+
+Indian Economy
+
+RBI
+
+Monetary Policy
+
+Banking Terms
+
+Financial Institutions
+
+Current Affairs
+
+Quantitative Aptitude
+
+Reasoning
+
+English
+
+Use banking-specific terminology accurately.
+
+RAILWAY — ID 37
+
+Generate questions suitable for Railway recruitment examinations.
+
+Cover:
+
+General Awareness
+
+General Science
+
+Mathematics
+
+Reasoning
+
+Current Affairs
+
+Indian History
+
+Geography
+
+Basic Railway Awareness
+
+Questions should be appropriate for Railway examination preparation.
+
+UPSC — ID 38
+
+Generate questions suitable for UPSC Civil Services examination preparation, especially General Studies.
+
+Cover:
+
+Indian Polity
+
+History
+
+Geography
+
+Economy
+
+Environment
+
+Science & Technology
+
+Current Affairs
+
+International Relations
+
+Governance
+
+Society
+
+Art and Culture
+
+Questions should be concept-based and appropriate for UPSC-level preparation.
+
+DEFENCE — ID 39
+
+Generate questions suitable for defence examinations such as:
+
+NDA
+
+CDS
+
+AFCAT
+
+Other defence recruitment examinations
+
+Cover:
+
+General Knowledge
+
+Current Affairs
+
+Defence Awareness
+
+Indian History
+
+Geography
+
+Science
+
+Mathematics
+
+Reasoning
+
+Military-related awareness
+
+STATE PSC — ID 40
+
+Generate questions suitable for State Public Service Commission examinations.
+
+Cover:
+
+General Studies
+
+Indian History
+
+Indian Polity
+
+Geography
+
+Economy
+
+General Science
+
+Current Affairs
+
+Environment
+
+State-related general awareness where appropriate
+
+Do not make all questions specific to one state.
+
+TEACHING EXAMS — ID 41
+
+Generate questions suitable for teaching examinations such as:
+
+CTET
+
+TET
+
+Teacher recruitment examinations
+
+Teaching aptitude examinations
+
+Cover:
+
+Child Development
+
+Pedagogy
+
+Educational Psychology
+
+Learning Theories
+
+Teaching Methods
+
+Classroom Management
+
+Assessment
+
+Inclusive Education
+
+Educational concepts
+
+POLICE EXAMS — ID 42
+
+Generate questions suitable for police recruitment examinations.
+
+Cover:
+
+General Knowledge
+
+Current Affairs
+
+Indian Constitution
+
+General Science
+
+Reasoning
+
+Mathematics
+
+General Awareness
+
+Basic law and policing awareness
+
+INSURANCE EXAMS — ID 43
+
+Generate questions suitable for insurance-sector competitive examinations.
+
+Cover:
+
+Insurance Awareness
+
+Insurance terminology
+
+Life Insurance
+
+General Insurance
+
+IRDAI
+
+Banking and Finance
+
+Economy
+
+Financial Awareness
+
+Current Affairs
+
+Quantitative Aptitude
+
+Reasoning
+
+English
+
+GOVERNMENT JOBS — ID 44
+
+Generate general competitive-exam questions suitable for Indian government job examinations.
+
+Cover:
+
+General Knowledge
+
+Current Affairs
+
+Indian History
+
+Geography
+
+Polity
+
+Economy
+
+General Science
+
+Mathematics
+
+Reasoning
+
+English
+
+Static GK
+
+Questions should have broad government-exam relevance.
+
+SSC CGL — ID 45
+
+Generate questions specifically suitable for SSC CGL preparation.
+
+Cover:
+
+General Intelligence & Reasoning
+
+General Awareness
+
+Quantitative Aptitude
+
+English Language
+
+Current Affairs
+
+Static GK
+
+General Science
+
+Indian Polity
+
+History
+
+Geography
+
+Economy
+
+Questions should match SSC CGL-level preparation.
+
+SSC CHSL — ID 46
+
+Generate questions specifically suitable for SSC CHSL preparation.
+
+Cover:
+
+General Intelligence
+
+General Awareness
+
+Quantitative Aptitude
+
+English Language
+
+Current Affairs
+
+Static GK
+
+Basic Science
+
+History
+
+Geography
+
+Polity
+
+Maintain an appropriate CHSL difficulty level.
+
+SSC MTS — ID 47
+
+Generate questions specifically suitable for SSC MTS preparation.
+
+Cover:
+
+General Awareness
+
+General Science
+
+Current Affairs
+
+Basic Mathematics
+
+Reasoning
+
+English
+
+Static GK
+
+Basic Indian Polity
+
+History
+
+Geography
+
+Keep the difficulty appropriate for SSC MTS.
+
+IBPS — ID 48
+
+Generate questions suitable for IBPS examinations such as:
+
+IBPS PO
+
+IBPS Clerk
+
+IBPS RRB where relevant
+
+Cover:
+
+Banking Awareness
+
+Current Affairs
+
+Financial Awareness
+
+Economy
+
+RBI
+
+Quantitative Aptitude
+
+Reasoning
+
+English
+
+Computer Awareness
+
+Use accurate banking terminology.
+
+SBI — ID 49
+
+Generate questions suitable for SBI examinations such as:
+
+SBI PO
+
+SBI Clerk
+
+Other SBI recruitment examinations
+
+Cover:
+
+Banking Awareness
+
+Financial Awareness
+
+Current Affairs
+
+Economy
+
+RBI
+
+Quantitative Aptitude
+
+Reasoning
+
+English
+
+Computer Awareness
+
+Questions should be appropriate for SBI examination preparation.
+
+RRB — ID 50
+
+Generate questions suitable for RRB examinations, including Railway Recruitment Board examinations.
+
+Cover:
+
+General Awareness
+
+General Science
+
+Mathematics
+
+Reasoning
+
+Current Affairs
+
+Indian History
+
+Geography
+
+Polity
+
+Basic Railway Awareness
+
+Questions should be appropriate for RRB examination preparation.
+
+QUIZ GROUPING
+
+Each sub-category must have its own quiz.
+
+Use these exact quiz titles:
+
+SSC:
+Competitive Exams - SSC
+
+Banking:
+Competitive Exams - Banking
+
+Railway:
+Competitive Exams - Railway
+
+UPSC:
+Competitive Exams - UPSC
+
+Defence:
+Competitive Exams - Defence
+
+State PSC:
+Competitive Exams - State PSC
+
+Teaching Exams:
+Competitive Exams - Teaching Exams
+
+Police Exams:
+Competitive Exams - Police Exams
+
+Insurance Exams:
+Competitive Exams - Insurance Exams
+
+Government Jobs:
+Competitive Exams - Government Jobs
+
+SSC CGL:
+Competitive Exams - SSC CGL
+
+SSC CHSL:
+Competitive Exams - SSC CHSL
+
+SSC MTS:
+Competitive Exams - SSC MTS
+
+IBPS:
+Competitive Exams - IBPS
+
+SBI:
+Competitive Exams - SBI
+
+RRB:
+Competitive Exams - RRB
+
+QUIZ SLUGS
+
+Use these exact slugs:
+
+Competitive Exams - SSC
+→ competitive-exams-ssc
+
+Competitive Exams - Banking
+→ competitive-exams-banking
+
+Competitive Exams - Railway
+→ competitive-exams-railway
+
+Competitive Exams - UPSC
+→ competitive-exams-upsc
+
+Competitive Exams - Defence
+→ competitive-exams-defence
+
+Competitive Exams - State PSC
+→ competitive-exams-state-psc
+
+Competitive Exams - Teaching Exams
+→ competitive-exams-teaching-exams
+
+Competitive Exams - Police Exams
+→ competitive-exams-police-exams
+
+Competitive Exams - Insurance Exams
+→ competitive-exams-insurance-exams
+
+Competitive Exams - Government Jobs
+→ competitive-exams-government-jobs
+
+Competitive Exams - SSC CGL
+→ competitive-exams-ssc-cgl
+
+Competitive Exams - SSC CHSL
+→ competitive-exams-ssc-chsl
+
+Competitive Exams - SSC MTS
+→ competitive-exams-ssc-mts
+
+Competitive Exams - IBPS
+→ competitive-exams-ibps
+
+Competitive Exams - SBI
+→ competitive-exams-sbi
+
+Competitive Exams - RRB
+→ competitive-exams-rrb
+
+OUTPUT FORMAT
+
+Return the result as CSV ONLY.
+
+Do not provide:
+
+Markdown
+
+Code fences
+
+Commentary
+
+Explanations outside the CSV
+
+Headings outside the CSV
+
+Numbered lists outside the CSV
+
+The first line must be this exact header row:
+
+quiz_title,quiz_slug,quiz_description,category_id,sub_category_id,quiz_type,price,quiz_difficulty,time_limit,question_limit,pass_percentage,marks_per_correct,negative_marking,quiz_status,question,question_type,option_a,option_b,option_c,option_d,correct_answer,explanation,question_difficulty
+
+There are exactly 23 columns.
+
+Use these exact column names, in exactly this order:
+
+quiz_title
+
+quiz_slug
+
+quiz_description
+
+category_id
+
+sub_category_id
+
+quiz_type
+
+price
+
+quiz_difficulty
+
+time_limit
+
+question_limit
+
+pass_percentage
+
+marks_per_correct
+
+negative_marking
+
+quiz_status
+
+question
+
+question_type
+
+option_a
+
+option_b
+
+option_c
+
+option_d
+
+correct_answer
+
+explanation
+
+question_difficulty
+
+FIELD RULES
+
+quiz_title:
+Use the exact quiz title specified for the corresponding sub-category.
+
+quiz_slug:
+Use the exact slug specified for the corresponding sub-category.
+
+quiz_description:
+Write a short and accurate description specifically related to that competitive-exam sub-category.
+
+category_id:
+Always 34.
+
+sub_category_id:
+Must be exactly one of:
+35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50.
+
+quiz_type:
+Always "free".
+
+price:
+Always 0.
+
+quiz_difficulty:
+Use only:
+easy
+medium
+hard
+
+question_type:
+Always "mcq_single".
+
+option_a, option_b, option_c, option_d:
+Exactly four distinct and plausible options.
+
+Do not use:
+
+Option A
+
+Option B
+
+Option C
+
+Option D
+
+Placeholder text
+
+correct_answer:
+Must contain exactly ONE letter:
+A, B, C or D.
+
+The selected letter must correspond exactly to the correct option.
+
+explanation:
+Every question must contain a meaningful explanation of 1–3 sentences.
+
+Never leave explanation empty.
+
+question_difficulty:
+Use only:
+easy
+medium
+hard.
+
+QUIZ SETTINGS
+
+Use these values for every row:
+
+quiz_type = free
+price = 0
+quiz_status = published
+time_limit = 0
+question_limit = 0
+pass_percentage = 40
+marks_per_correct = 1
+negative_marking = 0
+
+QUALITY REQUIREMENTS
+
+Generate between 25 and 30 questions for EVERY sub-category.
+
+Every sub-category must contain at least 25 questions.
+
+No sub-category may contain more than 30 questions.
+
+Every sub-category must be represented in the final CSV.
+
+Every question must be unique.
+
+Do not repeat the same question.
+
+Do not create paraphrased duplicates.
+
+Questions must be factually accurate.
+
+If uncertain about a fact, replace the question with another question.
+
+Every question must have exactly ONE correct answer.
+
+There must never be two potentially correct options.
+
+All four options must be plausible and relevant.
+
+Avoid ambiguous questions.
+
+Avoid filler questions.
+
+Do not mix questions between sub-categories.
+
+Every question must clearly fit its assigned competitive-exam category.
+
+Questions should match the expected difficulty and style of the corresponding examination.
+
+Distribute questions across easy, medium and hard difficulty.
+
+Distribute correct answers reasonably among A, B, C and D.
+
+Do not use a predictable answer pattern such as:
+A, B, C, D, A, B, C, D.
+
+Do not make the correct option obviously different in length or wording.
+
+Do not duplicate options within a question.
+
+Do not include "(Correct)", "(Answer)" or similar labels.
+
+Do not reveal the correct answer inside the question.
+
+Every explanation must agree with the correct answer.
+
+Mathematics calculations must be verified.
+
+Reasoning solutions must be logically verified.
+
+English grammar and vocabulary answers must be verified.
+
+Banking and financial terminology must be accurate.
+
+Insurance-related terminology and facts must be accurate.
+
+Defence-related facts must be accurate.
+
+UPSC-level questions should test concepts rather than relying only on trivial facts.
+
+Do not fabricate examination patterns, syllabus information or official facts.
+
+Current-affairs questions must be based on genuine and relevant events.
+
+CURRENT AFFAIRS RULE
+
+Where current affairs are included, use relevant recent/current events.
+
+Do not make every question a current-affairs question.
+
+The questions must primarily match the assigned examination/category.
+
+For example:
+
+Banking → banking + financial current affairs
+
+Defence → defence + national/international current affairs
+
+SSC → general current affairs + static GK
+
+UPSC → current affairs linked to GS topics
+
+Insurance → insurance/financial current affairs
+
+Railway/RRB → general current affairs + railway awareness where appropriate
+
+CSV SAFETY RULES
+
+The CSV must be directly importable into an existing Quiz Import system.
+
+If any field contains a comma, wrap the complete field in double quotes.
+
+If any field contains a double quote, escape it according to standard CSV rules by doubling the quote.
+
+Keep every row at exactly 23 columns.
+
+Never create extra columns accidentally.
+
+Never omit any column.
+
+Never add any column.
+
+Never use Markdown code fences.
+
+Never add comments before or after the CSV.
+
+FINAL VALIDATION BEFORE OUTPUT
+
+Before returning the CSV, internally verify all of the following:
+
+Header contains exactly 23 columns.
+
+Total data rows are between 400 and 480.
+
+category_id = 34 in every row.
+
+sub_category_id 35 has between 25 and 30 questions.
+
+sub_category_id 36 has between 25 and 30 questions.
+
+sub_category_id 37 has between 25 and 30 questions.
+
+sub_category_id 38 has between 25 and 30 questions.
+
+sub_category_id 39 has between 25 and 30 questions.
+
+sub_category_id 40 has between 25 and 30 questions.
+
+sub_category_id 41 has between 25 and 30 questions.
+
+sub_category_id 42 has between 25 and 30 questions.
+
+sub_category_id 43 has between 25 and 30 questions.
+
+sub_category_id 44 has between 25 and 30 questions.
+
+sub_category_id 45 has between 25 and 30 questions.
+
+sub_category_id 46 has between 25 and 30 questions.
+
+sub_category_id 47 has between 25 and 30 questions.
+
+sub_category_id 48 has between 25 and 30 questions.
+
+sub_category_id 49 has between 25 and 30 questions.
+
+sub_category_id 50 has between 25 and 30 questions.
+
+Every question belongs to the correct sub-category.
+
+Every question has exactly four options.
+
+Every question has exactly one correct answer.
+
+correct_answer contains only A, B, C or D.
+
+question_type = "mcq_single" in every row.
+
+quiz_type = "free" in every row.
+
+price = 0 in every row.
+
+quiz_status = "published" in every row.
+
+No duplicate questions exist.
+
+No duplicate options exist within a question.
+
+Every explanation is present.
+
+Every row has exactly 23 CSV fields.
+
+No sub-category has fewer than 25 questions.
+
+No sub-category has more than 30 questions.
+
+All numerical answers have been verified.
+
+All reasoning answers have been verified.
+
+The final response contains CSV only.
+
+IMPORTANT FINAL INSTRUCTION
+
+Generate ALL 16 sub-categories in ONE SINGLE CSV output.
+
+DO NOT stop after generating one sub-category.
+
+DO NOT generate a separate CSV for each sub-category.
+
+DO NOT ask for confirmation between sub-categories.
+
+DO NOT generate only SSC.
+
+Every one of the following sub-categories MUST have between 25 and 30 questions:
+
+35 = SSC
+36 = Banking
+37 = Railway
+38 = UPSC
+39 = Defence
+40 = State PSC
+41 = Teaching Exams
+42 = Police Exams
+43 = Insurance Exams
+44 = Government Jobs
+45 = SSC CGL
+46 = SSC CHSL
+47 = SSC MTS
+48 = IBPS
+49 = SBI
+50 = RRB
+
+FINAL TOTAL:
+
+Minimum = 400 questions.
+Maximum = 480 questions.
+
+The final CSV must contain between 400 and 480 high-quality competitive-exam questions in ONE CSV file.

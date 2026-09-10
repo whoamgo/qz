@@ -158,6 +158,52 @@
     <script src="{{ wAsset('assets/web/js/profile.js') }}" defer></script>
     <script src="{{ wAsset('assets/web/js/translate.js') }}"></script>
     <script src="//translate.google.com/translate_a/element.js?cb=wGoogleTranslateInit" defer></script>
+
+
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://quizmitra.com/#organization",
+          "name": "QuizMitra",
+          "alternateName": "Quiz Mitra",
+          "url": "https://quizmitra.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "@id": "https://quizmitra.com/#logo",
+            "url": "https://quizmitra.com/assets/images/logo_icon/logo.png",
+            "contentUrl": "https://quizmitra.com/assets/images/logo_icon/logo.png"
+          },
+          "description": "QuizMitra is an online quiz and exam preparation platform for General Knowledge, Current Affairs and competitive exams.",
+          "sameAs": [
+            "https://www.facebook.com/profile.php?id=61593349494889",
+            "https://www.youtube.com/@quizmitra07",
+            "https://www.instagram.com/quiz.mitra",
+            "https://www.quora.com/profile/Quiz-Mitra"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://quizmitra.com/#website",
+          "name": "QuizMitra",
+          "alternateName": [
+            "Quiz Mitra",
+            "quizmitra.com"
+          ],
+          "url": "https://quizmitra.com/",
+          "publisher": {
+            "@id": "https://quizmitra.com/#organization"
+          },
+          "inLanguage": "en-IN"
+        }
+      ]
+    }
+    </script>
+
+    
     @stack('scripts')
 </body>
 </html>
